@@ -9,7 +9,8 @@
   --nf-teal: #00343F;        /* Nunayon Teal — primary, wordmark, headings */
   --nf-teal-700: #0B4A57;    /* hover / pressed on teal */
   --nf-leaf: #4A8F62;        /* Leaf Green — logo leaf, icons, large accents */
-  --nf-leaf-deep: #2F6E4A;   /* Deep Leaf — leaf shade, green buttons with white text */
+  --nf-leaf-shadow: #00393E; /* Leaf Shadow — dark side of the logo leaves, stem */
+  --nf-leaf-deep: #2F6E4A;   /* Deep Leaf — green buttons with white text, links */
   --nf-forest: #2E6A55;      /* Forest — tagline, green text on light backgrounds */
   --nf-mint: #7CC495;        /* Mint — leaf on dark backgrounds */
   --nf-mint-pale: #BFE3CB;   /* Pale Mint — tints, tagline on teal */

@@ -6,7 +6,7 @@ This folder holds the logo, colours, type and tokens for nunayonfoundation.org.
 Open `brand/index.html` in a browser for the visual guide.
 
 The logo here is a clean vector rebuild of the original artwork
-(`reference/original-logo-screenshot.png`). All text in the logo files is
+(`reference/`). The sprout was traced from the original and fitted with smooth curves. All text in the logo files is
 converted to outlines, so they need no fonts installed.
 
 ---
@@ -17,7 +17,7 @@ The logo has three parts:
 
 - **Wordmark:** "nunayon", lowercase, Montserrat Bold
 - **Descriptor:** "FOUNDATION", Montserrat Medium, widely letter-spaced
-- **Sprout mark:** a stem with two leaves, growing beside the final "N". It stands for growth and the communities the foundation supports.
+- **Sprout:** grows out of the final "N" of FOUNDATION. A slim stem rises just after the N and curls into a small leaf. Above it, a large leaf floats with its tail pointing down at the stem. Each leaf has a dark Leaf Shadow crescent on one side and a Leaf Green body. The sprout stands for growth and the communities the foundation supports.
 
 ### Versions (`logo/svg`, PNGs in `logo/png`)
 
@@ -58,7 +58,8 @@ The logo has three parts:
 | **Nunayon Teal** | `#00343F` | 0, 52, 63 | Primary. Wordmark, headings, nav, footer |
 | Teal 700 | `#0B4A57` | 11, 74, 87 | Hover/pressed on teal |
 | **Leaf Green** | `#4A8F62` | 74, 143, 98 | Logo leaf, icons, illustrations, large accents |
-| Deep Leaf | `#2F6E4A` | 47, 110, 74 | Leaf shading, green buttons, links |
+| Leaf Shadow | `#00393E` | 0, 57, 62 | Dark side of the leaves and the stem (logo only) |
+| Deep Leaf | `#2F6E4A` | 47, 110, 74 | Green buttons, links |
 | Forest | `#2E6A55` | 46, 106, 85 | Tagline, green text |
 | Mint | `#7CC495` | 124, 196, 149 | Leaf on dark backgrounds |
 | Pale Mint | `#BFE3CB` | 191, 227, 203 | Tints, tagline on teal |
@@ -69,8 +70,8 @@ The logo has three parts:
 
 **Proportion guide:** about 60% Cream/White, 25% Teal, 10% greens, 5% Amber.
 
-The Teal, Leaf, Forest and Sand values were sampled from the original logo
-artwork. Teal 700, Mint, Pale Mint, Amber and Slate are added to complete the
+The Teal, Leaf Green, Leaf Shadow, Forest and Sand values were sampled from the original logo
+artwork. Teal 700, Deep Leaf, Mint, Pale Mint, Amber and Slate are added to complete the
 web palette. Amber gives the Donate button a warm colour that stands out.
 
 ### Accessibility (WCAG 2.1 contrast)
