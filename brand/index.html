@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nunayon Brand Guide</title>
+<link rel="icon" href="favicon/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens/tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: var(--nf-font); color: var(--nf-text); background: var(--nf-bg); line-height: 1.6; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+  header.hero { background: var(--nf-white); border-bottom: 1px solid var(--nf-border); padding: 56px 0 48px; }
+  header.hero img { width: min(520px, 100%); display: block; }
+  section { padding: 48px 0; border-bottom: 1px solid var(--nf-border); }
+  .eyebrow { font-size: 13px; font-weight: 600; letter-spacing: var(--nf-tracking-eyebrow); text-transform: uppercase; color: var(--nf-forest); margin: 0 0 8px; }
+  h2 { font-size: 32px; font-weight: 700; margin: 0 0 24px; line-height: 1.2; }
+  p.lead { color: var(--nf-slate); max-width: 640px; margin: 0 0 24px; }
+  .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+  .tile { border-radius: var(--nf-radius); padding: 28px; display: flex; flex-direction: column; justify-content: space-between; gap: 16px; min-height: 180px; border: 1px solid var(--nf-border); }
+  .tile img { width: 100%; max-height: 140px; object-fit: contain; }
+  .tile small { font-size: 12px; color: inherit; opacity: .75; font-weight: 500; }
+  .on-white { background: #fff; } .on-cream { background: var(--nf-cream); } .on-sand { background: var(--nf-sand); }
+  .on-teal { background: var(--nf-teal); color: #fff; border-color: var(--nf-teal); }
+  .swatch { border-radius: var(--nf-radius); overflow: hidden; border: 1px solid var(--nf-border); background: #fff; }
+  .swatch .chip { height: 96px; display: flex; align-items: flex-end; padding: 10px 12px; font-weight: 700; font-size: 14px; }
+  .swatch .meta { padding: 12px; font-size: 13px; }
+  .swatch .meta b { display: block; font-size: 15px; }
+  .swatch code { font-size: 13px; }
+  .type-row { display: grid; grid-template-columns: 160px 1fr; gap: 16px; align-items: baseline; padding: 14px 0; border-top: 1px dashed var(--nf-border); }
+  .type-row span { font-size: 12px; color: var(--nf-slate); }
+  .btns { display: flex; flex-wrap: wrap; gap: 12px; }
+  .btn { font: 700 16px var(--nf-font); padding: 14px 28px; border-radius: var(--nf-radius-pill); border: 2px solid transparent; }
+  .btn-donate { background: var(--nf-amber); color: var(--nf-teal); }
+  .btn-primary { background: var(--nf-teal); color: #fff; }
+  .btn-green { background: var(--nf-leaf-deep); color: #fff; }
+  .btn-ghost { background: transparent; color: var(--nf-teal); border-color: var(--nf-teal); }
+  .icons { display: flex; gap: 20px; flex-wrap: wrap; align-items: end; }
+  .icons figure { margin: 0; text-align: center; font-size: 12px; color: var(--nf-slate); }
+  .icons img { display: block; margin: 0 auto 6px; image-rendering: auto; }
+  .card { background: #fff; border-radius: var(--nf-radius); overflow: hidden; border: 1px solid var(--nf-border); max-width: 360px; }
+  .card .img { height: 160px; background: linear-gradient(135deg, var(--nf-teal), var(--nf-leaf-deep)); display: grid; place-items: center; }
+  .card .img img { width: 72px; }
+  .card .body { padding: 20px; }
+  .card h3 { margin: 4px 0 8px; font-size: 20px; }
+  .card p { margin: 0 0 16px; color: var(--nf-slate); font-size: 15px; }
+  footer { padding: 32px 0 64px; font-size: 13px; color: var(--nf-slate); }
+  @media (max-width: 560px) { .type-row { grid-template-columns: 1fr; gap: 4px; } h2 { font-size: 26px; } }
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <img src="logo/svg/nunayon-logo-primary.svg" alt="Nunayon Foundation — Empowering lives. Building communities.">
+  </div>
+</header>
+
+<main class="wrap">
+  <section>
+    <p class="eyebrow">01 · Logo</p>
+    <h2>Logo versions</h2>
+    <p class="lead">A clean vector rebuild of the original mark. Use the primary lockup wherever it fits, the horizontal lockup in the site header, and the sprout badge for icons and avatars.</p>
+    <div class="grid">
+      <div class="tile on-white"><img src="logo/svg/nunayon-logo-primary.svg" alt=""><small>Primary · nunayon-logo-primary.svg</small></div>
+      <div class="tile on-cream"><img src="logo/svg/nunayon-logo-no-tagline.svg" alt=""><small>No tagline · nunayon-logo-no-tagline.svg</small></div>
+      <div class="tile on-teal"><img src="logo/svg/nunayon-logo-reversed.svg" alt=""><small>Reversed · nunayon-logo-reversed.svg</small></div>
+      <div class="tile on-white"><img src="logo/svg/nunayon-logo-horizontal.svg" alt=""><small>Horizontal · nunayon-logo-horizontal.svg</small></div>
+      <div class="tile on-teal"><img src="logo/svg/nunayon-logo-horizontal-reversed.svg" alt=""><small>Horizontal reversed</small></div>
+      <div class="tile on-sand"><img src="logo/svg/nunayon-logo-mono-teal.svg" alt=""><small>Mono teal · print &amp; stamps</small></div>
+      <div class="tile on-teal"><img src="logo/svg/nunayon-logo-mono-white.svg" alt=""><small>Mono white</small></div>
+      <div class="tile on-white"><img src="logo/svg/nunayon-mark.svg" alt=""><small>Sprout mark · nunayon-mark.svg</small></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="eyebrow">02 · Icons</p>
+    <h2>Favicon &amp; app icon</h2>
+    <div class="icons">
+      <figure><img src="logo/svg/nunayon-mark-badge-teal.svg" width="128" height="128" alt="">Badge · teal</figure>
+      <figure><img src="logo/svg/nunayon-mark-badge-cream.svg" width="128" height="128" alt="">Badge · cream</figure>
+      <figure><img src="favicon/icon-192.png" width="64" height="64" alt="">64px</figure>
+      <figure><img src="favicon/favicon-32.png" width="32" height="32" alt="">32px</figure>
+      <figure><img src="favicon/favicon-16.png" width="16" height="16" alt="">16px</figure>
+    </div>
+  </section>
+
+  <section>
+    <p class="eyebrow">03 · Colour</p>
+    <h2>Palette</h2>
+    <p class="lead">Teal and Leaf Green come straight from the logo. Cream and Sand carry the warmth of the original artwork. Sunrise Amber is kept for the Donate button only.</p>
+    <div class="grid">
+      <div class="swatch"><div class="chip" style="background:#00343F;color:#fff">Aa 13.4</div><div class="meta"><b>Nunayon Teal</b><code>#00343F</code> · Primary</div></div>
+      <div class="swatch"><div class="chip" style="background:#4A8F62;color:#fff">Graphics only</div><div class="meta"><b>Leaf Green</b><code>#4A8F62</code> · Leaf, icons</div></div>
+      <div class="swatch"><div class="chip" style="background:#2F6E4A;color:#fff">Aa 6.1</div><div class="meta"><b>Deep Leaf</b><code>#2F6E4A</code> · Buttons, links</div></div>
+      <div class="swatch"><div class="chip" style="background:#2E6A55;color:#fff">Aa 6.4</div><div class="meta"><b>Forest</b><code>#2E6A55</code> · Tagline, labels</div></div>
+      <div class="swatch"><div class="chip" style="background:#7CC495;color:#00343F">Aa 6.5</div><div class="meta"><b>Mint</b><code>#7CC495</code> · Leaf on dark</div></div>
+      <div class="swatch"><div class="chip" style="background:#BFE3CB;color:#00343F">Aa</div><div class="meta"><b>Pale Mint</b><code>#BFE3CB</code> · Tints</div></div>
+      <div class="swatch"><div class="chip" style="background:#FDF7EC;color:#00343F">Aa 12.6</div><div class="meta"><b>Cream</b><code>#FDF7EC</code> · Background</div></div>
+      <div class="swatch"><div class="chip" style="background:#F6E3CC;color:#00343F">Aa</div><div class="meta"><b>Sand</b><code>#F6E3CC</code> · Warm sections</div></div>
+      <div class="swatch"><div class="chip" style="background:#E8A33D;color:#00343F">Aa 6.2</div><div class="meta"><b>Sunrise Amber</b><code>#E8A33D</code> · Donate CTA</div></div>
+      <div class="swatch"><div class="chip" style="background:#4A6268;color:#fff">Aa 6.5</div><div class="meta"><b>Slate</b><code>#4A6268</code> · Secondary text</div></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="eyebrow">04 · Typography</p>
+    <h2>Montserrat</h2>
+    <div class="type-row"><span>Display · 800</span><div style="font-size:clamp(32px,6vw,56px);font-weight:800;line-height:1.1">Every life can grow.</div></div>
+    <div class="type-row"><span>H2 · 700</span><div style="font-size:clamp(24px,4vw,40px);font-weight:700;line-height:1.2">Building stronger communities</div></div>
+    <div class="type-row"><span>H3 · 700</span><div style="font-size:24px;font-weight:700">Education &amp; skills</div></div>
+    <div class="type-row"><span>Eyebrow · 600</span><div class="eyebrow" style="margin:0">Our programmes</div></div>
+    <div class="type-row"><span>Body · 400</span><div style="font-size:17px;max-width:600px">We work alongside families and local leaders to open doors to education, health and opportunity, so that every person can thrive.</div></div>
+  </section>
+
+  <section>
+    <p class="eyebrow">05 · Components</p>
+    <h2>Buttons &amp; cards</h2>
+    <div class="btns" style="margin-bottom:32px">
+      <button class="btn btn-donate">Donate now</button>
+      <button class="btn btn-primary">Get involved</button>
+      <button class="btn btn-green">Volunteer</button>
+      <button class="btn btn-ghost">Learn more</button>
+    </div>
+    <div class="card">
+      <div class="img"><img src="logo/svg/nunayon-mark-badge-teal.svg" alt=""></div>
+      <div class="body">
+        <p class="eyebrow" style="margin:0">Programme</p>
+        <h3>Community learning hubs</h3>
+        <p>Safe spaces where children and adults learn, connect and grow together.</p>
+        <button class="btn btn-ghost" style="padding:10px 20px;font-size:14px">Read more</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">Nunayon Foundation brand guide · nunayonfoundation.org · see BRAND.md for full usage rules</footer>
+</body>
+</html>

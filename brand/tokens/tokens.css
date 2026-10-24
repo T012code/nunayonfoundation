@@ -1,0 +1,49 @@
+/*
+ * Nunayon Foundation — brand design tokens
+ * Source of truth: brand/BRAND.md
+ * Fonts: load Montserrat from Google Fonts, e.g.
+ *   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+ */
+:root {
+  /* Core palette */
+  --nf-teal: #00343F;        /* Nunayon Teal — primary, wordmark, headings */
+  --nf-teal-700: #0B4A57;    /* hover / pressed on teal */
+  --nf-leaf: #4A8F62;        /* Leaf Green — logo leaf, icons, large accents */
+  --nf-leaf-deep: #2F6E4A;   /* Deep Leaf — leaf shade, green buttons with white text */
+  --nf-forest: #2E6A55;      /* Forest — tagline, green text on light backgrounds */
+  --nf-mint: #7CC495;        /* Mint — leaf on dark backgrounds */
+  --nf-mint-pale: #BFE3CB;   /* Pale Mint — tints, tagline on teal */
+  --nf-cream: #FDF7EC;       /* Cream — page background */
+  --nf-sand: #F6E3CC;        /* Sand — warm section background */
+  --nf-amber: #E8A33D;       /* Sunrise Amber — donate CTA (use teal text) */
+  --nf-slate: #4A6268;       /* Slate — secondary text */
+  --nf-white: #FFFFFF;
+
+  /* Semantic */
+  --nf-bg: var(--nf-cream);
+  --nf-surface: var(--nf-white);
+  --nf-text: var(--nf-teal);
+  --nf-text-muted: var(--nf-slate);
+  --nf-link: var(--nf-leaf-deep);
+  --nf-primary: var(--nf-teal);
+  --nf-on-primary: var(--nf-white);
+  --nf-cta: var(--nf-amber);
+  --nf-on-cta: var(--nf-teal);
+  --nf-border: #E4DCCD;
+  --nf-focus: var(--nf-leaf);
+
+  /* Typography */
+  --nf-font: "Montserrat", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --nf-weight-regular: 400;
+  --nf-weight-medium: 500;
+  --nf-weight-semibold: 600;
+  --nf-weight-bold: 700;
+  --nf-weight-extrabold: 800;
+  --nf-tracking-eyebrow: 0.16em;   /* uppercase labels, mirrors "FOUNDATION" */
+
+  /* Shape */
+  --nf-radius-sm: 6px;
+  --nf-radius: 12px;
+  --nf-radius-lg: 24px;
+  --nf-radius-pill: 999px;
+}
