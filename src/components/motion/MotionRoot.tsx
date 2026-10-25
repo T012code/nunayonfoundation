@@ -9,7 +9,9 @@ import "lenis/dist/lenis.css";
  * Runs the site's scroll motion from one place:
  * - smooth scrolling on desktop pointers,
  * - [data-reveal] elements animate in (CSS) the first time they enter the viewport,
- * - [data-parallax] elements drift against the scroll while on screen.
+ * - [data-parallax] elements drift against the scroll while on screen,
+ * - [data-drift] elements (background leaves) travel and turn with the scroll:
+ *   data-speed is the travel as a fraction of the screen height, data-rotate the turn in degrees.
  * Sections only add data attributes; no per-component scripts.
  */
 export function MotionRoot() {
@@ -44,17 +46,27 @@ export function MotionRoot() {
   // Parallax: positions are measured on layout changes only; each frame is plain arithmetic.
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const els = [...document.querySelectorAll<HTMLElement>("[data-parallax]")];
+    const els = [...document.querySelectorAll<HTMLElement>("[data-parallax], [data-drift]")];
     if (!els.length) return;
-    let items: { el: HTMLElement; top: number; height: number; speed: number }[] = [];
+    type Item = { el: HTMLElement; top: number; height: number; drift: boolean; speed: number; rotate: number };
+    let items: Item[] = [];
     let vh = window.innerHeight;
 
     const measure = () => {
       vh = window.innerHeight;
       const y = window.scrollY;
       items = els.map((el) => {
+        // Progress follows the containing section, so every leaf in it moves in step.
         const box = (el.parentElement ?? el).getBoundingClientRect();
-        return { el, top: box.top + y, height: box.height, speed: Number(el.dataset.parallax) || 0.08 };
+        const drift = el.hasAttribute("data-drift");
+        return {
+          el,
+          top: box.top + y,
+          height: box.height,
+          drift,
+          speed: Number(drift ? el.dataset.speed : el.dataset.parallax) || 0.08,
+          rotate: Number(el.dataset.rotate) || 0,
+        };
       });
     };
 
@@ -62,9 +74,11 @@ export function MotionRoot() {
       for (const it of items) {
         const top = it.top - y;
         if (top > vh || top + it.height < 0) continue; // off screen
-        // -1 when the element's centre is at the bottom of the screen, +1 at the top.
+        // -1 when the section's centre is at the bottom of the screen, +1 at the top.
         const t = (vh / 2 - (top + it.height / 2)) / (vh / 2 + it.height / 2);
-        it.el.style.transform = `translate3d(0, ${(t * it.speed * it.height).toFixed(1)}px, 0)`;
+        it.el.style.transform = it.drift
+          ? `translate3d(0, ${(-t * it.speed * vh).toFixed(1)}px, 0) rotate(${(t * it.rotate).toFixed(2)}deg)`
+          : `translate3d(0, ${(t * it.speed * it.height).toFixed(1)}px, 0)`;
       }
     };
 

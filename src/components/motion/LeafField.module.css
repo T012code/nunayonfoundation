@@ -1,0 +1,41 @@
+.field {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.leaf {
+  position: absolute;
+  display: block;
+  will-change: transform;
+}
+
+.sway {
+  display: block;
+  opacity: var(--o);
+  transform: rotate(var(--angle));
+  animation: sway var(--sway) var(--ease-in-out) var(--delay) infinite alternate;
+}
+
+.mark {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+@keyframes sway {
+  from {
+    transform: rotate(calc(var(--angle) - 5deg)) translate3d(-0.5rem, 0, 0);
+  }
+  to {
+    transform: rotate(calc(var(--angle) + 6deg)) translate3d(0.75rem, -0.5rem, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sway {
+    animation: none;
+  }
+}

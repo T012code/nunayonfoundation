@@ -6,13 +6,6 @@
   color: var(--cream);
 }
 
-.decor {
-  left: -5rem;
-  bottom: -6rem;
-  width: clamp(16rem, 34vw, 30rem);
-  animation-duration: 26s;
-}
-
 .inner {
   position: relative;
   z-index: 1;

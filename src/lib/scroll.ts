@@ -106,3 +106,11 @@ export function jumpTo(y: number) {
   if (lenis) lenis.scrollTo(y, { immediate: true, force: true });
   else window.scrollTo({ top: y, behavior: "instant" });
 }
+
+/** Glide back to the top (instantly with reduced motion), then move keyboard focus to the logo. */
+export function scrollToTop() {
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (lenis) lenis.scrollTo(0, { duration: 1.4 });
+  else window.scrollTo({ top: 0, behavior: reduced ? "instant" : "smooth" });
+  document.querySelector<HTMLElement>("header a")?.focus({ preventScroll: true });
+}

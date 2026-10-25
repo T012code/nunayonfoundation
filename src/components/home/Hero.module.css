@@ -312,8 +312,14 @@
     aspect-ratio: auto;
   }
 
+  /* The photo sits 3px inside the frame, under its 10px paper border (matches TUCK in Hero.tsx). */
   .clip {
+    top: calc(12% + 3px);
+    right: calc(var(--edge) + 3px);
+    width: calc(var(--content) * 0.5 - 6px);
+    height: calc(78% - 6px);
     box-shadow: none;
+    backface-visibility: hidden;
   }
 
   .stage[data-ready] .clip {

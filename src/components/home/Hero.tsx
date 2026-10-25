@@ -10,6 +10,8 @@ import type { ImageSlug } from "@/content/images";
 import styles from "./Hero.module.css";
 
 const SLIDE_MS = 6500;
+// How far the photo's edge sits inside the frame's 10px paper border, in px.
+const TUCK = 3;
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const clamp01 = (n: number) => Math.min(1, Math.max(0, n));
 const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
@@ -77,11 +79,14 @@ export function Hero({ title, lead, slides }: Props) {
       g.W = stage.clientWidth;
       g.H = stage.clientHeight;
       // The mat sits exactly where the frame is and is never moved, so it gives the geometry.
-      g.fx = mat.offsetLeft;
-      g.fy = mat.offsetTop;
-      g.fw = mat.offsetWidth;
-      g.fh = mat.offsetHeight;
+      // Exact (fractional) bounds, then the photo's edge is tucked under the paper border so
+      // sub-pixel rounding can never show a sliver of photo outside the frame.
       const s = stage.getBoundingClientRect();
+      const f = mat.getBoundingClientRect();
+      g.fx = f.left - s.left + TUCK;
+      g.fy = f.top - s.top + TUCK;
+      g.fw = f.width - 2 * TUCK;
+      g.fh = f.height - 2 * TUCK;
       const c = light.getBoundingClientRect();
       g.lx = c.left - s.left;
       g.ly = c.top - s.top;
