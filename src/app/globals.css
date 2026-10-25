@@ -45,6 +45,7 @@
   --veil-text: oklch(100% 0 0 / 0.85);
   --ink-rule: oklch(30% 0.053 216.8 / 0.16);
   --mint-wash: oklch(76% 0.099 154.7 / 0.1);
+  --error-wash: oklch(52% 0.17 28 / 0.15);
   --paper-glass: oklch(97.8% 0.016 82.8 / 0.92);
   --scrim-mid: oklch(18% 0.04 215 / 0.35);
   --scrim-clear: oklch(18% 0.04 215 / 0);

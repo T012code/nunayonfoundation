@@ -1,0 +1,228 @@
+.form {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.row {
+  display: grid;
+  gap: var(--space-md);
+}
+
+@media (min-width: 40rem) {
+  .row {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.field {
+  display: grid;
+  gap: var(--space-2xs);
+}
+
+.label {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+}
+
+.optional {
+  font-weight: var(--weight-regular);
+  color: var(--color-ink-muted);
+}
+
+.input {
+  width: 100%;
+  min-height: 3.25rem;
+  padding: var(--space-xs) var(--space-sm);
+  border: 1.5px solid var(--color-rule);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  font-size: var(--text-body);
+  transition:
+    border-color var(--dur-micro) var(--ease-out),
+    box-shadow var(--dur-micro) var(--ease-out);
+}
+
+.input:hover {
+  border-color: var(--slate);
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--leaf-deep);
+  box-shadow: 0 0 0 3px var(--mint-pale);
+}
+
+.field[data-invalid] .input {
+  border-color: var(--color-error);
+}
+
+.field[data-invalid] .input:focus {
+  box-shadow: 0 0 0 3px var(--error-wash);
+}
+
+.textarea {
+  min-height: 9rem;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.selectWrap {
+  position: relative;
+  display: block;
+}
+
+.selectWrap::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: var(--space-sm);
+  width: 0.5rem;
+  height: 0.5rem;
+  margin-top: -0.375rem;
+  border-right: 2px solid var(--teal);
+  border-bottom: 2px solid var(--teal);
+  transform: rotate(45deg);
+  pointer-events: none;
+}
+
+.select {
+  appearance: none;
+  padding-right: var(--space-xl);
+  cursor: pointer;
+}
+
+.hint {
+  font-size: var(--text-sm);
+  color: var(--color-ink-muted);
+}
+
+.error {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2xs);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-error);
+  animation: shake 360ms var(--ease-out);
+}
+
+.error svg {
+  flex-shrink: 0;
+  width: 1rem;
+  height: 1rem;
+  margin-top: 0.2rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+@keyframes shake {
+  25% {
+    transform: translate3d(-3px, 0, 0);
+  }
+  50% {
+    transform: translate3d(3px, 0, 0);
+  }
+  75% {
+    transform: translate3d(-2px, 0, 0);
+  }
+}
+
+/* Choice chips (checkbox and radio groups) */
+.choices {
+  display: grid;
+  gap: var(--space-2xs);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.choices legend {
+  margin-bottom: var(--space-2xs);
+  padding: 0;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2xs);
+}
+
+.chip {
+  position: relative;
+  cursor: pointer;
+}
+
+.chip input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.chip span {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  min-height: 2.75rem;
+  padding: 0 var(--space-sm);
+  border: 1.5px solid var(--color-rule);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  transition:
+    background-color var(--dur-micro) var(--ease-out),
+    border-color var(--dur-micro) var(--ease-out),
+    color var(--dur-micro) var(--ease-out),
+    transform var(--dur-micro) var(--ease-out);
+}
+
+.chip span::before {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--color-rule);
+  transition:
+    transform var(--dur-base) var(--ease-out-expo),
+    background-color var(--dur-micro) var(--ease-out);
+}
+
+.chip:hover span {
+  border-color: var(--slate);
+}
+
+.chip:active span {
+  transform: scale(0.97);
+}
+
+.chip input:checked + span {
+  border-color: var(--leaf-deep);
+  background: var(--leaf-deep);
+  color: var(--cream);
+}
+
+.chip input:checked + span::before {
+  background: var(--mint);
+  transform: scale(1.3);
+}
+
+.chip input:focus-visible + span {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.choices[data-invalid] .chip span {
+  border-color: var(--color-error);
+}
+
+.note {
+  font-size: var(--text-sm);
+  color: var(--color-ink-muted);
+}
+
+.submit {
+  justify-self: start;
+}

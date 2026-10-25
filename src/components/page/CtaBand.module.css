@@ -1,0 +1,35 @@
+.band {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding-block: var(--section-y);
+  background: var(--teal);
+  color: var(--cream);
+}
+
+.inner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  text-align: center;
+}
+
+.title {
+  max-width: 18ch;
+  font-size: var(--text-h2);
+}
+
+.body {
+  max-width: 36rem;
+  margin-top: var(--space-md);
+  color: var(--color-on-inverse-muted);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-xs);
+  margin-top: var(--space-lg);
+}

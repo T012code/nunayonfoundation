@@ -18,8 +18,8 @@ const explore = [
 
 const involved = [
   { href: "/donate", label: "Donate" },
-  { href: "/get-involved#volunteer", label: "Volunteer" },
-  { href: "/get-involved#partner", label: "Partner with us" },
+  { href: "/volunteer", label: "Volunteer" },
+  { href: "/contact?topic=partnership#message", label: "Partner with us" },
   { href: "/contact", label: "Contact" },
 ];
 
@@ -65,7 +65,7 @@ export function SiteFooter({ year }: { year: number }) {
               <Link href="/donate" className={styles.pill}>
                 Donate
               </Link>
-              <Link href="/get-involved#volunteer" className={`${styles.pill} ${styles.pillGhost}`}>
+              <Link href="/volunteer" className={`${styles.pill} ${styles.pillGhost}`}>
                 Volunteer
               </Link>
             </div>

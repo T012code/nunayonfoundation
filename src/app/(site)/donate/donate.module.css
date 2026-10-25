@@ -1,0 +1,25 @@
+.use {
+  gap: var(--space-sm);
+}
+
+.value {
+  font-size: clamp(1.75rem, 1.4rem + 1.4vw, 2.5rem);
+  font-weight: var(--weight-heavy);
+  letter-spacing: -0.03em;
+  color: var(--leaf-deep);
+}
+
+.anchor {
+  scroll-margin-top: var(--header-h);
+}
+
+.note {
+  max-width: 30rem;
+  font-size: var(--text-lead);
+  color: var(--color-ink-muted);
+}
+
+/* Same left edge as every other section; the list itself is kept to a readable width. */
+.faq > :last-child {
+  max-width: 56rem;
+}

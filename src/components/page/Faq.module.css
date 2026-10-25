@@ -1,0 +1,80 @@
+.list {
+  display: grid;
+  gap: var(--space-2xs);
+}
+
+.item {
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  transition: border-color var(--dur-base) var(--ease-out);
+}
+
+.item[open] {
+  border-color: var(--leaf);
+}
+
+.q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  font-weight: var(--weight-bold);
+  cursor: pointer;
+  list-style: none;
+}
+
+.q::-webkit-details-marker {
+  display: none;
+}
+
+.q:focus-visible {
+  outline-offset: -3px;
+}
+
+/* Plus that turns into a minus. */
+.icon {
+  position: relative;
+  flex-shrink: 0;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  background: var(--mint-pale);
+}
+
+.icon::before,
+.icon::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0.75rem;
+  height: 2px;
+  margin: -1px 0 0 -0.375rem;
+  border-radius: 2px;
+  background: var(--teal);
+  transition: transform var(--dur-base) var(--ease-out-expo);
+}
+
+.icon::after {
+  transform: rotate(90deg);
+}
+
+.item[open] .icon::after {
+  transform: rotate(0deg);
+}
+
+.a {
+  max-width: var(--measure);
+  padding: 0 var(--space-md) var(--space-md);
+  color: var(--color-ink-muted);
+  animation: answer 500ms var(--ease-out-expo);
+}
+
+@keyframes answer {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -0.5rem, 0);
+  }
+}

@@ -258,5 +258,161 @@
     ],
     "blur": "data:image/webp;base64,UklGRqIAAABXRUJQVlA4IJYAAABQBACdASoQABUAPu1iqU2ppaOiMAgBMB2JYgAFEB7wDtEeJIzqFuOm612AAPjhVdMEjw+pjy/hiVkAWyVRkdDBHNVsDuMpFg93fcIDjux1208AENgdD9wOzFnb+Ce+gAIAC+SbT27ZwaIa+lmSpJhbUJV5D608GEsV+DMunP3dBY6shpzBMwN5KimwvBp+Ij7s+/gAAAA=",
     "source": "https://www.pexels.com/photo/11645428/"
+  },
+  "classroom-lesson": {
+    "alt": "Pupils following a lesson at their wooden desks",
+    "width": 2600,
+    "height": 1730,
+    "sizes": [
+      480,
+      960,
+      1600,
+      2400
+    ],
+    "blur": "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAAAQAgCdASoQAAsAA4BaJagCdAD1RbM6XcsAAP5sbyOLEL4UDxFwKKhUbaej5giutpqj4xC29vbBSB78Srx5pyafXWjT6gNYdmxBnSw+2bm4K+nn1atTNjXWf6OAAA==",
+    "source": "https://www.pexels.com/photo/14554004/"
+  },
+  "pupils-studying": {
+    "alt": "Children studying in a classroom in Igbo-Etche",
+    "width": 2600,
+    "height": 1950,
+    "sizes": [
+      480,
+      960,
+      1600,
+      2400
+    ],
+    "blur": "data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAADwAQCdASoQAAwAA4BaJZACdAEDa7XioAAA+kvHME+Yz4CBKbgmXQVP/ALPxpLU/PzWIaB2SHTOC4Dnf1hotaFKpnUo2jIzOAfy/vEgp8bHBgs6lRvopX5lgAA=",
+    "source": "https://www.pexels.com/photo/6346833/"
+  },
+  "boy-uniform": {
+    "alt": "A schoolboy in a brown uniform and blue beret",
+    "width": 2600,
+    "height": 3573,
+    "sizes": [
+      480,
+      960,
+      1600,
+      2400
+    ],
+    "blur": "data:image/webp;base64,UklGRrgAAABXRUJQVlA4IKwAAADwAwCdASoQABYAPu1iqU2ppaOiMAgBMB2JbACdAywToAjaAFTvyxn8APk+yYMqhh+WaHAP46N673GRUxCWnu6C47M4NK8U3WCDDd0gzwMHEnphg6b3fbz00rlPKsaUuX2W+OA7pqXyCXIy26YdbZA6K8LW/7PPGnDpS2qf0Dw/q1Z5WnY5v6fV2etS+Rb/on60r2k4FqCLOjtE5tnQ9Lqazw4G2hlqjvoEAAAA",
+    "source": "https://www.pexels.com/photo/32548114/"
+  },
+  "computer-teacher": {
+    "alt": "A young instructor standing among computers in a training room",
+    "width": 2600,
+    "height": 2027,
+    "sizes": [
+      480,
+      960,
+      1600,
+      2400
+    ],
+    "blur": "data:image/webp;base64,UklGRmAAAABXRUJQVlA4IFQAAACQAQCdASoQAAwAA4BaJZQCw7Bf5EgA/vgmkhqG49g1V2sGAshvHORZFR8KefzdEBO7/2oE023zvx/Dzl+WyFkfc1fgxVRfaakBy7+jLcQYYI9jgAA=",
+    "source": "https://www.pexels.com/photo/17471201/"
+  },
+  "lab-teacher": {
+    "alt": "A teacher helping a student at a computer",
+    "width": 2600,
+    "height": 1463,
+    "sizes": [
+      480,
+      960,
+      1600,
+      2400
+    ],
+    "blur": "data:image/webp;base64,UklGRlgAAABXRUJQVlA4IEwAAADQAQCdASoQAAkAA4BaJZwAAfll8M26AAD4MyZFlme5BOeRXz93lfzcajfN3mPKOo6Z6gKTW2nQ2dEHBORrGVLEpBiCpOIljNY8AAAA",
+    "source": "https://www.pexels.com/photo/32394664/"
+  },
+  "health-rural": {
+    "alt": "Health workers visiting families in a rural community",
+    "width": 2600,
+    "height": 1733,
+    "sizes": [
+      480,
+      960,
+      1600,
+      2400
+    ],
+    "blur": "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAAAQAgCdASoQAAsAA4BaJbACdAEKlqHxaAEAAP7Q/RvWwVIDcE9SJJf82G0AYRnmeNqgkR86wECQqsMbxj/C5Yw1gOMq7Tucd2Jkoc/ktq81q0sqcPLyPx5zl4bvXxzQYRaMqAAA",
+    "source": "https://www.pexels.com/photo/37285163/"
+  },
+  "health-children": {
+    "alt": "A health worker sitting with two children outdoors",
+    "width": 2600,
+    "height": 1463,
+    "sizes": [
+      480,
+      960,
+      1600,
+      2400
+    ],
+    "blur": "data:image/webp;base64,UklGRmAAAABXRUJQVlA4IFQAAADQAQCdASoQAAkAA4BaJbACdAEDociRoAD+569/3xMyXlt88EDLroH/mXk99qNrFOpXI1ATkuRtKtnAQeICt/FBwmuyigaYENqM8eWtbu0SKHIAAAA=",
+    "source": "https://www.pexels.com/photo/34717769/"
+  },
+  "clinic-check": {
+    "alt": "A health worker checking a patient's blood pressure in a clinic",
+    "width": 2600,
+    "height": 1733,
+    "sizes": [
+      480,
+      960,
+      1600,
+      2400
+    ],
+    "blur": "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAAAwAgCdASoQAAsAA4BaJaACdADiV36uibpMAAD+aIcitBI+ndXEv37Cb38rY39UdFmjPwdT0H2hltGvyG0DhBA/JHsLebqit1ziK8gmBvHSrJq8h9ms/NqlVchRQCnSRfXqBM4J8kQgAA==",
+    "source": "https://www.pexels.com/photo/30688589/"
+  },
+  "women-gathering": {
+    "alt": "Women in matching blue gele at a community gathering",
+    "width": 2600,
+    "height": 3466,
+    "sizes": [
+      480,
+      960,
+      1600,
+      2400
+    ],
+    "blur": "data:image/webp;base64,UklGRsQAAABXRUJQVlA4ILgAAADQBACdASoQABUAPu1iqU2ppaOiMAgBMB2JZACdMoR4KGZjlIIeLFaSGrEfDbialAD+0HBmZTug35+88XS5w91Qz2h9m5CZWtcEwyNNM/I/vcshUhHN6KTO8xvoETx51CI/laZoIOF0zsJ2znFMzApfsPo1xy0GaCQtdalNuiA0CvxtVnfZ1Oqvm7oxd8AkMsVOHiFnfjpav2Qjp7xItzAzkBewnbunoI6PHkBxO805+F84PXoE4cAA",
+    "source": "https://www.pexels.com/photo/36448918/"
+  },
+  "child-well": {
+    "alt": "A child drawing water from a hand pump",
+    "width": 2600,
+    "height": 1733,
+    "sizes": [
+      480,
+      960,
+      1600,
+      2400
+    ],
+    "blur": "data:image/webp;base64,UklGRl4AAABXRUJQVlA4IFIAAAAwAgCdASoQAAsAA4BaJQBdgMXh1RDSWHYcQADyYwy+XiTvqTkkPozJFpx5iABtnRxjpQcWB9wkuD2BxY2uBDu4PP9bCtn1f4hqXn7CVwD/SxAA",
+    "source": "https://www.pexels.com/photo/18682366/"
+  },
+  "hands-water": {
+    "alt": "Hands catching clean water from a pump",
+    "width": 2600,
+    "height": 1356,
+    "sizes": [
+      480,
+      960,
+      1600,
+      2400
+    ],
+    "blur": "data:image/webp;base64,UklGRl4AAABXRUJQVlA4IFIAAADwAQCdASoQAAgAA4BaJZACdAEDZUKBggAA/sGkI6BV6DQft2XSrPu2hSP7ofswvu4276pHHdlmpChf3zmBDOm3ZKTSXUa+ZAg+Ll0ncsEAGAAA",
+    "source": "https://www.pexels.com/photo/3030281/"
+  },
+  "smiling-children": {
+    "alt": "Smiling children crowding together for a photo",
+    "width": 2600,
+    "height": 3250,
+    "sizes": [
+      480,
+      960,
+      1600,
+      2400
+    ],
+    "blur": "data:image/webp;base64,UklGRpwAAABXRUJQVlA4IJAAAADwAwCdASoQABQAPu1iqU2ppaOiMAgBMB2JZQAATrmbNNcYekW598AAAP6hK5w3IsbvRTewxOtOP7SJne4+4bFJqZF95h7JwbBEJSl/B0xeN1v2lcTyY3iAS+MHxJujdUjmMgX5t7IzByOl6EukEKOISGpgDm6JhKtFPIzOmCv3Hjv8A59Ec2j9Y1hjlNCigAA=",
+    "source": "https://www.pexels.com/photo/38226079/"
   }
 }

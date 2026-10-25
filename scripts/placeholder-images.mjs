@@ -4,7 +4,7 @@
 //
 // These are stand-ins until the foundation's own photos are uploaded through the admin.
 // Usage: npm run images:placeholder
-import { mkdir, writeFile } from "node:fs/promises";
+import { access, mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
 
@@ -34,11 +34,30 @@ const PHOTOS = {
   "kids-pump": [28101466, "Children drawing water from a hand pump"],
   "computer-class": [16007661, "A young woman using a computer in a training class"],
   "tailor-workshop": [11645428, "A young tailor working at a sewing machine in his shop"],
+  "classroom-lesson": [14554004, "Pupils following a lesson at their wooden desks"],
+  "pupils-studying": [6346833, "Children studying in a classroom in Igbo-Etche"],
+  "boy-uniform": [32548114, "A schoolboy in a brown uniform and blue beret"],
+  "computer-teacher": [17471201, "A young instructor standing among computers in a training room"],
+  "lab-teacher": [32394664, "A teacher helping a student at a computer"],
+  "health-rural": [37285163, "Health workers visiting families in a rural community"],
+  "health-children": [34717769, "A health worker sitting with two children outdoors"],
+  "clinic-check": [30688589, "A health worker checking a patient's blood pressure in a clinic"],
+  "women-gathering": [36448918, "Women in matching blue gele at a community gathering"],
+  "child-well": [18682366, "A child drawing water from a hand pump"],
+  "hands-water": [3030281, "Hands catching clean water from a pump"],
+  "smiling-children": [38226079, "Smiling children crowding together for a photo"],
 };
 
 await mkdir(OUT, { recursive: true });
+const MANIFEST = path.join(ROOT, "src", "content", "placeholder-images.json");
+const previous = JSON.parse(await readFile(MANIFEST, "utf8").catch(() => "{}"));
 const manifest = {};
 for (const [slug, [id, alt]] of Object.entries(PHOTOS)) {
+  const done = previous[slug] && (await access(path.join(OUT, `${slug}-480.webp`)).then(() => true, () => false));
+  if (done) {
+    manifest[slug] = { ...previous[slug], alt };
+    continue;
+  }
   const url = `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=srgb&w=2600`;
   const res = await fetch(url);
   if (!res.ok) throw new Error(`${slug}: HTTP ${res.status}`);
@@ -62,4 +81,4 @@ for (const [slug, [id, alt]] of Object.entries(PHOTOS)) {
   };
   console.log(slug, width, "x", height, sizes.join(","));
 }
-await writeFile(path.join(ROOT, "src", "content", "placeholder-images.json"), JSON.stringify(manifest, null, 2) + "\n");
+await writeFile(MANIFEST, JSON.stringify(manifest, null, 2) + "\n");

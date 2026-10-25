@@ -1,0 +1,33 @@
+.role {
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.roleMedia {
+  display: block;
+  aspect-ratio: 4 / 3;
+  margin-bottom: var(--space-2xs);
+  border-radius: var(--radius);
+  --unveil-cover: var(--sand);
+}
+
+.photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.anchor {
+  scroll-margin-top: var(--header-h);
+}
+
+.note {
+  max-width: 30rem;
+  font-size: var(--text-lead);
+  color: var(--color-ink-muted);
+}
+
+/* Same left edge as every other section; the list itself is kept to a readable width. */
+.faq > :last-child {
+  max-width: 56rem;
+}
