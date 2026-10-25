@@ -104,8 +104,7 @@ export function SiteShell({ children, footer }: { children: ReactNode; footer: R
         aria-hidden={!open}
         inert={!open}
       >
-        <button type="button" className={styles.close} onClick={close}>
-          Close
+        <button type="button" className={styles.close} onClick={close} aria-label="Close menu">
           <span className={styles.closeIcon} aria-hidden="true" />
         </button>
         <ul className={styles.drawerLinks}>
@@ -128,6 +127,7 @@ export function SiteShell({ children, footer }: { children: ReactNode; footer: R
         <div className={styles.drawerFoot}>
           <a href={`mailto:${site.email}`}>{site.email}</a>
           <a href={`tel:${site.phone.replace(/\s/g, "")}`}>{site.phone}</a>
+          <a href={`https://wa.me/${site.whatsapp.replace(/\D/g, "")}`}>WhatsApp us</a>
         </div>
         <Logo variant="mark" className={`${styles.drawerMark} logo-reversed`} aria-hidden="true" />
       </nav>

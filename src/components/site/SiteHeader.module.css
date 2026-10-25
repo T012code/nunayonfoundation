@@ -34,7 +34,6 @@
   position: absolute;
   inset: 0;
   background: var(--paper-glass);
-  backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--color-rule);
   opacity: 0;
   transition: opacity var(--dur-base) var(--ease-out);
@@ -112,21 +111,21 @@
   gap: var(--space-2xs);
 }
 
+/* Below desktop, Donate lives in the menu. */
 .donate {
+  display: none;
   min-height: 2.75rem;
 }
 
 .menuButton {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2xs);
-  min-height: 2.75rem;
-  padding: 0 var(--space-sm);
-  border: 1.5px solid var(--color-ink);
-  border-radius: var(--radius-pill);
+  display: inline-grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  margin-right: calc(-1 * var(--space-2xs));
+  border: 0;
+  border-radius: 50%;
   background: transparent;
-  font-size: var(--text-sm);
-  font-weight: var(--weight-bold);
   cursor: pointer;
   transition: background-color var(--dur-micro) var(--ease-out);
 }
@@ -136,20 +135,27 @@
 }
 
 .burger {
-  position: relative;
-  width: 1rem;
-  height: 0.625rem;
-  border-block: 1.75px solid currentColor;
+  display: grid;
+  gap: 5px;
+  width: 1.5rem;
 }
 
-@media (max-width: 23.4375rem) {
-  .menuButton span:first-child {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-  }
+.burger span {
+  display: block;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--color-ink);
+  transform-origin: 100% 50%;
+  transition: transform var(--dur-base) var(--ease-out-expo);
+}
+
+/* The short middle line stretches on hover. */
+.burger span:nth-child(2) {
+  transform: scaleX(0.6);
+}
+
+.menuButton:hover .burger span:nth-child(2) {
+  transform: none;
 }
 
 @media (min-width: 64rem) {
@@ -159,6 +165,10 @@
 
   .menuButton {
     display: none;
+  }
+
+  .donate {
+    display: inline-flex;
   }
 
   .logo {

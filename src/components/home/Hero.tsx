@@ -4,6 +4,7 @@ import { useReducedMotion } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Words } from "@/components/motion/Words";
 import { ButtonLink } from "@/components/ui/Button";
+import { onLayout, onScroll } from "@/lib/scroll";
 import { Picture } from "@/components/ui/Picture";
 import type { ImageSlug } from "@/content/images";
 import styles from "./Hero.module.css";
@@ -13,7 +14,7 @@ const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const clamp01 = (n: number) => Math.min(1, Math.max(0, n));
 const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
 
-type Props = { eyebrow: string; title: string; lead: string; slides: ImageSlug[] };
+type Props = { title: string; lead: string; slides: ImageSlug[] };
 
 /**
  * Home hero. On desktop the photo slider starts in a paper frame beside the headline and
@@ -21,7 +22,7 @@ type Props = { eyebrow: string; title: string; lead: string; slides: ImageSlug[]
  * reaches it. Only transform and opacity change. Below desktop, or with reduced motion,
  * it stays a framed slider under the headline.
  */
-export function Hero({ eyebrow, title, lead, slides }: Props) {
+export function Hero({ title, lead, slides }: Props) {
   const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const clipRef = useRef<HTMLDivElement>(null);
@@ -35,83 +36,99 @@ export function Hero({ eyebrow, title, lead, slides }: Props) {
   const [hovering, setHovering] = useState(false);
 
   // ── Scroll-driven expansion ──
+  // The photo layer is full-screen in the layout and starts scaled down onto the frame, so it
+  // is drawn at full resolution and ends with no transform at all. Positions are measured on
+  // layout changes only; each scroll frame is arithmetic plus a few style writes.
   useEffect(() => {
     const section = sectionRef.current;
     const stage = stageRef.current;
     const clip = clipRef.current;
     const inner = innerRef.current;
-    if (!section || !stage || !clip || !inner) return;
+    const mat = matRef.current;
+    const light = lightCopyRef.current;
+    const scrim = scrimRef.current;
+    if (!section || !stage || !clip || !inner || !mat || !light || !scrim) return;
 
     const desktop = window.matchMedia("(min-width: 64rem)");
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
-    let frame = 0;
+    let active = false;
+    let last = -1;
+    const g = { start: 0, travel: 1, W: 1, H: 1, fx: 0, fy: 0, fw: 1, fh: 1, lx: 0, ly: 0, lw: 0, lh: 0 };
 
     const reset = () => {
-      for (const el of [clip, inner, matRef.current, scrimRef.current, lightCopyRef.current]) {
-        if (el) {
-          el.style.transform = "";
-          el.style.opacity = "";
-          el.style.clipPath = "";
-        }
+      for (const el of [clip, inner, mat, scrim, light]) {
+        el.style.transform = "";
+        el.style.opacity = "";
+        el.style.clipPath = "";
       }
     };
 
-    const apply = () => {
-      frame = 0;
-      if (!desktop.matches || reduced.matches) return reset();
-      const W = stage.clientWidth;
-      const H = stage.clientHeight;
-      // Layout geometry of the frame, unaffected by the transforms we apply.
-      const fx = clip.offsetLeft;
-      const fy = clip.offsetTop;
-      const fw = clip.offsetWidth;
-      const fh = clip.offsetHeight;
-      const travel = section.offsetHeight - stage.offsetHeight;
-      const scrolled = -section.getBoundingClientRect().top;
-      const p = travel > 0 ? clamp01(scrolled / travel) : 0;
+    const measure = () => {
+      active = desktop.matches && !reduced.matches;
+      last = -1;
+      if (!active) return reset();
+      const y = window.scrollY;
+      const stageTop = parseFloat(getComputedStyle(stage).top) || 0;
+      g.start = section.getBoundingClientRect().top + y - stageTop;
+      g.travel = Math.max(1, section.offsetHeight - stage.offsetHeight);
+      g.W = stage.clientWidth;
+      g.H = stage.clientHeight;
+      // The mat sits exactly where the frame is and is never moved, so it gives the geometry.
+      g.fx = mat.offsetLeft;
+      g.fy = mat.offsetTop;
+      g.fw = mat.offsetWidth;
+      g.fh = mat.offsetHeight;
+      const s = stage.getBoundingClientRect();
+      const c = light.getBoundingClientRect();
+      g.lx = c.left - s.left;
+      g.ly = c.top - s.top;
+      g.lw = c.width;
+      g.lh = c.height;
+    };
+
+    const update = (y: number) => {
+      if (!active) return;
+      const p = clamp01((y - g.start) / g.travel);
       const e = easeInOut(clamp01(p / 0.62));
-      const sx = lerp(1, W / fw, e);
-      const sy = lerp(1, H / fh, e);
-      const tx = lerp(0, W / 2 - (fx + fw / 2), e);
-      const ty = lerp(0, H / 2 - (fy + fh / 2), e);
+      if (e === last) return;
+      last = e;
+      const { W, H, fx, fy, fw, fh, lx, ly, lw, lh } = g;
+      const sx = lerp(fw / W, 1, e);
+      const sy = lerp(fh / H, 1, e);
+      const cx = lerp(fx + fw / 2, W / 2, e);
+      const cy = lerp(fy + fh / 2, H / 2, e);
       const m = Math.max(sx, sy);
-      clip.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(${sx}, ${sy})`;
-      inner.style.transform = `scale(${m / sx}, ${m / sy})`;
-      if (matRef.current) matRef.current.style.opacity = String(1 - clamp01(e / 0.08));
-      if (scrimRef.current) scrimRef.current.style.opacity = String(clamp01((e - 0.15) / 0.5));
+      clip.style.transform = `translate3d(${(cx - W / 2).toFixed(2)}px, ${(cy - H / 2).toFixed(2)}px, 0) scale(${sx.toFixed(5)}, ${sy.toFixed(5)})`;
+      inner.style.transform = `scale(${(m / sx).toFixed(5)}, ${(m / sy).toFixed(5)})`;
+      mat.style.opacity = String(1 - clamp01(e / 0.08));
+      scrim.style.opacity = String(clamp01((e - 0.15) / 0.5));
 
       // The white headline shows only where the photo sits behind it, so the text turns
       // white exactly at the photo's edge as the photo slides under it.
-      const light = lightCopyRef.current;
-      if (light) {
-        const cx = fx + fw / 2 + tx;
-        const cy = fy + fh / 2 + ty;
-        const s = stage.getBoundingClientRect();
-        const c = light.getBoundingClientRect();
-        const left = s.left + cx - (fw * sx) / 2 - c.left;
-        const right = c.right - (s.left + cx + (fw * sx) / 2);
-        const top = s.top + cy - (fh * sy) / 2 - c.top;
-        const bottom = c.bottom - (s.top + cy + (fh * sy) / 2);
-        const overlaps = left < c.width && right < c.width && top < c.height && bottom < c.height;
-        light.style.opacity = overlaps ? "1" : "0";
-        light.style.clipPath = `inset(${Math.max(0, top)}px ${Math.max(0, right)}px ${Math.max(0, bottom)}px ${Math.max(0, left)}px)`;
+      const left = cx - (W * sx) / 2 - lx;
+      const right = lx + lw - (cx + (W * sx) / 2);
+      const top = cy - (H * sy) / 2 - ly;
+      const bottom = ly + lh - (cy + (H * sy) / 2);
+      const overlaps = left < lw && right < lw && top < lh && bottom < lh;
+      light.style.opacity = overlaps ? "1" : "0";
+      if (overlaps) {
+        light.style.clipPath = `inset(${Math.max(0, top).toFixed(1)}px ${Math.max(0, right).toFixed(1)}px ${Math.max(0, bottom).toFixed(1)}px ${Math.max(0, left).toFixed(1)}px)`;
       }
     };
 
-    const schedule = () => {
-      if (!frame) frame = requestAnimationFrame(apply);
+    const offLayout = onLayout(measure);
+    const offScroll = onScroll(update);
+    const onChange = () => {
+      measure();
+      update(window.scrollY);
     };
-    apply();
-    window.addEventListener("scroll", schedule, { passive: true });
-    window.addEventListener("resize", schedule);
-    desktop.addEventListener("change", schedule);
-    reduced.addEventListener("change", schedule);
+    desktop.addEventListener("change", onChange);
+    reduced.addEventListener("change", onChange);
     return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", schedule);
-      window.removeEventListener("resize", schedule);
-      desktop.removeEventListener("change", schedule);
-      reduced.removeEventListener("change", schedule);
+      offLayout();
+      offScroll();
+      desktop.removeEventListener("change", onChange);
+      reduced.removeEventListener("change", onChange);
     };
   }, []);
 
@@ -130,7 +147,6 @@ export function Hero({ eyebrow, title, lead, slides }: Props) {
 
   const copy = (tone: "dark" | "light") => (
     <>
-      <p className={styles.eyebrow}>{eyebrow}</p>
       {tone === "dark" ? (
         <h1 id="hero-title" className={styles.title}>
           <Words text={title} />

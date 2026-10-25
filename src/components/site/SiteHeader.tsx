@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState, type RefObject } from "react";
+import { useEffect, useRef, type RefObject } from "react";
 import { Logo } from "@/components/brand/Logo";
 import { ButtonLink } from "@/components/ui/Button";
 import { nav } from "@/content/site";
+import { onLayout, onScroll } from "@/lib/scroll";
 import styles from "./SiteHeader.module.css";
 
 export function SiteHeader({
@@ -18,46 +19,41 @@ export function SiteHeader({
   toggleRef: RefObject<HTMLButtonElement | null>;
 }) {
   const pathname = usePathname();
-  const [scrolled, setScrolled] = useState(false);
-  const [hidden, setHidden] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
   const barRef = useRef<HTMLSpanElement>(null);
 
   // Hides while reading down the page, returns on any scroll up; the bar shows progress.
+  // Written straight to the DOM on the shared scroll loop, so scrolling never re-renders React.
   useEffect(() => {
+    const header = headerRef.current;
+    const bar = barRef.current;
+    if (!header || !bar) return;
+    let max = 1;
     let lastY = window.scrollY;
-    let frame = 0;
-    const update = () => {
-      frame = 0;
-      const y = window.scrollY;
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      setScrolled(y > 8);
+    const offLayout = onLayout(() => {
+      max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    });
+    const offScroll = onScroll((y) => {
+      header.toggleAttribute("data-scrolled", y > 8);
       if (Math.abs(y - lastY) > 6) {
-        const focusInside = headerRef.current?.contains(document.activeElement);
-        setHidden(y > lastY && y > 320 && !focusInside);
+        const focusInside = header.contains(document.activeElement);
+        header.toggleAttribute("data-hidden", y > lastY && y > 320 && !focusInside);
         lastY = y;
       }
-      if (barRef.current) barRef.current.style.transform = `scaleX(${max > 0 ? Math.min(1, y / max) : 0})`;
-    };
-    const onScroll = () => {
-      if (!frame) frame = requestAnimationFrame(update);
-    };
-    update();
-    window.addEventListener("scroll", onScroll, { passive: true });
+      bar.style.transform = `scaleX(${Math.min(1, y / max).toFixed(4)})`;
+    });
     return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", onScroll);
+      offLayout();
+      offScroll();
     };
   }, []);
 
+  useEffect(() => {
+    if (open) headerRef.current?.removeAttribute("data-hidden");
+  }, [open]);
+
   return (
-    <header
-      ref={headerRef}
-      className={styles.header}
-      data-scrolled={scrolled || undefined}
-      data-hidden={(hidden && !open) || undefined}
-      onFocus={() => setHidden(false)}
-    >
+    <header ref={headerRef} className={styles.header} onFocus={() => headerRef.current?.removeAttribute("data-hidden")}>
       <span ref={barRef} className={styles.progress} aria-hidden="true" />
       <div className={`wrap ${styles.inner}`}>
         <Link href="/" className={styles.brand} aria-label="Nunayon Foundation, home">
@@ -90,10 +86,14 @@ export function SiteHeader({
             className={styles.menuButton}
             aria-expanded={open}
             aria-controls="site-menu"
+            aria-label="Open menu"
             onClick={onMenu}
           >
-            <span>Menu</span>
-            <span className={styles.burger} aria-hidden="true" />
+            <span className={styles.burger} aria-hidden="true">
+              <span />
+              <span />
+              <span />
+            </span>
           </button>
         </div>
       </div>

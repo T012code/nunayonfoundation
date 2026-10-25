@@ -2,7 +2,8 @@
 
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
-import { startSmoothScroll, stopSmoothScroll } from "@/lib/scroll";
+import { onLayout, onScroll, startSmoothScroll, stopSmoothScroll } from "@/lib/scroll";
+import "lenis/dist/lenis.css";
 
 /**
  * Runs the site's scroll motion from one place:
@@ -40,41 +41,38 @@ export function MotionRoot() {
     return () => io.disconnect();
   }, [pathname]);
 
-  // Parallax: only elements on screen are updated, once per frame.
+  // Parallax: positions are measured on layout changes only; each frame is plain arithmetic.
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const visible = new Set<HTMLElement>();
-    const io = new IntersectionObserver((entries) => {
-      for (const e of entries) {
-        if (e.isIntersecting) visible.add(e.target as HTMLElement);
-        else visible.delete(e.target as HTMLElement);
-      }
-      schedule();
-    });
-    document.querySelectorAll<HTMLElement>("[data-parallax]").forEach((el) => io.observe(el));
+    const els = [...document.querySelectorAll<HTMLElement>("[data-parallax]")];
+    if (!els.length) return;
+    let items: { el: HTMLElement; top: number; height: number; speed: number }[] = [];
+    let vh = window.innerHeight;
 
-    let frame = 0;
-    const update = () => {
-      frame = 0;
-      const vh = window.innerHeight;
-      for (const el of visible) {
-        const speed = Number(el.dataset.parallax) || 0.08;
-        const r = el.parentElement?.getBoundingClientRect() ?? el.getBoundingClientRect();
+    const measure = () => {
+      vh = window.innerHeight;
+      const y = window.scrollY;
+      items = els.map((el) => {
+        const box = (el.parentElement ?? el).getBoundingClientRect();
+        return { el, top: box.top + y, height: box.height, speed: Number(el.dataset.parallax) || 0.08 };
+      });
+    };
+
+    const update = (y: number) => {
+      for (const it of items) {
+        const top = it.top - y;
+        if (top > vh || top + it.height < 0) continue; // off screen
         // -1 when the element's centre is at the bottom of the screen, +1 at the top.
-        const t = (vh / 2 - (r.top + r.height / 2)) / (vh / 2 + r.height / 2);
-        el.style.transform = `translate3d(0, ${(t * speed * r.height).toFixed(1)}px, 0)`;
+        const t = (vh / 2 - (top + it.height / 2)) / (vh / 2 + it.height / 2);
+        it.el.style.transform = `translate3d(0, ${(t * it.speed * it.height).toFixed(1)}px, 0)`;
       }
     };
-    function schedule() {
-      if (!frame) frame = requestAnimationFrame(update);
-    }
-    window.addEventListener("scroll", schedule, { passive: true });
-    window.addEventListener("resize", schedule);
+
+    const offLayout = onLayout(measure);
+    const offScroll = onScroll(update);
     return () => {
-      cancelAnimationFrame(frame);
-      io.disconnect();
-      window.removeEventListener("scroll", schedule);
-      window.removeEventListener("resize", schedule);
+      offLayout();
+      offScroll();
     };
   }, [pathname]);
 

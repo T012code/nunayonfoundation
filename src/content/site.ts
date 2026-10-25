@@ -31,7 +31,6 @@ export const nav = [
 ];
 
 export const hero = {
-  eyebrow: "Lagos · Outreaches across Nigeria",
   title: "Helping families across Nigeria grow stronger, together.",
   lead: "We put children in school, help mothers start and grow small businesses, and bring care and clean water to communities that need it.",
   slides: ["children-waving", "classroom-smiles", "health-check", "volunteer-children", "village-group"] satisfies ImageSlug[],
