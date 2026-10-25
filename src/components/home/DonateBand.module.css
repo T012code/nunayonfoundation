@@ -1,0 +1,93 @@
+.section {
+  position: relative;
+  padding-block: var(--section-y);
+  overflow: hidden;
+  background: var(--teal);
+  color: var(--cream);
+}
+
+.inner {
+  display: grid;
+  gap: var(--space-xl);
+  align-items: center;
+}
+
+.eyebrow {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--mint);
+}
+
+.title {
+  max-width: 18ch;
+  margin: var(--space-xs) 0 var(--space-md);
+  font-size: var(--text-h2);
+}
+
+.lead {
+  max-width: 34rem;
+  color: var(--color-on-inverse-muted);
+}
+
+.cta {
+  margin-top: var(--space-lg);
+}
+
+.cards {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.card {
+  display: grid;
+  gap: var(--space-md);
+  margin: 0;
+  padding: var(--space-lg);
+  border: 1px solid var(--veil-rule);
+  border-radius: var(--radius-lg);
+  background: var(--veil-fill);
+}
+
+.row {
+  display: grid;
+  gap: var(--space-3xs);
+}
+
+.row dt {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--color-on-inverse-muted);
+}
+
+.row dd {
+  margin: 0;
+  font-size: var(--text-lead);
+  font-weight: var(--weight-semibold);
+}
+
+.numberRow dd {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.number {
+  font-size: clamp(1.75rem, 1.3rem + 2vw, 2.5rem);
+  font-weight: var(--weight-heavy);
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+  color: var(--white);
+}
+
+@media (min-width: 64rem) {
+  .inner {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3xl);
+  }
+}

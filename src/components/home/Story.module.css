@@ -1,0 +1,140 @@
+.section {
+  padding-block: var(--section-y);
+  background: var(--color-paper-warm);
+}
+
+.grid {
+  display: grid;
+  gap: var(--space-xl);
+}
+
+.title {
+  max-width: 18ch;
+  margin: var(--space-xs) 0 var(--space-md);
+  font-size: var(--text-h2);
+}
+
+.values {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2xs);
+  margin: 0 0 var(--space-lg);
+  padding: 0;
+  list-style: none;
+}
+
+.values li {
+  padding: var(--space-3xs) var(--space-sm);
+  border: 1px solid var(--ink-rule);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+}
+
+.main {
+  display: grid;
+  gap: var(--space-xl);
+}
+
+.photoWrap {
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+}
+
+.photo {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  object-position: 50% 30%;
+}
+
+.chapters {
+  display: grid;
+  gap: var(--space-lg);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: chapter;
+}
+
+.chapter {
+  display: grid;
+  gap: var(--space-2xs);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--ink-rule);
+}
+
+.chapterTitle {
+  font-size: var(--text-h3);
+}
+
+.chapter p {
+  max-width: var(--measure);
+  color: var(--color-ink-muted);
+}
+
+.quote {
+  margin: 0;
+  padding: var(--space-lg);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.quote blockquote {
+  margin: 0;
+}
+
+.quote blockquote p {
+  font-size: var(--text-lead);
+  font-weight: var(--weight-semibold);
+  line-height: 1.45;
+  letter-spacing: -0.01em;
+}
+
+.quote blockquote p::before {
+  content: "\201C";
+}
+
+.quote blockquote p::after {
+  content: "\201D";
+}
+
+.quote figcaption {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+  font-size: var(--text-sm);
+}
+
+.quote strong {
+  display: block;
+}
+
+.avatar {
+  display: inline-grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  background: var(--mint-pale);
+  color: var(--teal);
+  font-weight: var(--weight-bold);
+}
+
+.role {
+  color: var(--color-ink-muted);
+}
+
+@media (min-width: 64rem) {
+  .grid {
+    grid-template-columns: 5fr 7fr;
+    gap: var(--space-3xl);
+  }
+
+  .sticky {
+    position: sticky;
+    top: calc(var(--header-h) + var(--space-xl));
+  }
+}

@@ -1,0 +1,245 @@
+/* Hallmark · macrostructure: framed-hero editorial · tone: warm editorial · anchor hue: 217 (teal) */
+
+/* ── Tokens ──────────────────────────────────────────────────────────────── */
+:root {
+  /* Brand palette (brand/BRAND.md), in OKLCH */
+  --teal: oklch(30% 0.053 216.8);
+  --teal-700: oklch(37.8% 0.063 215.8);
+  --leaf: oklch(59.2% 0.099 153.6);
+  --leaf-deep: oklch(48.6% 0.088 155.9);
+  --leaf-shadow: oklch(31.4% 0.054 204.4);
+  --forest: oklch(47.8% 0.072 167.7);
+  --mint: oklch(76% 0.099 154.7);
+  --mint-pale: oklch(88.3% 0.05 156.1);
+  --cream: oklch(97.8% 0.016 82.8);
+  --sand: oklch(92.5% 0.037 72.6);
+  --amber: oklch(76.5% 0.14 72.9);
+  --amber-strong: oklch(70% 0.15 68);
+  --slate: oklch(47.9% 0.03 214.7);
+  --white: oklch(100% 0 0);
+
+  /* Semantic colour */
+  --color-paper: var(--cream);
+  --color-paper-warm: var(--sand);
+  --color-surface: var(--white);
+  --color-ink: var(--teal);
+  --color-ink-muted: var(--slate);
+  --color-rule: oklch(88% 0.02 80);
+  --color-accent: var(--leaf-deep);
+  --color-cta: var(--amber);
+  --color-cta-hover: var(--amber-strong);
+  --color-on-cta: var(--teal);
+  --color-inverse: var(--leaf-shadow);
+  --color-on-inverse: var(--cream);
+  --color-on-inverse-muted: oklch(85% 0.03 180);
+  --color-focus: var(--leaf);
+  --color-error: oklch(52% 0.17 28);
+  --color-success: var(--leaf-deep);
+  --color-scrim: oklch(18% 0.04 215 / 0.62);
+
+  /* Translucent layers (on dark bands and over photos) */
+  --veil-rule: oklch(100% 0 0 / 0.14);
+  --veil-rule-strong: oklch(100% 0 0 / 0.3);
+  --veil-fill: oklch(100% 0 0 / 0.06);
+  --veil-fill-hover: oklch(100% 0 0 / 0.12);
+  --veil-text: oklch(100% 0 0 / 0.85);
+  --ink-rule: oklch(30% 0.053 216.8 / 0.16);
+  --mint-wash: oklch(76% 0.099 154.7 / 0.1);
+  --paper-glass: oklch(97.8% 0.016 82.8 / 0.92);
+  --scrim-mid: oklch(18% 0.04 215 / 0.35);
+  --scrim-clear: oklch(18% 0.04 215 / 0);
+  --scrim-deep: oklch(18% 0.04 215 / 0.85);
+  --shadow-surface: 0 30px 80px -20px oklch(10% 0.03 215 / 0.6);
+
+  /* Logo colours (overridden by .logo-reversed) */
+  --logo-ink: var(--teal);
+  --logo-shadow: var(--leaf-shadow);
+  --logo-leaf: var(--leaf);
+  --logo-tagline: var(--forest);
+
+  /* Type */
+  --font-sans: var(--font-montserrat), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --text-xs: 0.8125rem;
+  --text-sm: 0.9375rem;
+  --text-body: 1.0625rem;
+  --text-lead: clamp(1.125rem, 1rem + 0.5vw, 1.3125rem);
+  --text-h3: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
+  --text-h2: clamp(2rem, 1.5rem + 2.2vw, 3.25rem);
+  --text-h1: clamp(2.5rem, 1.6rem + 4vw, 5rem);
+  --text-stat: clamp(2.75rem, 2rem + 3.2vw, 4.5rem);
+  --tracking-eyebrow: 0.16em;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --weight-heavy: 800;
+
+  /* Space (4pt scale) */
+  --space-3xs: 0.25rem;
+  --space-2xs: 0.5rem;
+  --space-xs: 0.75rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+  --space-2xl: 4rem;
+  --space-3xl: 6rem;
+  --space-4xl: 8rem;
+  --gutter: clamp(1rem, 0.5rem + 2.5vw, 3rem);
+  --measure: 64ch;
+  --container: 80rem;
+  --section-y: clamp(4rem, 3rem + 5vw, 8rem);
+  --header-h: 4.5rem;
+
+  /* Shape */
+  --radius-sm: 0.375rem;
+  --radius: 0.75rem;
+  --radius-lg: 1.5rem;
+  --radius-pill: 999px;
+  --shadow-card: 0 1px 2px oklch(30% 0.05 217 / 0.06), 0 12px 32px -18px oklch(30% 0.05 217 / 0.28);
+  --shadow-frame: 0 30px 60px -30px oklch(30% 0.05 217 / 0.45);
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-micro: 160ms;
+  --dur-base: 320ms;
+  --dur-slow: 600ms;
+}
+
+/* ── Base ────────────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  overflow-x: clip;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-padding-top: calc(var(--header-h) + var(--space-sm));
+}
+
+body {
+  margin: 0;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: 1.65;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  font-weight: var(--weight-bold);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+::selection {
+  background: var(--mint-pale);
+  color: var(--teal);
+}
+
+/* ── Layout helpers ──────────────────────────────────────────────────────── */
+.wrap {
+  width: 100%;
+  max-width: calc(var(--container) + 2 * var(--gutter));
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.eyebrow {
+  display: inline-block;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--forest);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: fixed;
+  top: var(--space-sm);
+  left: var(--space-sm);
+  z-index: 100;
+  padding: var(--space-2xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  background: var(--teal);
+  color: var(--cream);
+  font-weight: var(--weight-semibold);
+  text-decoration: none;
+  transform: translateY(-200%);
+  transition: transform var(--dur-micro) var(--ease-out);
+}
+
+.skip-link:focus-visible {
+  transform: none;
+}
+
+.logo-reversed {
+  --logo-ink: var(--white);
+  --logo-shadow: var(--leaf);
+  --logo-leaf: var(--mint);
+  --logo-tagline: var(--mint-pale);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}

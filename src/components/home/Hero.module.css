@@ -1,0 +1,309 @@
+/* Mobile first: headline, then the framed slider. */
+.hero {
+  position: relative;
+}
+
+.stage {
+  position: relative;
+  display: grid;
+  gap: var(--space-lg);
+  padding: var(--space-lg) var(--gutter) var(--space-xl);
+}
+
+.copy {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  max-width: 40rem;
+  order: -1;
+}
+
+.copyDark,
+.copyLight {
+  grid-area: 1 / 1;
+}
+
+.copyDark {
+  color: var(--color-ink);
+}
+
+.copyLight {
+  color: var(--white);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.eyebrow {
+  margin-bottom: var(--space-sm);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+}
+
+.copyDark .eyebrow {
+  color: var(--forest);
+}
+
+.copyLight .eyebrow {
+  color: var(--mint-pale);
+}
+
+.title {
+  font-size: var(--text-h1);
+  font-weight: var(--weight-heavy);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.lead {
+  max-width: 34rem;
+  margin-top: var(--space-md);
+  font-size: var(--text-lead);
+  line-height: 1.55;
+}
+
+.copyDark .lead {
+  color: var(--color-ink-muted);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  margin-top: var(--space-lg);
+}
+
+/* ── Frame ── */
+.clip {
+  position: relative;
+  z-index: 1;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--sand);
+  box-shadow: var(--shadow-frame);
+  transform-origin: 50% 50%;
+  will-change: transform;
+}
+
+.inner {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 50%;
+  will-change: transform;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 1.2s var(--ease-in-out);
+}
+
+.slide[data-active] {
+  z-index: 1;
+  opacity: 1;
+}
+
+.photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.slide[data-active] .photo {
+  animation: settle 9s var(--ease-out) both;
+}
+
+@keyframes settle {
+  from {
+    transform: scale(1.08);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+/* Teal wash for the white headline, strongest on the left where the text sits. */
+.scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(90deg, var(--color-scrim) 0%, var(--scrim-mid) 55%, var(--scrim-clear) 100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Paper mat around the photo; fades as the photo opens up. */
+.mat {
+  display: none;
+}
+
+/* ── Controls ── */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3xs);
+  justify-self: start;
+  padding: var(--space-3xs);
+  border-radius: var(--radius-pill);
+  background: var(--cream);
+  box-shadow: var(--shadow-card);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+.step {
+  display: inline-grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-ink);
+  cursor: pointer;
+  transition: background-color var(--dur-micro) var(--ease-out);
+}
+
+.step:hover {
+  background: var(--sand);
+}
+
+.step svg {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.step svg .solid {
+  fill: currentColor;
+}
+
+.count {
+  min-width: 2.75rem;
+  text-align: center;
+}
+
+.progress {
+  position: relative;
+  width: 2.5rem;
+  height: 2px;
+  margin: 0 var(--space-xs) 0 var(--space-3xs);
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--color-rule);
+}
+
+.progress span {
+  position: absolute;
+  inset: 0;
+  background: var(--leaf);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+.progress span[data-running] {
+  animation: fill 6.5s var(--ease-in-out) forwards;
+}
+
+@keyframes fill {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* ── Tablet: wider frame ── */
+@media (min-width: 40rem) {
+  .clip {
+    aspect-ratio: 16 / 10;
+  }
+}
+
+/* ── Desktop: sticky stage, the frame opens to full screen on scroll ── */
+@media (min-width: 64rem) and (prefers-reduced-motion: no-preference) {
+  .hero {
+    height: 230vh;
+  }
+
+  .stage {
+    position: sticky;
+    top: var(--header-h);
+    display: block;
+    height: calc(100dvh - var(--header-h));
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .copy {
+    position: absolute;
+    top: 50%;
+    left: max(var(--gutter), calc((100% - var(--container)) / 2));
+    width: min(44%, 38rem);
+    transform: translateY(-50%);
+  }
+
+  .clip {
+    position: absolute;
+    top: 7%;
+    right: max(var(--gutter), calc((100% - var(--container)) / 2));
+    width: 46%;
+    height: 80%;
+    aspect-ratio: auto;
+  }
+
+  .mat {
+    position: absolute;
+    top: 7%;
+    right: max(var(--gutter), calc((100% - var(--container)) / 2));
+    z-index: 2;
+    display: block;
+    width: 46%;
+    height: 80%;
+    border: 10px solid var(--cream);
+    outline: 1px solid var(--color-rule);
+    outline-offset: -1px;
+    pointer-events: none;
+  }
+
+  .controls {
+    position: absolute;
+    right: max(var(--gutter), calc((100% - var(--container)) / 2));
+    bottom: 3.5%;
+    z-index: 4;
+  }
+}
+
+/* Desktop with reduced motion: side-by-side, no scroll effect. */
+@media (min-width: 64rem) and (prefers-reduced-motion: reduce) {
+  .stage {
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    min-height: calc(100dvh - var(--header-h));
+  }
+
+  .clip {
+    grid-column: 2;
+    grid-row: 1;
+    aspect-ratio: 4 / 5;
+  }
+
+  .copy {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .controls {
+    grid-column: 2;
+  }
+
+  .slide[data-active] .photo {
+    animation: none;
+  }
+}

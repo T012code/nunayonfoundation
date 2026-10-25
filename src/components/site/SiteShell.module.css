@@ -1,0 +1,188 @@
+.shell {
+  position: relative;
+  min-height: 100dvh;
+  background: var(--color-inverse);
+}
+
+.surface {
+  position: relative;
+  z-index: 1;
+  min-height: 100dvh;
+  background: var(--color-paper);
+  transform-origin: 0% 50%;
+  transition:
+    transform var(--dur-slow) var(--ease-out),
+    border-radius var(--dur-slow) var(--ease-out);
+}
+
+.main:focus {
+  outline: none;
+}
+
+/* ── Drawer (behind the page) ── */
+.drawer {
+  position: fixed;
+  inset: 0 0 0 auto;
+  z-index: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  width: min(82vw, 24rem);
+  padding: var(--space-md) var(--gutter) var(--space-lg);
+  overflow: clip auto;
+  color: var(--color-on-inverse);
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+
+.close {
+  align-self: flex-end;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  min-height: 2.75rem;
+  padding: 0 var(--space-sm);
+  border: 1px solid var(--veil-rule-strong);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  cursor: pointer;
+}
+
+.closeIcon {
+  position: relative;
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.closeIcon::before,
+.closeIcon::after {
+  content: "";
+  position: absolute;
+  inset: 50% 0 auto;
+  height: 1.5px;
+  background: currentColor;
+  transform: rotate(45deg);
+}
+
+.closeIcon::after {
+  transform: rotate(-45deg);
+}
+
+.drawerLinks {
+  display: grid;
+  gap: var(--space-3xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.drawerLinks a {
+  display: block;
+  padding: var(--space-2xs) 0;
+  font-size: clamp(1.5rem, 1.2rem + 1.5vw, 2rem);
+  font-weight: var(--weight-bold);
+  letter-spacing: -0.02em;
+  text-decoration: none;
+  transform: translateX(1.5rem);
+  opacity: 0;
+  transition:
+    transform var(--dur-slow) var(--ease-out),
+    opacity var(--dur-slow) var(--ease-out),
+    color var(--dur-micro) var(--ease-out);
+}
+
+.drawerLinks a:hover,
+.drawerLinks a[aria-current="page"] {
+  color: var(--mint);
+}
+
+.drawerDonate {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3rem;
+  border-radius: var(--radius-pill);
+  background: var(--amber);
+  color: var(--teal);
+  font-weight: var(--weight-bold);
+  text-decoration: none;
+}
+
+.drawerFoot {
+  display: grid;
+  gap: var(--space-3xs);
+  margin-top: auto;
+  font-size: var(--text-sm);
+  color: var(--color-on-inverse-muted);
+}
+
+.drawerFoot a {
+  text-decoration: none;
+}
+
+.drawerMark {
+  position: absolute;
+  right: -3rem;
+  bottom: -3rem;
+  width: 14rem;
+  opacity: 0.08;
+  pointer-events: none;
+}
+
+.scrim {
+  position: fixed;
+  inset: 0 min(82vw, 24rem) 0 0;
+  z-index: 2;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* ── Pinned while the menu is open: the page keeps its scroll position as one surface ── */
+.shell[data-frozen] .surface {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+}
+
+.shell[data-frozen] .page {
+  transform: translateY(calc(-1 * var(--scroll-y, 0px)));
+}
+
+/* ── Open state ── */
+.shell[data-open] .surface {
+  transform: translateX(calc(-1 * min(82vw, 24rem) + 1.5rem)) scale(0.9);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-surface);
+}
+
+.shell[data-open] .drawer {
+  opacity: 1;
+}
+
+.shell[data-open] .drawerLinks a {
+  transform: none;
+  opacity: 1;
+}
+
+.shell[data-open] .drawerLinks li:nth-child(2) a { transition-delay: 40ms; }
+.shell[data-open] .drawerLinks li:nth-child(3) a { transition-delay: 80ms; }
+.shell[data-open] .drawerLinks li:nth-child(4) a { transition-delay: 120ms; }
+.shell[data-open] .drawerLinks li:nth-child(5) a { transition-delay: 160ms; }
+.shell[data-open] .drawerLinks li:nth-child(6) a { transition-delay: 200ms; }
+.shell[data-open] .drawerLinks li:nth-child(7) a { transition-delay: 240ms; }
+
+@media (min-width: 64rem) {
+  .drawer,
+  .scrim {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shell[data-open] .surface {
+    transform: translateX(calc(-1 * min(82vw, 24rem)));
+  }
+}

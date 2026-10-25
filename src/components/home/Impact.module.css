@@ -1,0 +1,50 @@
+.impact {
+  position: relative;
+  padding-block: var(--section-y);
+  background: var(--color-inverse);
+  color: var(--color-on-inverse);
+}
+
+.title {
+  max-width: 22ch;
+  font-size: var(--text-h2);
+  font-weight: var(--weight-bold);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-xl) var(--space-lg);
+  margin: var(--space-2xl) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stat {
+  display: grid;
+  align-content: start;
+  gap: var(--space-2xs);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--veil-rule);
+}
+
+.value {
+  font-size: var(--text-stat);
+  font-weight: var(--weight-heavy);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+  color: var(--mint);
+}
+
+.label {
+  max-width: 18ch;
+  font-size: var(--text-sm);
+  color: var(--color-on-inverse-muted);
+}
+
+@media (min-width: 56rem) {
+  .stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
