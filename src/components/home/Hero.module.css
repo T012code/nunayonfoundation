@@ -262,7 +262,8 @@
 }
 
 /* ── Desktop: the hero fills the screen under the floating header, and the frame opens to
-   full screen on scroll. Frame: right-aligned, 46% wide, from 12% to 90% of the height. ── */
+   full screen on scroll. Both columns come from the same content box (the page container):
+   headline 44%, frame 50%, gap 6%. Frame height runs from 12% to 90% of the screen. ── */
 @media (min-width: 64rem) and (prefers-reduced-motion: no-preference) {
   .hero {
     height: 230vh;
@@ -270,7 +271,8 @@
   }
 
   .stage {
-    --frame-right: max(var(--gutter), calc((100% - var(--container)) / 2));
+    --content: min(100% - 2 * var(--gutter), var(--container));
+    --edge: calc((100% - var(--content)) / 2);
     position: sticky;
     top: 0;
     display: block;
@@ -282,34 +284,48 @@
   .copy {
     position: absolute;
     top: calc(50% + var(--header-h) / 2);
-    left: max(var(--gutter), calc((100% - var(--container)) / 2));
-    width: min(44%, 38rem);
+    left: var(--edge);
+    width: calc(var(--content) * 0.44);
+    max-width: none;
     transform: translateY(-50%);
   }
 
-  /* Full-screen layer, shrunk onto the frame until the script takes over (same numbers as
-     .mat): centre moves from the middle to the frame's centre, scale = frame / screen. */
-  .clip {
-    position: absolute;
-    inset: 0;
-    aspect-ratio: auto;
-    box-shadow: none;
-    transform: translate3d(calc(27% - var(--frame-right)), 1%, 0) scale(0.46, 0.78);
+  /* Sized to the copy column and the screen height, so the longest line never reaches the photo. */
+  .title {
+    font-size: clamp(2.5rem, min((100vw - 2 * var(--gutter)) * 0.056, var(--container) * 0.056, 8.6vh), 5rem);
   }
 
-  .inner {
-    transform: scale(1.6957, 1);
+  .lead {
+    font-size: clamp(1rem, 1.6vh + 0.35rem, 1.25rem);
   }
 
+  /* Before the script runs, the photo sits in the frame like a normal box. Once it runs
+     (data-ready), the layer becomes full screen and is scaled down onto the frame, so the
+     photo is drawn at full resolution and ends with no transform when open. */
+  .clip,
   .mat {
     position: absolute;
     top: 12%;
-    right: var(--frame-right);
+    right: var(--edge);
+    width: calc(var(--content) * 0.5);
+    height: 78%;
+    aspect-ratio: auto;
+  }
+
+  .clip {
+    box-shadow: none;
+  }
+
+  .stage[data-ready] .clip {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .mat {
     z-index: 2;
     display: block;
     box-shadow: var(--shadow-frame);
-    width: 46%;
-    height: 78%;
     pointer-events: none;
   }
 
@@ -327,7 +343,7 @@
 
   .controls {
     position: absolute;
-    right: var(--frame-right);
+    right: var(--edge);
     bottom: 2.5%;
     z-index: 4;
   }

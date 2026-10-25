@@ -36,8 +36,8 @@ export function Hero({ title, lead, slides }: Props) {
   const [hovering, setHovering] = useState(false);
 
   // ── Scroll-driven expansion ──
-  // The photo layer is full-screen in the layout and starts scaled down onto the frame, so it
-  // is drawn at full resolution and ends with no transform at all. Positions are measured on
+  // Once running, the photo layer is full-screen in the layout and starts scaled down onto the
+  // frame, so it is drawn at full resolution and ends with no transform at all. Positions are measured on
   // layout changes only; each scroll frame is arithmetic plus a few style writes.
   useEffect(() => {
     const section = sectionRef.current;
@@ -56,6 +56,7 @@ export function Hero({ title, lead, slides }: Props) {
     const g = { start: 0, travel: 1, W: 1, H: 1, fx: 0, fy: 0, fw: 1, fh: 1, lx: 0, ly: 0, lw: 0, lh: 0 };
 
     const reset = () => {
+      delete stage.dataset.ready;
       for (const el of [clip, inner, mat, scrim, light]) {
         el.style.transform = "";
         el.style.opacity = "";
@@ -67,6 +68,8 @@ export function Hero({ title, lead, slides }: Props) {
       active = desktop.matches && !reduced.matches;
       last = -1;
       if (!active) return reset();
+      // Switch the photo layer to full screen; update() scales it onto the frame in the same task.
+      stage.dataset.ready = "";
       const y = window.scrollY;
       const stageTop = parseFloat(getComputedStyle(stage).top) || 0;
       g.start = section.getBoundingClientRect().top + y - stageTop;
