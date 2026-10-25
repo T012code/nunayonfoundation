@@ -13,6 +13,16 @@
   color: var(--mint);
 }
 
+/* Footer links nudge right on hover. */
+.links ul a {
+  display: inline-block;
+  transition: transform var(--dur-base) var(--ease-out-expo), color var(--dur-micro) var(--ease-out);
+}
+
+.links ul a:hover {
+  transform: translate3d(4px, 0, 0);
+}
+
 .top {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -109,7 +119,7 @@
     align-items: end;
   }
 
-  .logo {
+  .logoWrap {
     justify-self: end;
   }
 }

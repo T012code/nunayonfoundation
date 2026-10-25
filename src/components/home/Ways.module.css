@@ -21,6 +21,7 @@
 }
 
 .card {
+  transition: transform var(--dur-slow) var(--ease-out-expo), box-shadow var(--dur-slow) var(--ease-out-expo);
   position: relative;
   display: flex;
   align-items: flex-end;
@@ -33,14 +34,17 @@
   isolation: isolate;
 }
 
-.photo {
+.photoWrap {
   position: absolute;
-  inset: 0;
+  inset: -10% 0;
   z-index: -2;
+}
+
+.photo {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform var(--dur-slow) var(--ease-out);
+  transition: transform var(--dur-slow) var(--ease-out-expo);
 }
 
 .shade {
@@ -50,9 +54,31 @@
   background: linear-gradient(180deg, var(--scrim-clear) 25%, var(--scrim-deep) 100%);
 }
 
+.card:hover,
+.card:focus-visible {
+  transform: translate3d(0, -8px, 0);
+  box-shadow: var(--shadow-frame);
+}
+
 .card:hover .photo,
 .card:focus-visible .photo {
-  transform: scale(1.05);
+  transform: scale(1.06);
+}
+
+/* The description eases up a touch on hover, the call to action follows. */
+.text,
+.cta {
+  transition: transform var(--dur-slow) var(--ease-out-expo);
+}
+
+.card:hover .text,
+.card:focus-visible .text {
+  transform: translate3d(0, -4px, 0);
+}
+
+.card:hover .cta,
+.card:focus-visible .cta {
+  transform: translate3d(0, -4px, 0);
 }
 
 .body {

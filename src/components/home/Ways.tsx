@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Reveal } from "@/components/motion/Reveal";
+import { Words } from "@/components/motion/Words";
 import { Arrow } from "@/components/ui/Arrow";
 import { Picture } from "@/components/ui/Picture";
 import type { ImageSlug } from "@/content/images";
@@ -11,17 +12,21 @@ export function Ways({ eyebrow, title, items }: { eyebrow: string; title: string
   return (
     <section className={styles.section} aria-labelledby="ways-title">
       <div className="wrap">
-        <Reveal className={styles.head}>
-          <p className="eyebrow">{eyebrow}</p>
-          <h2 id="ways-title" className={styles.title}>
-            {title}
+        <div className={styles.head}>
+          <Reveal as="p" className="eyebrow">
+            {eyebrow}
+          </Reveal>
+          <h2 id="ways-title" className={styles.title} data-reveal="words">
+            <Words text={title} />
           </h2>
-        </Reveal>
+        </div>
         <ul className={styles.list}>
           {items.map((item, i) => (
-            <Reveal as="li" key={item.title} delay={i * 0.08}>
+            <Reveal as="li" key={item.title} delay={i * 0.12}>
               <Link href={item.href} className={styles.card}>
-                <Picture slug={item.image} sizes="(min-width: 56rem) 30vw, 92vw" className={styles.photo} alt="" />
+                <span className={styles.photoWrap} data-parallax="0.1">
+                  <Picture slug={item.image} sizes="(min-width: 56rem) 30vw, 92vw" className={styles.photo} alt="" />
+                </span>
                 <span className={styles.shade} aria-hidden="true" />
                 <span className={styles.body}>
                   <span className={styles.cardTitle}>{item.title}</span>

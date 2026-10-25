@@ -1,35 +1,53 @@
 .section {
   padding-block: var(--space-2xl);
   border-block: 1px solid var(--color-rule);
+  overflow: hidden;
 }
 
-.inner {
-  display: grid;
-  gap: var(--space-lg);
-  align-items: center;
+.head {
+  margin-bottom: var(--space-lg);
 }
 
 .title {
-  max-width: 24ch;
-  font-size: var(--text-body);
+  font-size: var(--text-sm);
   font-weight: var(--weight-semibold);
-  letter-spacing: 0;
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
   color: var(--color-ink-muted);
 }
 
-.logos {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+.marquee {
+  display: flex;
+  width: max-content;
+  mask-image: linear-gradient(90deg, transparent, var(--teal) 8%, var(--teal) 92%, transparent);
+}
+
+.track {
+  display: flex;
+  flex-shrink: 0;
   gap: var(--space-sm);
   margin: 0;
-  padding: 0;
+  padding: 0 var(--space-sm) 0 0;
   list-style: none;
+  /* Constant speed is the point of a continuous strip, so this is the one linear timing on the site. */
+  animation: marquee 40s linear infinite;
+}
+
+.marquee:hover .track {
+  animation-play-state: paused;
+}
+
+@keyframes marquee {
+  to {
+    transform: translate3d(-100%, 0, 0);
+  }
 }
 
 .logo {
   display: grid;
   place-items: center;
-  height: 4.5rem;
+  width: 12rem;
+  height: 5rem;
   border: 1px dashed var(--color-rule);
   border-radius: var(--radius);
   font-size: var(--text-xs);
@@ -39,8 +57,20 @@
   color: var(--color-ink-muted);
 }
 
-@media (min-width: 64rem) {
-  .inner {
-    grid-template-columns: 1fr 3fr;
+@media (prefers-reduced-motion: reduce) {
+  .marquee {
+    width: auto;
+    flex-wrap: wrap;
+    padding-inline: var(--gutter);
+    mask-image: none;
+  }
+
+  .track {
+    flex-wrap: wrap;
+    animation: none;
+  }
+
+  .track[aria-hidden] {
+    display: none;
   }
 }

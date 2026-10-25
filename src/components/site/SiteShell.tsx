@@ -4,6 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { Logo } from "@/components/brand/Logo";
+import { MotionRoot } from "@/components/motion/MotionRoot";
+import { jumpTo, lockScroll } from "@/lib/scroll";
 import { nav, site } from "@/content/site";
 import { SiteHeader } from "./SiteHeader";
 import styles from "./SiteShell.module.css";
@@ -23,6 +25,7 @@ export function SiteShell({ children, footer }: { children: ReactNode; footer: R
   const restoreY = useRef<number | null>(null);
 
   const openMenu = useCallback(() => {
+    lockScroll(true);
     setFrozen({ y: window.scrollY, path: window.location.pathname });
     // Next frame, so the slide starts from the pinned page.
     requestAnimationFrame(() => requestAnimationFrame(() => setOpen(true)));
@@ -58,7 +61,8 @@ export function SiteShell({ children, footer }: { children: ReactNode; footer: R
   // Restore the scroll position only once the page is back in normal flow (full height).
   useLayoutEffect(() => {
     if (frozen !== null || restoreY.current === null) return;
-    window.scrollTo({ top: restoreY.current, behavior: "instant" });
+    jumpTo(restoreY.current);
+    lockScroll(false);
     restoreY.current = null;
     toggleRef.current?.focus({ preventScroll: true });
   }, [frozen]);
@@ -141,6 +145,7 @@ export function SiteShell({ children, footer }: { children: ReactNode; footer: R
         </div>
       </div>
       {open ? <button type="button" className={styles.scrim} aria-label="Close menu" onClick={close} /> : null}
+      <MotionRoot />
     </div>
   );
 }

@@ -3,6 +3,29 @@
   top: 0;
   z-index: 20;
   height: var(--header-h);
+  transition: transform var(--dur-slow) var(--ease-out-expo);
+  animation: header-in 900ms var(--ease-out-expo) 100ms backwards;
+}
+
+@keyframes header-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -1rem, 0);
+  }
+}
+
+.header[data-hidden] {
+  transform: translate3d(0, -100%, 0);
+}
+
+.progress {
+  position: absolute;
+  inset: auto 0 -1px;
+  z-index: 1;
+  height: 2px;
+  background: var(--leaf);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
 }
 
 /* The solid backdrop fades in once the page scrolls (opacity only). */

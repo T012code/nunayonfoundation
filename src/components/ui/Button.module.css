@@ -20,15 +20,35 @@
   text-decoration: none;
   white-space: nowrap;
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
   transition:
-    background-color var(--dur-micro) var(--ease-out),
-    color var(--dur-micro) var(--ease-out),
-    border-color var(--dur-micro) var(--ease-out),
+    color var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out),
     transform var(--dur-micro) var(--ease-out);
 }
 
-.button:hover {
+/* Hover: the new colour rises from the bottom edge. */
+.button::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border-radius: inherit;
   background: var(--btn-hover-bg);
+  transform: translate3d(0, 102%, 0);
+  transition: transform var(--dur-base) var(--ease-out-expo);
+}
+
+.button:hover::before,
+.button:focus-visible::before {
+  transform: none;
+}
+
+.button:hover,
+.button:focus-visible {
+  color: var(--btn-hover-fg, var(--btn-fg));
 }
 
 .button:active {
@@ -39,6 +59,10 @@
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
+}
+
+.button:disabled::before {
+  transform: translate3d(0, 102%, 0);
 }
 
 .button[data-loading] {
@@ -73,32 +97,36 @@
 .cta {
   --btn-bg: var(--amber);
   --btn-fg: var(--teal);
-  --btn-hover-bg: var(--amber-strong);
+  --btn-hover-bg: var(--teal);
+  --btn-hover-fg: var(--cream);
 }
 
 .primary {
   --btn-bg: var(--teal);
   --btn-fg: var(--cream);
-  --btn-hover-bg: var(--teal-700);
+  --btn-hover-bg: var(--leaf-deep);
 }
 
 .paper {
   --btn-bg: var(--cream);
   --btn-fg: var(--teal);
   --btn-border: var(--color-rule);
-  --btn-hover-bg: var(--white);
+  --btn-hover-bg: var(--teal);
+  --btn-hover-fg: var(--cream);
 }
 
 .ghost {
   --btn-bg: transparent;
   --btn-fg: var(--teal);
   --btn-border: var(--teal);
-  --btn-hover-bg: var(--mint-pale);
+  --btn-hover-bg: var(--teal);
+  --btn-hover-fg: var(--cream);
 }
 
 .inverse {
   --btn-bg: transparent;
   --btn-fg: var(--cream);
   --btn-border: var(--veil-rule-strong);
-  --btn-hover-bg: var(--veil-fill-hover);
+  --btn-hover-bg: var(--cream);
+  --btn-hover-fg: var(--teal);
 }

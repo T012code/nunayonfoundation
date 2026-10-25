@@ -2,6 +2,7 @@
 
 import { useReducedMotion } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Words } from "@/components/motion/Words";
 import { ButtonLink } from "@/components/ui/Button";
 import { Picture } from "@/components/ui/Picture";
 import type { ImageSlug } from "@/content/images";
@@ -132,10 +133,12 @@ export function Hero({ eyebrow, title, lead, slides }: Props) {
       <p className={styles.eyebrow}>{eyebrow}</p>
       {tone === "dark" ? (
         <h1 id="hero-title" className={styles.title}>
-          {title}
+          <Words text={title} />
         </h1>
       ) : (
-        <p className={styles.title}>{title}</p>
+        <p className={styles.title}>
+          <Words text={title} />
+        </p>
       )}
       <p className={styles.lead}>{lead}</p>
     </>
@@ -158,6 +161,7 @@ export function Hero({ eyebrow, title, lead, slides }: Props) {
             ))}
           </div>
           <div ref={scrimRef} className={styles.scrim} aria-hidden="true" />
+          <div className={styles.cover} aria-hidden="true" />
         </div>
         <div ref={matRef} className={styles.mat} aria-hidden="true" />
 

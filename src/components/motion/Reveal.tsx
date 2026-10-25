@@ -1,31 +1,32 @@
-"use client";
+import type { CSSProperties, ReactNode } from "react";
 
-import { motion, useReducedMotion } from "motion/react";
-import type { ReactNode } from "react";
+type Variant = "up" | "unveil" | "draw" | "pop" | "words";
 
-/** Fades and lifts its children into place the first time they scroll into view. */
+/**
+ * Marks content to animate in when it first scrolls into view (see the Motion section of
+ * globals.css; MotionRoot sets data-inview). Without JavaScript everything shows normally.
+ */
 export function Reveal({
   children,
+  variant = "up",
   delay = 0,
-  y = 24,
   className,
-  as = "div",
+  as: Tag = "div",
+  style,
 }: {
-  children: ReactNode;
+  children?: ReactNode;
+  variant?: Variant;
+  /** Seconds. */
   delay?: number;
-  y?: number;
   className?: string;
-  as?: "div" | "li" | "article";
+  as?: "div" | "li" | "article" | "span" | "figure" | "p";
+  style?: CSSProperties;
 }) {
-  const reduced = useReducedMotion();
-  const Tag = motion[as];
   return (
     <Tag
+      data-reveal={variant}
       className={className}
-      initial={reduced ? { opacity: 0 } : { opacity: 0, y }}
-      whileInView={reduced ? { opacity: 1 } : { opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "0px 0px -12% 0px" }}
-      transition={reduced ? { duration: 0.15 } : { duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] }}
+      style={{ ...style, "--delay": `${Math.round(delay * 1000)}ms` } as CSSProperties}
     >
       {children}
     </Tag>

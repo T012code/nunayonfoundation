@@ -6,7 +6,16 @@
   color: var(--cream);
 }
 
+.decor {
+  left: -5rem;
+  bottom: -6rem;
+  width: clamp(16rem, 34vw, 30rem);
+  animation-duration: 26s;
+}
+
 .inner {
+  position: relative;
+  z-index: 1;
   display: grid;
   gap: var(--space-xl);
   align-items: center;
@@ -41,6 +50,7 @@
 }
 
 .card {
+  transition: border-color var(--dur-base) var(--ease-out);
   display: grid;
   gap: var(--space-md);
   margin: 0;
@@ -48,6 +58,10 @@
   border: 1px solid var(--veil-rule);
   border-radius: var(--radius-lg);
   background: var(--veil-fill);
+}
+
+.card:hover {
+  border-color: var(--veil-rule-strong);
 }
 
 .row {

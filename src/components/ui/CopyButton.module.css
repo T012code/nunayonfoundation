@@ -44,3 +44,14 @@
   stroke-linecap: round;
   stroke-linejoin: round;
 }
+
+.button[data-state="copied"] svg {
+  animation: tick 500ms var(--ease-out-expo);
+}
+
+@keyframes tick {
+  from {
+    transform: scale(0.4) rotate(-12deg);
+    opacity: 0;
+  }
+}

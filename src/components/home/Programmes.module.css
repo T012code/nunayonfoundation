@@ -42,23 +42,39 @@
   overflow: hidden;
   border-radius: var(--radius);
   background: var(--sand);
+  transition: transform var(--dur-slow) var(--ease-out-expo);
 }
 
 .photo {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform var(--dur-slow) var(--ease-out);
 }
 
-.card:hover .photo,
-.card:focus-visible .photo {
-  transform: scale(1.04);
+/* Hover: the card lifts and the photo zooms gently. */
+.zoom {
+  display: block;
+  height: 100%;
+  transition: transform var(--dur-slow) var(--ease-out-expo);
+}
+
+.card:hover .media,
+.card:focus-visible .media {
+  transform: translate3d(0, -6px, 0);
+}
+
+.card:hover .zoom,
+.card:focus-visible .zoom {
+  transform: scale(1.06);
 }
 
 .body {
   display: grid;
   gap: var(--space-2xs);
+}
+
+.item {
+  display: block;
 }
 
 .cardTitle {
@@ -112,7 +128,7 @@
   }
 
   /* Middle column sits lower for a staggered, editorial rhythm. */
-  .grid > li:nth-child(3n + 2) {
+  .grid > .item:nth-child(3n + 2) {
     margin-top: var(--space-2xl);
   }
 

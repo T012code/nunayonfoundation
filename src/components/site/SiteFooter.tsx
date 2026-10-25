@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { Logo } from "@/components/brand/Logo";
+import { Reveal } from "@/components/motion/Reveal";
+import { Words } from "@/components/motion/Words";
 import { site } from "@/content/site";
 import { NewsletterForm } from "./NewsletterForm";
 import styles from "./SiteFooter.module.css";
@@ -31,14 +33,22 @@ export function SiteFooter({ year }: { year: number }) {
       <div className="wrap">
         <div className={styles.top}>
           <div className={styles.news}>
-            <h2 className={styles.newsTitle}>Stories from the field, in your inbox.</h2>
-            <p className={styles.newsText}>One email a month about the families we meet and what your support did.</p>
-            <NewsletterForm />
+            <h2 className={styles.newsTitle} data-reveal="words">
+              <Words text="Stories from the field, in your inbox." />
+            </h2>
+            <Reveal as="p" delay={0.3} className={styles.newsText}>
+              One email a month about the families we meet and what your support did.
+            </Reveal>
+            <Reveal delay={0.4}>
+              <NewsletterForm />
+            </Reveal>
           </div>
-          <Logo variant="full" className={`${styles.logo} logo-reversed`} />
+          <Reveal delay={0.2} className={styles.logoWrap}>
+            <Logo variant="full" className={`${styles.logo} logo-reversed`} />
+          </Reveal>
         </div>
 
-        <div className={styles.links}>
+        <Reveal className={styles.links}>
           <nav aria-label="Explore">
             <h3 className={styles.heading}>Explore</h3>
             <ul>
@@ -77,7 +87,7 @@ export function SiteFooter({ year }: { year: number }) {
               ))}
             </p>
           </address>
-        </div>
+        </Reveal>
 
         <div className={styles.bottom}>
           <p>

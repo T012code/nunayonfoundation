@@ -101,10 +101,14 @@
 
   /* Motion */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
   --dur-micro: 160ms;
   --dur-base: 320ms;
   --dur-slow: 600ms;
+  --dur-reveal: 1000ms;
+  --dur-unveil: 1400ms;
+  --stagger: 55ms;
 }
 
 /* ── Base ────────────────────────────────────────────────────────────────── */
@@ -233,13 +237,152 @@ select {
   --logo-tagline: var(--mint-pale);
 }
 
+/* ── Motion ───────────────────────────────────────────────────────────────────
+   One vocabulary across the site:
+   rise   – words come up from behind a mask           (.word, data-reveal="words")
+   up     – blocks fade and lift into place             (data-reveal="up")
+   unveil – a cover pulls away as the photo settles     (data-reveal="unveil")
+   draw   – rules draw across from the left             (data-reveal="draw")
+   pop    – small items scale in                        (data-reveal="pop")
+   Hidden states apply only when JavaScript runs (html.js), so nothing stays hidden without it.
+   MotionRoot adds data-inview once an element enters the viewport. */
+
+.word {
+  display: inline-block;
+  overflow: hidden;
+  /* Room for descenders inside the mask. */
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+  vertical-align: top;
+}
+
+.word > span {
+  display: inline-block;
+}
+
+.js [data-reveal="words"] .word > span {
+  transform: translate3d(0, 110%, 0);
+  transition: transform var(--dur-reveal) var(--ease-out-expo);
+  transition-delay: calc(var(--delay, 0ms) + var(--i, 0) * var(--stagger));
+}
+
+.js [data-reveal="words"][data-inview] .word > span {
+  transform: none;
+}
+
+.js [data-reveal="up"] {
+  opacity: 0;
+  transform: translate3d(0, 2rem, 0);
+  transition:
+    opacity var(--dur-reveal) var(--ease-out-expo) var(--delay, 0ms),
+    transform var(--dur-reveal) var(--ease-out-expo) var(--delay, 0ms);
+}
+
+.js [data-reveal="pop"] {
+  opacity: 0;
+  transform: scale(0.92);
+  transition:
+    opacity var(--dur-slow) var(--ease-out-expo) var(--delay, 0ms),
+    transform var(--dur-slow) var(--ease-out-expo) var(--delay, 0ms);
+}
+
+.js [data-reveal="up"][data-inview],
+.js [data-reveal="pop"][data-inview] {
+  opacity: 1;
+  transform: none;
+}
+
+[data-reveal="unveil"] {
+  position: relative;
+  overflow: hidden;
+}
+
+.js [data-reveal="unveil"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: var(--unveil-cover, var(--color-paper));
+  transform-origin: 50% 0%;
+  transition: transform var(--dur-unveil) var(--ease-out-expo) var(--delay, 0ms);
+  pointer-events: none;
+}
+
+.js [data-reveal="unveil"] img {
+  transform: scale(1.18);
+  transition: transform calc(var(--dur-unveil) + 400ms) var(--ease-out-expo) var(--delay, 0ms);
+}
+
+.js [data-reveal="unveil"][data-inview]::after {
+  transform: scaleY(0);
+}
+
+.js [data-reveal="unveil"][data-inview] img {
+  transform: none;
+}
+
+.js [data-reveal="draw"] {
+  transform: scaleX(0);
+  transform-origin: 0% 50%;
+  transition: transform calc(var(--dur-reveal) + 200ms) var(--ease-out-expo) var(--delay, 0ms);
+}
+
+.js [data-reveal="draw"][data-inview] {
+  transform: none;
+}
+
+/* Slow drift for decorative leaf marks on the dark bands. */
+@keyframes drift {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate3d(-1.5rem, 1rem, 0) rotate(-6deg);
+  }
+  100% {
+    transform: translate3d(0.75rem, -0.75rem, 0) rotate(4deg);
+  }
+}
+
+.leaf-decor {
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.07;
+  animation: drift 22s var(--ease-in-out) infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js [data-reveal] .word > span,
+  .js [data-reveal="draw"],
+  .js [data-reveal="unveil"] img {
+    transform: none !important;
+  }
+
+  .js [data-reveal="up"],
+  .js [data-reveal="pop"] {
+    transform: none !important;
+    transition: opacity 150ms var(--ease-out) !important;
+  }
+
+  .js [data-reveal="unveil"]::after {
+    display: none;
+  }
+
+  .leaf-decor {
+    animation: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
     animation-duration: 1ms !important;
+    animation-delay: 0ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 1ms !important;
+    transition-delay: 0ms !important;
     scroll-behavior: auto !important;
   }
 }

@@ -1,4 +1,6 @@
+import { Logo } from "@/components/brand/Logo";
 import { Reveal } from "@/components/motion/Reveal";
+import { Words } from "@/components/motion/Words";
 import { ButtonLink } from "@/components/ui/Button";
 import { CopyButton } from "@/components/ui/CopyButton";
 import styles from "./DonateBand.module.css";
@@ -8,21 +10,26 @@ type Account = { currency: string; bank: string; name: string; number: string };
 export function DonateBand({ accounts }: { accounts: Account[] }) {
   return (
     <section className={styles.section} aria-labelledby="donate-title">
+      <Logo variant="mark" className={`leaf-decor logo-reversed ${styles.decor}`} aria-hidden="true" />
       <div className={`wrap ${styles.inner}`}>
-        <Reveal className={styles.copy}>
-          <p className={styles.eyebrow}>Give by bank transfer</p>
-          <h2 id="donate-title" className={styles.title}>
-            Every naira reaches a child, a family or a community.
+        <div className={styles.copy}>
+          <Reveal as="p" className={styles.eyebrow}>
+            Give by bank transfer
+          </Reveal>
+          <h2 id="donate-title" className={styles.title} data-reveal="words">
+            <Words text="Every naira reaches a child, a family or a community." />
           </h2>
-          <p className={styles.lead}>
+          <Reveal as="p" delay={0.3} className={styles.lead}>
             Transfer any amount to the account below, then let us know so we can thank you and tell you where it went.
-          </p>
-          <ButtonLink href="/donate#tell-us" variant="cta" className={styles.cta}>
-            I&apos;ve made a donation
-          </ButtonLink>
-        </Reveal>
+          </Reveal>
+          <Reveal delay={0.45}>
+            <ButtonLink href="/donate#tell-us" variant="cta" className={styles.cta}>
+              I&apos;ve made a donation
+            </ButtonLink>
+          </Reveal>
+        </div>
 
-        <Reveal delay={0.1} className={styles.cards}>
+        <Reveal delay={0.25} className={styles.cards}>
           {accounts.map((a) => (
             <dl key={a.number} className={styles.card}>
               <div className={styles.row}>
