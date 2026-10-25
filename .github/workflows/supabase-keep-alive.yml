@@ -1,0 +1,41 @@
+# Keeps the Supabase project awake. Free-plan projects are paused after 7 days without
+# activity; this runs a small database query twice a week (Monday and Thursday) so that
+# never happens. If a run fails, GitHub emails the repository owner.
+#
+# Scheduled workflows only run from the repository's default branch.
+name: Supabase keep-alive
+
+on:
+  schedule:
+    - cron: "23 7 * * 1,4" # 07:23 UTC, Mondays and Thursdays
+  workflow_dispatch: # "Run workflow" button in the Actions tab
+
+permissions: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      # Public values (the same ones the website sends to browsers). Repository variables
+      # SUPABASE_URL / SUPABASE_PUBLISHABLE_KEY override them if the project ever changes.
+      SUPABASE_URL: ${{ vars.SUPABASE_URL || 'https://qmelvymbmxafttgzxpcg.supabase.co' }}
+      SUPABASE_KEY: ${{ vars.SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_BuGkwUM5YaAUL4E_qFum1w_mXjIuTI5' }}
+    steps:
+      - name: Query the database
+        run: |
+          for attempt in 1 2 3; do
+            status=$(curl -sS -o response.txt -w "%{http_code}" -X POST \
+              "$SUPABASE_URL/rest/v1/rpc/keep_alive" \
+              -H "apikey: $SUPABASE_KEY" \
+              -H "Content-Type: application/json" \
+              -d '{}') || status=000
+            if [ "$status" = "200" ]; then
+              echo "Supabase answered: $(cat response.txt)"
+              exit 0
+            fi
+            echo "Attempt $attempt failed (HTTP $status): $(cat response.txt 2>/dev/null)"
+            sleep 30
+          done
+          echo "::error::Supabase did not respond. If the project is paused, restore it from the Supabase dashboard."
+          exit 1
