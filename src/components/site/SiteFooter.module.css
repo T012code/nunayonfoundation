@@ -31,7 +31,7 @@
 .news {
   padding: clamp(1.5rem, 1rem + 2.5vw, 3rem);
   border: 1px solid var(--veil-rule);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius);
   background: var(--veil-fill);
 }
 
@@ -60,7 +60,7 @@
   align-content: end;
   gap: var(--space-md);
   padding: clamp(1.5rem, 1rem + 2.5vw, 3rem);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius);
   background: var(--leaf-deep);
 }
 

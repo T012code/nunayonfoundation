@@ -170,7 +170,7 @@
 /* ── Open state ── */
 .shell[data-open] .surface {
   transform: translateX(calc(-1 * min(82vw, 24rem) + 1.5rem)) scale(0.9);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius);
   box-shadow: var(--shadow-surface);
 }
 

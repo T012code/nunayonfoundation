@@ -55,7 +55,7 @@ export function Hero({ title, lead, slides }: Props) {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
     let active = false;
     let last = -1;
-    const g = { start: 0, travel: 1, W: 1, H: 1, fx: 0, fy: 0, fw: 1, fh: 1, lx: 0, ly: 0, lw: 0, lh: 0 };
+    const g = { start: 0, travel: 1, W: 1, H: 1, fx: 0, fy: 0, fw: 1, fh: 1, lx: 0, ly: 0, lw: 0, lh: 0, r: 0 };
 
     const reset = () => {
       delete stage.dataset.ready;
@@ -64,6 +64,7 @@ export function Hero({ title, lead, slides }: Props) {
         el.style.opacity = "";
         el.style.clipPath = "";
       }
+      clip.style.borderRadius = "";
     };
 
     const measure = () => {
@@ -87,6 +88,8 @@ export function Hero({ title, lead, slides }: Props) {
       g.fy = f.top - s.top + TUCK;
       g.fw = f.width - 2 * TUCK;
       g.fh = f.height - 2 * TUCK;
+      // The photo's corner follows the frame's rounded corner, inset by the tuck.
+      g.r = Math.max(0, parseFloat(getComputedStyle(mat).borderTopLeftRadius) - TUCK);
       const c = light.getBoundingClientRect();
       g.lx = c.left - s.left;
       g.ly = c.top - s.top;
@@ -108,6 +111,10 @@ export function Hero({ title, lead, slides }: Props) {
       const m = Math.max(sx, sy);
       clip.style.transform = `translate3d(${(cx - W / 2).toFixed(2)}px, ${(cy - H / 2).toFixed(2)}px, 0) scale(${sx.toFixed(5)}, ${sy.toFixed(5)})`;
       inner.style.transform = `scale(${(m / sx).toFixed(5)}, ${(m / sy).toFixed(5)})`;
+      // The layer is stretched unevenly, so its corner radii are set in its own units (r/sx, r/sy)
+      // to look perfectly round on screen. They ease to square as the photo fills the screen.
+      const r = g.r * (1 - e);
+      clip.style.borderRadius = `${(r / sx).toFixed(2)}px / ${(r / sy).toFixed(2)}px`;
       mat.style.opacity = String(1 - clamp01(e / 0.08));
       scrim.style.opacity = String(clamp01((e - 0.15) / 0.5));
 

@@ -115,6 +115,7 @@
   z-index: 1;
   aspect-ratio: 4 / 5;
   overflow: hidden;
+  border-radius: var(--radius);
   background: var(--sand);
   box-shadow: var(--shadow-frame);
   transform-origin: 50% 50%;
@@ -318,6 +319,7 @@
     right: calc(var(--edge) + 3px);
     width: calc(var(--content) * 0.5 - 6px);
     height: calc(78% - 6px);
+    border-radius: calc(var(--radius) - 3px);
     box-shadow: none;
     backface-visibility: hidden;
   }
@@ -331,6 +333,7 @@
   .mat {
     z-index: 2;
     display: block;
+    border-radius: var(--radius);
     box-shadow: var(--shadow-frame);
     pointer-events: none;
   }
@@ -342,6 +345,7 @@
     position: absolute;
     inset: 0;
     border: 10px solid var(--cream);
+    border-radius: inherit;
     outline: 1px solid var(--color-rule);
     outline-offset: -1px;
     animation: fade-in 900ms var(--ease-out) 1.1s backwards;

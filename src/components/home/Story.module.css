@@ -45,7 +45,7 @@
   --unveil-cover: var(--sand);
   aspect-ratio: 4 / 3;
   overflow: hidden;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius);
 }
 
 /* Taller than the frame so the parallax drift never shows an edge. */
@@ -99,7 +99,7 @@
 .quote {
   margin: 0;
   padding: var(--space-lg);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius);
   background: var(--color-surface);
   box-shadow: var(--shadow-card);
 }

@@ -49,7 +49,7 @@
   margin: 0;
   padding: var(--space-lg);
   border: 1px solid var(--veil-rule);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius);
   background: var(--veil-fill);
 }
 

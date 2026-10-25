@@ -27,7 +27,7 @@
   align-items: flex-end;
   min-height: 26rem;
   overflow: hidden;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius);
   background: var(--teal);
   color: var(--white);
   text-decoration: none;
