@@ -34,8 +34,10 @@ export function AdminShell({
     setOpen(false);
   }
 
-  // A name that's just the role (e.g. "Super admin") says nothing new; show the email instead.
-  const display = me.name && me.name.toLowerCase() !== me.role.toLowerCase() ? me.name : me.email;
+  // The person's name (or the start of their email if they haven't set one).
+  const display = me.name.trim() || me.email.split("@")[0];
+  // Skip the role line when it would just repeat the name (e.g. "Super admin").
+  const showRole = display.toLowerCase() !== me.role.toLowerCase();
 
   const isCurrent = (href: string) => (href === "/admin" ? pathname === "/admin" : pathname.startsWith(href));
 
@@ -83,11 +85,11 @@ export function AdminShell({
           <div className={styles.me}>
             <Link href="/admin/account" className={styles.meCard} aria-current={pathname === "/admin/account" ? "page" : undefined}>
               <span className={styles.avatar} aria-hidden="true">
-                {initials(display)}
+                {display.charAt(0).toUpperCase() || "?"}
               </span>
               <span className={styles.meText}>
                 <span className={styles.meName}>{display}</span>
-                <span className={styles.meRole}>{me.role}</span>
+                {showRole ? <span className={styles.meRole}>{me.role}</span> : null}
               </span>
               <Icon name="chevron" className={styles.meChevron} />
               <span className="visually-hidden">, your account</span>
@@ -112,8 +114,3 @@ export function AdminShell({
   );
 }
 
-/** Up to two initials from a name, or the first letter of an email. */
-function initials(name: string) {
-  const words = name.replace(/@.*/, "").split(/[\s._-]+/).filter(Boolean);
-  return ((words[0]?.[0] ?? "") + (words.length > 1 ? words[words.length - 1][0] : "")).toUpperCase() || "?";
-}
