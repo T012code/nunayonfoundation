@@ -49,6 +49,8 @@ export function MfaSetup({ enrolled, onDone }: { enrolled: boolean; onDone: () =
     const supabase = createClient();
     const { error } = await supabase.auth.mfa.challengeAndVerify({ factorId, code });
     if (error) {
+      // The sign-in stage shakes its card on this (no effect elsewhere).
+      window.dispatchEvent(new Event("auth:error"));
       setPending(false);
       setError(error.message.includes("Invalid") ? "That code didn't work. Check the time on your phone and try the newest code." : error.message);
       return;

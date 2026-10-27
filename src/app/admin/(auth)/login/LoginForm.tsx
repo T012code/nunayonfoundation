@@ -7,6 +7,7 @@ import { logSignIn } from "@/app/actions/admin/auth";
 import { Button } from "@/components/ui/Button";
 import { createClient } from "@/lib/supabase/browser";
 import styles from "@/components/admin/admin.module.css";
+import { signal } from "../AuthScene";
 import { Welcome } from "../Welcome";
 
 const MESSAGES: Record<string, string> = {
@@ -31,11 +32,13 @@ export function LoginForm({ notice }: { notice?: string }) {
       password: String(fd.get("password") ?? ""),
     });
     if (error) {
+      signal("error");
       setPending(false);
       setError(error.message === "Invalid login credentials" ? "That email and password don't match." : error.message);
       return;
     }
     setDone(true);
+    signal("success");
     await logSignIn("signed in");
     router.replace("/admin");
     router.refresh();

@@ -5,6 +5,7 @@ import { useState } from "react";
 import { MfaSetup } from "@/components/admin/MfaSetup";
 import { signOut } from "@/app/actions/admin/auth";
 import styles from "@/components/admin/admin.module.css";
+import { signal } from "../AuthScene";
 import { Welcome } from "../Welcome";
 
 export function MfaStep({ enrolled }: { enrolled: boolean }) {
@@ -21,6 +22,7 @@ export function MfaStep({ enrolled }: { enrolled: boolean }) {
         enrolled={enrolled}
         onDone={() => {
           setDone(true);
+          signal("success");
           router.replace("/admin");
           router.refresh();
         }}
