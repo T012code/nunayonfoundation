@@ -5,7 +5,52 @@
 }
 
 .head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
   margin-bottom: var(--space-lg);
+}
+
+/* Pause / play for the moving strip. */
+.toggle {
+  display: inline-grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid var(--color-rule);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-ink);
+  cursor: pointer;
+  transition:
+    background-color var(--dur-micro) var(--ease-out),
+    transform var(--dur-micro) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .toggle:hover {
+    background: var(--sand);
+  }
+}
+
+.toggle:active {
+  transform: scale(0.94);
+}
+
+.toggle svg {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.toggle .solid {
+  fill: currentColor;
 }
 
 .title {
@@ -31,6 +76,11 @@
   list-style: none;
   /* Constant speed is the point of a continuous strip, so this is the one linear timing on the site. */
   animation: marquee 40s linear infinite;
+}
+
+.marquee[data-paused] .track,
+.marquee:focus-within .track {
+  animation-play-state: paused;
 }
 
 @media (hover: hover) {
@@ -73,6 +123,11 @@
   }
 
   .track[aria-hidden] {
+    display: none;
+  }
+
+  /* Nothing moves, so nothing to pause. */
+  .toggle {
     display: none;
   }
 }

@@ -117,6 +117,45 @@
   }
 }
 
+/* Pause / play for the drifting photos, in the panel's top corner. */
+.still {
+  position: absolute;
+  top: var(--space-sm);
+  right: var(--space-sm);
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid var(--veil-rule-strong);
+  border-radius: 50%;
+  background: var(--color-scrim);
+  color: var(--color-on-inverse);
+  cursor: pointer;
+  transition: transform var(--dur-micro) var(--ease-out);
+}
+
+.still:active {
+  transform: scale(0.94);
+}
+
+.still svg {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* With reduced motion nothing drifts, so there's nothing to pause. */
+@media (prefers-reduced-motion: reduce) {
+  .still {
+    display: none;
+  }
+}
+
 /* ── Card side ── */
 .panel {
   position: relative;

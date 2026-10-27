@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, type CSSProperties, type ReactNode } from "react";
+import { useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { SplitText } from "gsap/SplitText";
 import { Logo } from "@/components/brand/Logo";
 import { LeafField, type Leaf } from "@/components/motion/LeafField";
@@ -35,12 +35,23 @@ export function signal(event: "error" | "success") {
 /**
  * The sign-in screens' stage (GSAP). On load the photo columns rise in from opposite sides,
  * the sprout springs up, the headline rises line by line, then the card lifts in and its
- * fields follow one by one. The photos keep drifting; a wrong password shakes the card and
+ * fields follow one by one. The photos keep drifting (a button pauses them); a wrong password shakes the card and
  * signing in sends the photos rushing past. With reduced motion everything simply appears.
  */
 export function AuthScene({ children }: { children: ReactNode }) {
   const root = useRef<HTMLElement>(null);
+  const driftTimeline = useRef<gsap.core.Timeline | null>(null);
+  const [still, setStill] = useState(false);
   usePressStates();
+
+  // The photos drift until stopped; the button pauses and resumes them.
+  const toggleDrift = () => {
+    setStill((s) => {
+      if (s) driftTimeline.current?.play();
+      else driftTimeline.current?.pause();
+      return !s;
+    });
+  };
 
   useGSAP(
     () => {
@@ -55,6 +66,7 @@ export function AuthScene({ children }: { children: ReactNode }) {
 
         // Constant-speed drift, as in a marquee: linear on purpose, so the loop has no visible seam.
         const drift = gsap.timeline();
+        driftTimeline.current = drift;
         tracks.forEach((track, i) => {
           const down = i === 1;
           drift.fromTo(
@@ -96,6 +108,7 @@ export function AuthScene({ children }: { children: ReactNode }) {
         };
         const onSuccess = () => {
           // The photos rush past as the dashboard opens.
+          drift.play();
           gsap.to(drift, { timeScale: 7, duration: 1.4, ease: "power2.in" });
           gsap.to(q("[data-veil]"), { opacity: 0.6, duration: 1.2 });
         };
@@ -105,6 +118,7 @@ export function AuthScene({ children }: { children: ReactNode }) {
           window.removeEventListener("auth:error", onError);
           window.removeEventListener("auth:success", onSuccess);
           split?.revert();
+          driftTimeline.current = null;
         };
       });
 
@@ -118,8 +132,8 @@ export function AuthScene({ children }: { children: ReactNode }) {
 
   return (
     <main ref={root} className={styles.shell}>
-      <aside className={styles.art} aria-hidden="true">
-        <div className={styles.reel}>
+      <aside className={styles.art}>
+        <div className={styles.reel} aria-hidden="true">
           {COLUMNS.map((col, c) => (
             <div key={c} data-column="" className={styles.column} style={{ "--c": c } as CSSProperties}>
               <div data-track="" className={styles.track}>
@@ -132,9 +146,27 @@ export function AuthScene({ children }: { children: ReactNode }) {
             </div>
           ))}
         </div>
-        <div data-veil="" className={styles.veil} />
+        <div data-veil="" className={styles.veil} aria-hidden="true" />
         <LeafField leaves={LEAVES} />
-        <div className={styles.copy}>
+        <button
+          type="button"
+          data-sub=""
+          className={styles.still}
+          onClick={toggleDrift}
+          aria-label={still ? "Play the moving photos" : "Pause the moving photos"}
+          aria-pressed={still}
+        >
+          {still ? (
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <path d="M5.5 3.5v9l7-4.5z" fill="currentColor" />
+            </svg>
+          ) : (
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <path d="M5.5 3.5v9M10.5 3.5v9" />
+            </svg>
+          )}
+        </button>
+        <div className={styles.copy} aria-hidden="true">
           <div data-sprout="" className={styles.sprout}>
             <Logo variant="mark" className="logo-reversed" />
           </div>
