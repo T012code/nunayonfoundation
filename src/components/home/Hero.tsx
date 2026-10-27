@@ -1,10 +1,10 @@
 "use client";
 
-import { useReducedMotion } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Words } from "@/components/motion/Words";
 import { ButtonLink } from "@/components/ui/Button";
 import { onLayout, onScroll } from "@/lib/scroll";
+import { useReducedMotionSafe } from "@/lib/useReducedMotionSafe";
 import { Picture } from "@/components/ui/Picture";
 import { imageKey, type ImageRef } from "@/content/images";
 import styles from "./Hero.module.css";
@@ -176,7 +176,7 @@ export function Hero({ title, lead, slides }: Props) {
   }, []);
 
   // ── Slider ── With reduced motion it waits for the visitor instead of advancing on its own.
-  const reduced = useReducedMotion();
+  const reduced = useReducedMotionSafe();
   const [playRequested, setPlayRequested] = useState(false);
   const stopped = paused || (reduced === true && !playRequested);
 
