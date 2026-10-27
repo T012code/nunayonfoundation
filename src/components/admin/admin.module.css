@@ -995,3 +995,346 @@ a.tile:hover {
   stroke-linecap: round;
   stroke-linejoin: round;
 }
+
+/* ── Admin buttons (compact; pills are for buttons only) ── */
+.primaryButton,
+.secondaryButton,
+.ghostButton,
+.dangerButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2xs);
+  min-height: 2.5rem;
+  padding: 0 var(--space-md);
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-pill);
+  font: inherit;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color var(--dur-micro) var(--ease-out),
+    border-color var(--dur-micro) var(--ease-out),
+    color var(--dur-micro) var(--ease-out),
+    transform var(--dur-micro) var(--ease-out);
+}
+
+.primaryButton:active,
+.secondaryButton:active,
+.ghostButton:active,
+.dangerButton:active {
+  transform: scale(0.97);
+}
+
+.primaryButton:disabled,
+.secondaryButton:disabled,
+.ghostButton:disabled,
+.dangerButton:disabled {
+  opacity: 0.5;
+  cursor: default;
+  transform: none;
+}
+
+.primaryButton svg,
+.secondaryButton svg,
+.ghostButton svg,
+.dangerButton svg {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.primaryButton {
+  background: var(--teal);
+  color: var(--cream);
+}
+
+.primaryButton:hover:not(:disabled) {
+  background: var(--leaf-deep);
+}
+
+.secondaryButton {
+  border-color: var(--color-rule);
+  background: var(--color-surface);
+  color: var(--color-ink);
+}
+
+.secondaryButton:hover:not(:disabled) {
+  border-color: var(--slate);
+}
+
+.ghostButton {
+  background: transparent;
+  color: var(--color-ink-muted);
+}
+
+.ghostButton:hover:not(:disabled) {
+  color: var(--color-ink);
+  background: var(--sand);
+}
+
+.dangerButton {
+  border-color: var(--color-error);
+  background: transparent;
+  color: var(--color-error);
+}
+
+.dangerButton:hover:not(:disabled) {
+  background: var(--error-wash);
+}
+
+/* ── Dialogs ── */
+.dialog {
+  width: min(100% - 2rem, 56rem);
+  max-height: min(100dvh - 2rem, 48rem);
+  padding: 0;
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  box-shadow: var(--shadow-card);
+}
+
+.dialog[open] {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  animation: rise-in var(--dur-base) var(--ease-out);
+}
+
+.dialog::backdrop {
+  background: var(--color-scrim);
+}
+
+.dialogHead,
+.dialogFoot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.dialogHead .cardTitle {
+  margin: 0;
+}
+
+.dialogBody {
+  min-height: 12rem;
+  overflow-y: auto;
+}
+
+.pick {
+  display: grid;
+  gap: var(--space-3xs);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.pick img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+  background-size: cover;
+  object-fit: cover;
+  transition: border-color var(--dur-micro) var(--ease-out), transform var(--dur-micro) var(--ease-out);
+}
+
+.pick:hover img {
+  border-color: var(--slate);
+}
+
+.pick[aria-pressed="true"] img {
+  border-color: var(--leaf-deep);
+  transform: scale(0.96);
+}
+
+.pickName {
+  overflow: hidden;
+  font-size: var(--text-xs);
+  color: var(--color-ink-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Upload progress ── */
+.single {
+  display: grid;
+  gap: var(--space-xs);
+  max-width: 28rem;
+}
+
+.jobs {
+  display: grid;
+  gap: var(--space-2xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.job {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 2px var(--space-sm);
+  font-size: var(--text-xs);
+}
+
+.job .progress {
+  grid-column: 1 / -1;
+}
+
+.jobName {
+  overflow: hidden;
+  font-weight: var(--weight-semibold);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.jobStatus {
+  color: var(--color-ink-muted);
+}
+
+.job[data-state="done"] .jobStatus {
+  color: var(--leaf-shadow);
+}
+
+.job[data-state="error"] .jobStatus {
+  color: var(--color-error);
+}
+
+/* ── Media library ── */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.search {
+  flex: 1 1 16rem;
+  max-width: 24rem;
+}
+
+.tabCount {
+  font-variant-numeric: tabular-nums;
+  opacity: 0.7;
+}
+
+.mediaMeta {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2xs);
+  font-size: var(--text-xs);
+}
+
+.usedTag {
+  color: var(--leaf-shadow);
+  font-weight: var(--weight-semibold);
+}
+
+.detailGrid {
+  display: grid;
+  gap: var(--space-md);
+  align-items: start;
+}
+
+.detailPhoto {
+  width: 100%;
+  border-radius: var(--radius);
+  background-size: cover;
+}
+
+.usageList {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dangerZone {
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--color-rule);
+}
+
+@media (min-width: 48rem) {
+  .detailGrid {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  }
+}
+
+@media (min-width: 40rem) {
+  .repeatFields {
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  }
+
+  .repeatFields [data-long] {
+    grid-column: 1 / -1;
+  }
+}
+
+.rowMain {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.personGrid {
+  display: grid;
+  gap: var(--space-md);
+}
+
+@media (min-width: 48rem) {
+  .personGrid {
+    grid-template-columns: minmax(0, 15rem) minmax(0, 1fr);
+  }
+}
+
+.inboxRow[data-unread] .rowLink {
+  color: var(--color-ink);
+}
+
+.inboxRow:not([data-unread]) .rowLink {
+  font-weight: var(--weight-semibold);
+}
+
+.clip {
+  max-width: 22rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.permGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+  gap: var(--space-sm) var(--space-md);
+}
+
+.copyRow {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.copyRow .input {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--text-sm);
+}
+
+.alignEnd {
+  align-self: flex-end;
+}

@@ -17,7 +17,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   const { access, supabase } = await requirePage();
   const has = (p: Parameters<typeof can>[1]) => can(access, p);
   const count = async (table: string, filter?: [string, string | boolean]) => {
-    let q = supabase.from(table).select("*", { count: "exact", head: true });
+    let q = supabase.from(table).select("id", { count: "exact", head: true });
     if (filter) q = q.eq(filter[0], filter[1]);
     const { count } = await q;
     return count ?? 0;
