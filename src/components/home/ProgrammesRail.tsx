@@ -2,11 +2,13 @@
 
 import { useRef, type ReactNode } from "react";
 import { gsap, MOTION_DESKTOP, ScrollTrigger, useGSAP } from "@/lib/gsap";
+import { jumpTo } from "@/lib/scroll";
 
 /**
  * On large screens the programmes section pins in place and its cards travel sideways as the
  * visitor scrolls down; each photo drifts inside its frame, and a line fills as they go. The
  * markup stays a normal list, so small screens, reduced motion and no-JS get the grid.
+ * Tabbing through the cards scrolls the rail along with the focus.
  */
 export function ProgrammesRail({ className, children }: { className?: string; children: ReactNode }) {
   const root = useRef<HTMLElement>(null);
@@ -53,8 +55,23 @@ export function ProgrammesRail({ className, children }: { className?: string; ch
           );
         }
 
+        // Keyboard: tabbing onto a card that's still off to the side scrolls the page to the
+        // point where that card sits in view, so focus never lands somewhere unseen.
+        const onFocus = (e: FocusEvent) => {
+          const st = slide.scrollTrigger;
+          const item = (e.target as HTMLElement).closest("li");
+          if (!st || !item || !distance()) return;
+          const want = item.offsetLeft - (frame.clientWidth - item.offsetWidth) / 2;
+          const progress = gsap.utils.clamp(0, 1, want / distance());
+          if (Math.abs(progress - st.progress) < 0.02 && st.isActive) return;
+          jumpTo(st.start + progress * (st.end - st.start));
+          slide.scrollTrigger?.update();
+        };
+        track.addEventListener("focusin", onFocus);
+
         ScrollTrigger.refresh();
         return () => {
+          track.removeEventListener("focusin", onFocus);
           delete section.dataset.rail;
         };
       });
