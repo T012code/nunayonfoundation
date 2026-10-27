@@ -192,6 +192,8 @@
   border: 0;
   background: transparent;
   color: var(--cream);
+  /* Sideways drags change the photo (Gallery.tsx); pinch zoom still works. */
+  touch-action: pan-y pinch-zoom;
 }
 
 .viewer::backdrop {
@@ -224,6 +226,36 @@
     opacity: 0;
     transform: scale(0.96);
   }
+}
+
+/* Moving through photos: the new one arrives from the side it's coming from. */
+.figure[data-enter="next"] {
+  animation: from-right 450ms var(--ease-out-expo);
+}
+
+.figure[data-enter="prev"] {
+  animation: from-left 450ms var(--ease-out-expo);
+}
+
+@keyframes from-right {
+  from {
+    opacity: 0;
+    transform: translate3d(12%, 0, 0);
+  }
+}
+
+@keyframes from-left {
+  from {
+    opacity: 0;
+    transform: translate3d(-12%, 0, 0);
+  }
+}
+
+/* Springing back after a short drag. */
+.figure {
+  transition:
+    transform var(--dur-slow) var(--ease-out-expo),
+    opacity var(--dur-slow) var(--ease-out-expo);
 }
 
 .full {

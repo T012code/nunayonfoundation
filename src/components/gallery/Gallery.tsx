@@ -20,7 +20,9 @@ export function Gallery({ albums }: { albums: Album[] }) {
   const shown = filter === "all" ? all : all.filter((p) => albums.find((a) => a.slug === filter)?.title === p.album);
   const [open, setOpen] = useState<number | null>(null);
   const dialog = useRef<HTMLDialogElement>(null);
-  const touchX = useRef<number | null>(null);
+  // Swipe in the viewer: the photo follows the finger, then moves on or springs back.
+  const drag = useRef<{ id: number; x: number; y: number; axis: "" | "x" | "y"; dx: number; v: number; t: number; el: HTMLElement | null } | null>(null);
+  const [enter, setEnter] = useState<"next" | "prev" | null>(null);
   const tabsRef = useRef<HTMLDivElement>(null);
   const barRef = useRef<HTMLSpanElement>(null);
   const gridRef = useRef<HTMLUListElement>(null);
@@ -110,6 +112,30 @@ export function Gallery({ albums }: { albums: Album[] }) {
 
   const current = open !== null ? shown[open] : null;
 
+  const step = (dir: 1 | -1) => {
+    setEnter(dir === 1 ? "next" : "prev");
+    go(dir);
+  };
+
+  const endDrag = (id: number) => {
+    const d = drag.current;
+    if (!d || id !== d.id) return;
+    drag.current = null;
+    if (d.axis !== "x" || !d.el) return;
+    const width = window.innerWidth;
+    const dir = d.dx < -width * 0.2 || d.v < -0.45 ? 1 : d.dx > width * 0.2 || d.v > 0.45 ? -1 : 0;
+    if (dir) {
+      // The next photo slides in from the side the finger was moving away from.
+      setEnter(dir === 1 ? "next" : "prev");
+      go(dir);
+      return;
+    }
+    const el = d.el;
+    el.style.transition = "";
+    el.style.transform = "";
+    el.style.opacity = "";
+  };
+
   return (
     <>
       <div className={styles.filters}>
@@ -153,7 +179,10 @@ export function Gallery({ albums }: { albums: Album[] }) {
               <button
                 type="button"
                 className={styles.thumb}
-                onClick={() => setOpen(index)}
+                onClick={() => {
+                  setEnter(null);
+                  setOpen(index);
+                }}
                 aria-label={`Open photo: ${p.caption}`}
               >
                 <Picture
@@ -177,20 +206,38 @@ export function Gallery({ albums }: { albums: Album[] }) {
         className={styles.viewer}
         aria-label="Photo viewer"
         onKeyDown={(e) => {
-          if (e.key === "ArrowRight") go(1);
-          if (e.key === "ArrowLeft") go(-1);
+          if (e.key === "ArrowRight") step(1);
+          if (e.key === "ArrowLeft") step(-1);
         }}
         onClick={(e) => e.target === e.currentTarget && dialog.current?.close()}
-        onTouchStart={(e) => (touchX.current = e.touches[0].clientX)}
-        onTouchEnd={(e) => {
-          if (touchX.current === null) return;
-          const dx = e.changedTouches[0].clientX - touchX.current;
-          if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1);
-          touchX.current = null;
+        onPointerDown={(e) => {
+          if (e.pointerType !== "touch" || shown.length < 2) return;
+          const el = e.currentTarget.querySelector<HTMLElement>("figure");
+          drag.current = { id: e.pointerId, x: e.clientX, y: e.clientY, axis: "", dx: 0, v: 0, t: e.timeStamp, el };
         }}
+        onPointerMove={(e) => {
+          const d = drag.current;
+          if (!d || e.pointerId !== d.id || !d.el) return;
+          const dx = e.clientX - d.x;
+          if (!d.axis) {
+            if (Math.abs(dx) < 8 && Math.abs(e.clientY - d.y) < 8) return;
+            d.axis = Math.abs(dx) > Math.abs(e.clientY - d.y) ? "x" : "y";
+            if (d.axis === "y") return;
+            d.el.style.animation = "none";
+            d.el.style.transition = "none";
+          }
+          if (d.axis !== "x") return;
+          d.v = (dx - d.dx) / Math.max(1, e.timeStamp - d.t);
+          d.dx = dx;
+          d.t = e.timeStamp;
+          d.el.style.transform = `translate3d(${dx}px, 0, 0)`;
+          d.el.style.opacity = String(1 - Math.min(0.5, Math.abs(dx) / window.innerWidth));
+        }}
+        onPointerUp={(e) => endDrag(e.pointerId)}
+        onPointerCancel={(e) => endDrag(e.pointerId)}
       >
         {current ? (
-          <figure key={open} className={styles.figure}>
+          <figure key={open} className={styles.figure} data-enter={enter ?? undefined}>
             <Picture image={current.image} sizes="92vw" className={styles.full} alt={current.caption} priority />
             <figcaption className={styles.figcaption}>
               <span>
@@ -203,12 +250,12 @@ export function Gallery({ albums }: { albums: Album[] }) {
             </figcaption>
           </figure>
         ) : null}
-        <button type="button" className={`${styles.nav} ${styles.prev}`} onClick={() => go(-1)} aria-label="Previous photo">
+        <button type="button" className={`${styles.nav} ${styles.prev}`} onClick={() => step(-1)} aria-label="Previous photo">
           <svg viewBox="0 0 16 16" aria-hidden="true">
             <path d="M10 3.5 5.5 8l4.5 4.5" />
           </svg>
         </button>
-        <button type="button" className={`${styles.nav} ${styles.next}`} onClick={() => go(1)} aria-label="Next photo">
+        <button type="button" className={`${styles.nav} ${styles.next}`} onClick={() => step(1)} aria-label="Next photo">
           <svg viewBox="0 0 16 16" aria-hidden="true">
             <path d="M6 3.5 10.5 8 6 12.5" />
           </svg>
