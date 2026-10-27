@@ -69,3 +69,23 @@ export async function deleteAlbum(id: string) {
   if (result.ok) redirect("/admin/gallery");
   return result;
 }
+
+/** From the album list: show the album on the gallery page, or hide it. */
+export async function setAlbumShown(id: string, published: boolean): Promise<ActionResult> {
+  return run(async () => {
+    const { supabase } = await requireAction("gallery");
+    check(await supabase.from("albums").update({ published }).eq("id", id), "update the album");
+    refreshSite();
+    return { ok: true, message: published ? "Shown on the gallery page" : "Hidden from the site" };
+  });
+}
+
+/** Deletes an album and its photos straight from the list (the uploads stay in Media). */
+export async function deleteAlbumInList(id: string): Promise<ActionResult> {
+  return run(async () => {
+    const { supabase } = await requireAction("gallery");
+    check(await supabase.from("albums").delete().eq("id", id), "delete the album");
+    refreshSite();
+    return { ok: true, message: "Album deleted" };
+  });
+}

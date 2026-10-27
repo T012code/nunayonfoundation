@@ -5,7 +5,8 @@ import { Badge, Empty, formatDate, PageHead, adminStyles as s } from "@/componen
 import { thumbUrl, type ImageRef } from "@/content/images";
 import { requirePage } from "@/lib/admin/access";
 import { HOME_STORIES } from "@/lib/home";
-import { DeleteStory, FeatureToggle } from "./RowActions";
+import { deleteArticleInList, setFeatured } from "@/app/actions/admin/news";
+import { RowDelete, RowSwitch } from "@/components/admin/RowActions";
 
 export const metadata: Metadata = { title: "News" };
 
@@ -76,10 +77,14 @@ export default async function NewsAdmin() {
                     <td>{r.published ? <Badge tone="green">Published</Badge> : <Badge>Draft</Badge>}</td>
                     <td className={`${s.small} ${s.muted} ${s.nowrap}`}>{formatDate(r.published_at)}</td>
                     <td>
-                      <FeatureToggle id={r.id} featured={r.featured} title={r.title} />
+                      <RowSwitch
+                        on={r.featured}
+                        label={`Show "${r.title}" on the home page`}
+                        action={setFeatured.bind(null, r.id)}
+                      />
                     </td>
                     <td className={s.rowEnd}>
-                      <DeleteStory id={r.id} title={r.title} />
+                      <RowDelete label={`Delete "${r.title}"`} action={deleteArticleInList.bind(null, r.id)} />
                     </td>
                   </tr>
                 ))}
