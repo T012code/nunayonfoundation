@@ -1,4 +1,5 @@
 .form {
+  container: newsletter / inline-size;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: var(--space-2xs);
@@ -44,6 +45,23 @@
 
 .submit {
   min-height: 2.75rem;
+}
+
+/* Narrow phones (or large text): the button drops under the address, so the field keeps
+   room for what's typed. */
+@container newsletter (max-width: 21rem) {
+  .field {
+    flex-wrap: wrap;
+    border-radius: var(--radius);
+  }
+
+  .input {
+    flex-basis: 100%;
+  }
+
+  .submit {
+    width: 100%;
+  }
 }
 
 .error {

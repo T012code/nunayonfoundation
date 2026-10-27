@@ -59,7 +59,7 @@ export function NewsletterForm() {
           name="email"
           type="email"
           autoComplete="email"
-          placeholder="Your email address"
+          placeholder="Email address"
           className={styles.input}
           aria-invalid={status.kind === "error" || undefined}
           aria-describedby={status.kind === "error" ? "newsletter-error" : undefined}
