@@ -188,6 +188,57 @@ export function Hero({ title, lead, slides }: Props) {
 
   const go = useCallback((i: number) => setActive((i + slides.length) % slides.length), [slides.length]);
 
+  // ── Swipe (touch) ── The photo follows the finger 1:1; letting go past a fifth of the width,
+  // or with a flick, moves to the next photo, otherwise it springs back. Vertical drags stay
+  // with the page (touch-action: pan-y in CSS).
+  const drag = useRef<{ id: number; x: number; y: number; axis: "" | "x" | "y"; dx: number; v: number; t: number; el: HTMLElement | null } | null>(null);
+
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.pointerType !== "touch" || slides.length < 2) return;
+    const el = e.currentTarget.querySelector<HTMLElement>("[data-active]");
+    drag.current = { id: e.pointerId, x: e.clientX, y: e.clientY, axis: "", dx: 0, v: 0, t: e.timeStamp, el };
+  };
+
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const d = drag.current;
+    if (!d || e.pointerId !== d.id || !d.el) return;
+    const dx = e.clientX - d.x;
+    if (!d.axis) {
+      if (Math.abs(dx) < 8 && Math.abs(e.clientY - d.y) < 8) return;
+      d.axis = Math.abs(dx) > Math.abs(e.clientY - d.y) ? "x" : "y";
+      if (d.axis === "y") return;
+      e.currentTarget.setPointerCapture(e.pointerId);
+      setHovering(true);
+      d.el.style.transition = "none";
+    }
+    if (d.axis !== "x") return;
+    const dt = Math.max(1, e.timeStamp - d.t);
+    d.v = (dx - d.dx) / dt;
+    d.dx = dx;
+    d.t = e.timeStamp;
+    d.el.style.transform = `translate3d(${dx}px, 0, 0)`;
+  };
+
+  const onPointerEnd = (e: React.PointerEvent<HTMLDivElement>) => {
+    const d = drag.current;
+    if (!d || e.pointerId !== d.id) return;
+    drag.current = null;
+    if (d.axis !== "x" || !d.el) return;
+    setHovering(false);
+    const el = d.el;
+    const width = e.currentTarget.getBoundingClientRect().width;
+    const dir = d.dx < -width * 0.2 || d.v < -0.45 ? 1 : d.dx > width * 0.2 || d.v > 0.45 ? -1 : 0;
+    el.style.transition = "";
+    if (dir) {
+      // The photo carries on in the swipe's direction while the next one fades in.
+      el.style.transform = `translate3d(${-dir * width * 0.35}px, 0, 0)`;
+      window.setTimeout(() => (el.style.transform = ""), 1200);
+      go(active + dir);
+    } else {
+      el.style.transform = "";
+    }
+  };
+
   const copy = (tone: "dark" | "light") => (
     <>
       {tone === "dark" ? (
@@ -211,6 +262,10 @@ export function Hero({ title, lead, slides }: Props) {
           className={styles.clip}
           onMouseEnter={() => setHovering(true)}
           onMouseLeave={() => setHovering(false)}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerEnd}
+          onPointerCancel={onPointerEnd}
         >
           <div ref={innerRef} className={styles.inner}>
             {slides.map((slug, i) => (

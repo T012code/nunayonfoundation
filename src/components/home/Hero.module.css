@@ -131,6 +131,8 @@
   box-shadow: var(--shadow-frame);
   transform-origin: 50% 50%;
   will-change: transform;
+  /* Sideways drags change the photo; up and down still scroll the page. */
+  touch-action: pan-y;
 }
 
 .inner {
@@ -144,7 +146,9 @@
   position: absolute;
   inset: 0;
   opacity: 0;
-  transition: opacity 1.2s var(--ease-in-out);
+  transition:
+    opacity 1.2s var(--ease-in-out),
+    transform var(--dur-slow) var(--ease-out-expo);
 }
 
 .slide[data-active] {
