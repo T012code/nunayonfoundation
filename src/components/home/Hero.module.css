@@ -416,6 +416,64 @@
   }
 }
 
+/* Where supported, the photo layer is full screen and posed on the frame from the very first
+   paint, its starting transform worked out here from the stage's size (container units; the
+   tan(atan2()) pair turns a ratio of two lengths into a number). The script then takes over
+   with the same pose, so nothing in the layout moves when it starts: no layout shift. The
+   numbers mirror measure() and update() in Hero.tsx at the top of the page. */
+@supports (scale: tan(atan2(1px, 1px))) {
+  @media (min-width: 64rem) and (prefers-reduced-motion: no-preference) {
+    .stage {
+      --q-content: min(100cqw - 2 * var(--gutter), var(--container));
+      --q-fw: calc(var(--q-content) * 0.5 - 6px);
+      --q-fh: calc(78cqh - 6px);
+      --q-fx: calc((100cqw + var(--q-content)) / 2 - 3px - var(--q-fw));
+      --q-fy: calc(12cqh + 3px);
+      --q-sx: tan(atan2(var(--q-fw), 100cqw));
+      --q-sy: tan(atan2(var(--q-fh), 100cqh));
+      --q-r: calc(var(--radius) - 3px);
+      container-type: size;
+    }
+
+    .clip {
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 0;
+      transform: translate3d(calc(var(--q-fx) + var(--q-fw) / 2 - 50cqw), calc(var(--q-fy) + var(--q-fh) / 2 - 50cqh), 0)
+        scale(var(--q-sx), var(--q-sy));
+    }
+
+    .inner {
+      transform: scale(max(1, var(--q-sy) / var(--q-sx)), max(1, var(--q-sx) / var(--q-sy)));
+    }
+
+    .corners {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      display: block;
+      pointer-events: none;
+    }
+
+    .corners span:nth-child(1) {
+      transform: translate3d(calc(var(--q-fx) - 1px), calc(var(--q-fy) - 1px), 0);
+    }
+
+    .corners span:nth-child(2) {
+      transform: translate3d(calc(var(--q-fx) + var(--q-fw) - var(--q-r)), calc(var(--q-fy) - 1px), 0);
+    }
+
+    .corners span:nth-child(3) {
+      transform: translate3d(calc(var(--q-fx) - 1px), calc(var(--q-fy) + var(--q-fh) - var(--q-r)), 0);
+    }
+
+    .corners span:nth-child(4) {
+      transform: translate3d(calc(var(--q-fx) + var(--q-fw) - var(--q-r)), calc(var(--q-fy) + var(--q-fh) - var(--q-r)), 0);
+    }
+  }
+}
+
 @keyframes fade-in {
   from {
     opacity: 0;
