@@ -67,7 +67,7 @@ export function PeopleForm({ people }: { people: PersonValue[] }) {
                     className={styles.iconButton}
                     data-danger
                     onClick={() => setList((l) => l.filter((_, k) => k !== i))}
-                    aria-label={`Remove ${p.name || "person"}`}
+                    aria-label={`Remove ${p.name || "board member"}`}
                   >
                     <Icon name="trash" />
                   </button>
@@ -82,7 +82,7 @@ export function PeopleForm({ people }: { people: PersonValue[] }) {
         className={`${styles.secondaryButton} ${styles.addButton}`}
         onClick={() => setList((l) => [...l, { key: `new-${next++}`, name: "", role: "", bio: "", image: null, published: true }])}
       >
-        <Icon name="plus" /> Add a person
+        <Icon name="plus" /> Add a board member
       </button>
       <SaveBar pending={pending} state={state} />
     </form>
