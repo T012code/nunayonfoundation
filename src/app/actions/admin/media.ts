@@ -6,7 +6,7 @@ import { mediaUsage, type MediaRow } from "@/lib/admin/media";
 import { check, run } from "@/lib/admin/result";
 import { serviceClient } from "@/lib/supabase/server";
 
-const CONTENT = ["news", "gallery", "programmes", "people", "settings"] as const;
+const CONTENT = ["pages", "news", "gallery", "programmes", "people", "settings"] as const;
 
 async function requireContent() {
   const ctx = await requireAction();

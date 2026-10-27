@@ -15,6 +15,7 @@ const ENTITY: Record<string, string> = {
   people: "board member",
   media: "photo upload",
   site_settings: "site settings",
+  page_content: "page text",
   mail_settings: "email set-up",
   admins: "team member",
   submissions: "inbox item",
@@ -26,6 +27,7 @@ const ENTITY: Record<string, string> = {
 // What the "Type" filter offers, in the order people think of them.
 const TYPES: { value: string; label: string }[] = [
   { value: "session", label: "Sign-ins and sign-outs" },
+  { value: "page_content", label: "Page text" },
   { value: "articles", label: "News" },
   { value: "programmes", label: "Programmes" },
   { value: "albums,photos", label: "Gallery" },

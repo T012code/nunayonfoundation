@@ -13,11 +13,13 @@ type Props = {
   chapters: { title: string; body: string }[];
   image: ImageRef;
   quote: { text: string; name: string; role: string };
+  /** The link to the About page. */
+  button?: string;
   /** Hide the "About us" link (on the About page itself). */
   hideLink?: boolean;
 };
 
-export function Story({ eyebrow, title, values, chapters, image, quote, hideLink }: Props) {
+export function Story({ eyebrow, title, values, chapters, image, quote, button = "About us", hideLink }: Props) {
   return (
     <section className={styles.section} aria-labelledby="story-title">
       <div className={`wrap ${styles.grid}`}>
@@ -40,7 +42,7 @@ export function Story({ eyebrow, title, values, chapters, image, quote, hideLink
             {hideLink ? null : (
               <Reveal delay={0.6}>
                 <ButtonLink href="/about" variant="ghost">
-                  About us
+                  {button}
                 </ButtonLink>
               </Reveal>
             )}

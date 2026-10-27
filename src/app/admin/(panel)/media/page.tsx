@@ -11,7 +11,7 @@ export const metadata: Metadata = { title: "Media" };
 
 export default async function MediaPage() {
   const { access, supabase } = await requirePage();
-  if (!(["news", "gallery", "programmes", "people", "settings"] as const).some((p) => can(access, p))) {
+  if (!(["pages", "news", "gallery", "programmes", "people", "settings"] as const).some((p) => can(access, p))) {
     redirect("/admin?denied=1");
   }
   const [{ data }, usage] = await Promise.all([

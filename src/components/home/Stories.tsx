@@ -3,10 +3,11 @@ import { Reveal } from "@/components/motion/Reveal";
 import { Words } from "@/components/motion/Words";
 import { ButtonLink } from "@/components/ui/Button";
 import { Picture } from "@/components/ui/Picture";
+import type { Copy } from "@/content/copy";
 import type { Article } from "@/content/site";
 import styles from "./Stories.module.css";
 
-export function Stories({ items }: { items: Article[] }) {
+export function Stories({ items, copy }: { items: Article[]; copy: Copy<"home">["stories"] }) {
   const [lead, ...rest] = items;
   return (
     <section className={styles.section} aria-labelledby="stories-title">
@@ -14,15 +15,15 @@ export function Stories({ items }: { items: Article[] }) {
         <div className={styles.head}>
           <div>
             <Reveal as="p" className="eyebrow">
-              News &amp; stories
+              {copy.eyebrow}
             </Reveal>
             <h2 id="stories-title" className={styles.title} data-reveal="words">
-              <Words text="From our recent outreaches" />
+              <Words text={copy.title} />
             </h2>
           </div>
           <Reveal delay={0.2}>
             <ButtonLink href="/news" variant="ghost">
-              All stories
+              {copy.button}
             </ButtonLink>
           </Reveal>
         </div>

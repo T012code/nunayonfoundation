@@ -11,13 +11,13 @@ const PARTNERS = Array.from({ length: 6 }, (_, i) => `Partner logo ${i + 1}`);
  * Logos drift past in a slow continuous strip. Hovering or focusing it pauses it, and a
  * button stops it for good (anything that moves on its own for more than five seconds needs one).
  */
-export function Partners() {
+export function Partners({ title }: { title: string }) {
   const [paused, setPaused] = useState(false);
   return (
     <section className={styles.section} aria-labelledby="partners-title">
       <div className={`wrap ${styles.head}`}>
         <Reveal as="p" className={styles.title}>
-          <span id="partners-title">Partners and friends who make outreaches possible</span>
+          <span id="partners-title">{title}</span>
         </Reveal>
         <button
           type="button"

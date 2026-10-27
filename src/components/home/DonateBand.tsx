@@ -3,6 +3,7 @@ import { Reveal } from "@/components/motion/Reveal";
 import { Words } from "@/components/motion/Words";
 import { ButtonLink } from "@/components/ui/Button";
 import { CopyButton } from "@/components/ui/CopyButton";
+import { COPY, type Copy } from "@/content/copy";
 import styles from "./DonateBand.module.css";
 
 type Account = { currency: string; bank: string; name: string; number: string };
@@ -14,24 +15,24 @@ const LEAVES: Leaf[] = [
   { top: "78%", left: "88%", size: "clamp(4rem, 7vw, 6rem)", speed: 0.6, rotate: -60, angle: 40, opacity: 0.16, sway: 10 },
 ];
 
-export function DonateBand({ accounts }: { accounts: Account[] }) {
+export function DonateBand({ accounts, copy = COPY.home.donate }: { accounts: Account[]; copy?: Copy<"home">["donate"] }) {
   return (
     <section className={styles.section} aria-labelledby="donate-title">
       <LeafField leaves={LEAVES} />
       <div className={`wrap ${styles.inner}`}>
         <div className={styles.copy}>
           <Reveal as="p" className={styles.eyebrow}>
-            Give by bank transfer
+            {copy.eyebrow}
           </Reveal>
           <h2 id="donate-title" className={styles.title} data-reveal="words">
-            <Words text="Every naira reaches a child, a family or a community." />
+            <Words text={copy.title} />
           </h2>
           <Reveal as="p" delay={0.3} className={styles.lead}>
-            Transfer any amount to the account below, then let us know so we can thank you and tell you where it went.
+            {copy.lead}
           </Reveal>
           <Reveal delay={0.45}>
             <ButtonLink href="/donate#tell-us" variant="cta" className={styles.cta}>
-              I&apos;ve made a donation
+              {copy.button}
             </ButtonLink>
           </Reveal>
         </div>
@@ -40,15 +41,17 @@ export function DonateBand({ accounts }: { accounts: Account[] }) {
           {accounts.map((a) => (
             <dl key={a.number} className={styles.card}>
               <div className={styles.row}>
-                <dt>Bank</dt>
+                <dt>{copy.bankLabel}</dt>
                 <dd>{a.bank}</dd>
               </div>
               <div className={styles.row}>
-                <dt>Account name</dt>
+                <dt>{copy.nameLabel}</dt>
                 <dd>{a.name}</dd>
               </div>
               <div className={`${styles.row} ${styles.numberRow}`}>
-                <dt>Account number ({a.currency})</dt>
+                <dt>
+                  {copy.numberLabel} ({a.currency})
+                </dt>
                 <dd>
                   <span className={styles.number}>{a.number}</span>
                   <CopyButton value={a.number} label="account number" />
