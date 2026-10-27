@@ -10,7 +10,7 @@ export default async function SettingsAdmin() {
   const { data } = await supabase.from("site_settings").select("*").maybeSingle();
   return (
     <div className={s.page}>
-      <PageHead title="Site settings" lead="Details shown across the site: contact information, bank accounts, impact figures and the home page." />
+      <PageHead title="Site settings" lead="Details shown across the site: contact information, social links and bank accounts. The home page headline, slideshow and impact figures are under Content › Homepage." />
       <SettingsForm values={data as SettingsValues} />
     </div>
   );

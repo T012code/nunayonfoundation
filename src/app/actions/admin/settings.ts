@@ -23,9 +23,6 @@ export async function saveSettings(_: unknown, fd: FormData): Promise<ActionResu
       if (!/^https:\/\//.test(s.href)) throw new ActionError(`The ${s.label} link should start with https://`);
     }
     const accounts = json<Account[]>(fd, "bank_accounts", []).filter((a) => a.number);
-    const impact = json<Stat[]>(fd, "impact", []).filter((s) => s.label).slice(0, 6);
-    const slides = imageRefs(fd, "slides");
-    if (!slides.length) throw new ActionError("The home page slideshow needs at least one photo.");
 
     check(
       await supabase
@@ -38,12 +35,31 @@ export async function saveSettings(_: unknown, fd: FormData): Promise<ActionResu
           notify_email: notify,
           socials,
           bank_accounts: accounts,
+        })
+        .eq("id", true),
+    );
+    refreshSite();
+    return { ok: true, message: "Saved. The site updates in a moment." };
+  });
+}
+
+/** Content > Homepage: the hero (headline, intro, slideshow) and the impact figures. */
+export async function saveHomepage(_: unknown, fd: FormData): Promise<ActionResult> {
+  return run(async () => {
+    const { supabase } = await requireAction("settings");
+    const impact = json<Stat[]>(fd, "impact", []).filter((s) => s.label).slice(0, 6);
+    const slides = imageRefs(fd, "slides");
+    if (!slides.length) throw new ActionError("The home page slideshow needs at least one photo.");
+    check(
+      await supabase
+        .from("site_settings")
+        .update({
           impact,
           hero: { title: required(fd, "hero_title", "Home page headline", 140), lead: str(fd, "hero_lead", 400), slides },
         })
         .eq("id", true),
     );
     refreshSite();
-    return { ok: true, message: "Saved. The site updates in a moment." };
+    return { ok: true, message: "Saved. The home page updates in a moment." };
   });
 }

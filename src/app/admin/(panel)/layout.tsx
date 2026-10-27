@@ -22,6 +22,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
     {
       label: "Content",
       items: [
+        ...show(has("settings"), { href: "/admin/homepage", label: "Homepage", icon: "layout" }),
         ...show(has("news"), { href: "/admin/news", label: "News", icon: "news" }),
         ...show(has("programmes"), { href: "/admin/programmes", label: "Programmes", icon: "programmes" }),
         ...show(has("gallery"), { href: "/admin/gallery", label: "Gallery", icon: "gallery" }),
