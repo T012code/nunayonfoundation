@@ -54,7 +54,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
   const groups = all.filter((g) => g.items.length > 0);
 
   return (
-    <AdminShell groups={groups} me={{ name: access.name || access.email, role: ROLE_LABELS[access.role] }} signOut={signOut}>
+    <AdminShell groups={groups} me={{ name: access.name, email: access.email, role: ROLE_LABELS[access.role] }} signOut={signOut}>
       {children}
     </AdminShell>
   );
