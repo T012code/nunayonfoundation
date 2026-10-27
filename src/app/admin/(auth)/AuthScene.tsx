@@ -7,6 +7,7 @@ import { LeafField, type Leaf } from "@/components/motion/LeafField";
 import { Picture } from "@/components/ui/Picture";
 import type { ImageSlug } from "@/content/images";
 import { gsap, useGSAP } from "@/lib/gsap";
+import { usePressStates } from "@/lib/usePressStates";
 import styles from "./auth.module.css";
 
 gsap.registerPlugin(SplitText);
@@ -39,6 +40,7 @@ export function signal(event: "error" | "success") {
  */
 export function AuthScene({ children }: { children: ReactNode }) {
   const root = useRef<HTMLElement>(null);
+  usePressStates();
 
   useGSAP(
     () => {

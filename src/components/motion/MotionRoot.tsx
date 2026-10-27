@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { onLayout, onScroll, startSmoothScroll, stopSmoothScroll } from "@/lib/scroll";
+import { usePressStates } from "@/lib/usePressStates";
 import "lenis/dist/lenis.css";
 
 /**
@@ -21,6 +22,8 @@ export function MotionRoot() {
     startSmoothScroll();
     return () => stopSmoothScroll();
   }, []);
+
+  usePressStates();
 
   // Reveals: mark each element once it is a little way into the viewport.
   useEffect(() => {

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, type ReactNode } from "react";
+import { usePressStates } from "@/lib/usePressStates";
 import { Logo } from "@/components/brand/Logo";
 import { Icon, type IconName } from "./Icon";
 import styles from "./admin.module.css";
@@ -22,6 +23,7 @@ export function AdminShell({
   signOut: () => Promise<void>;
   children: ReactNode;
 }) {
+  usePressStates();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 

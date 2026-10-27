@@ -127,7 +127,17 @@ body {
 
 html {
   -webkit-text-size-adjust: 100%;
+  /* No grey/blue flash on tap; presses get the site's own feedback below. */
+  -webkit-tap-highlight-color: transparent;
   scroll-padding-top: calc(var(--header-h) + var(--space-sm));
+}
+
+/* Touch screens: links, cards and controls dim while pressed, the way native lists do, so a
+   tap is acknowledged the moment the finger lands. (Buttons also press in; see Button.) */
+@media (hover: none) {
+  :where(a, button, summary, label, [role="button"]):active {
+    opacity: 0.72;
+  }
 }
 
 body {
