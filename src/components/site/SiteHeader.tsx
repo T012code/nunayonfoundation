@@ -55,6 +55,10 @@ export function SiteHeader({
 
   return (
     <header ref={headerRef} className={styles.header} onFocus={() => headerRef.current?.removeAttribute("data-hidden")}>
+      {/* Inside the header landmark, so every part of the page belongs to one. */}
+      <a href="#main" className="skip-link">
+        Skip to content
+      </a>
       <span ref={barRef} className={styles.progress} aria-hidden="true" />
       <div className={`wrap ${styles.inner}`}>
         <Link href="/" className={styles.brand} aria-label="Nunayon Foundation, home">

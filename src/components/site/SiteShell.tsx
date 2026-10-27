@@ -136,9 +136,6 @@ export function SiteShell({ children, footer, contact: site }: { children: React
       </nav>
 
       <div ref={surfaceRef} className={styles.surface} inert={frozen !== null}>
-        <a href="#main" className="skip-link">
-          Skip to content
-        </a>
         <SiteHeader open={open} onMenu={openMenu} toggleRef={toggleRef} />
         <div className={styles.page}>
           <main id="main" tabIndex={-1} className={styles.main}>
