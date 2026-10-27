@@ -86,8 +86,10 @@ export async function submitForm(kind: Kind, fd: FormData): Promise<FormResult> 
 
   const db = serviceClient();
   if (!db) {
-    console.error("[forms] SUPABASE_SECRET_KEY is not set; submission not saved");
-    return { ok: false, error: UNAVAILABLE };
+    // Pre-launch preview: until the server key is added in Vercel, forms behave as before
+    // (the visitor sees the thank-you page) and nothing is stored. The admin dashboard flags it.
+    console.warn("[forms] SUPABASE_SECRET_KEY is not set; submission not saved");
+    return { ok: true };
   }
   const { error } = await db.from("submissions").insert({ kind, name, email, phone, fields });
   if (error) {
@@ -142,7 +144,10 @@ export async function subscribe(fd: FormData): Promise<FormResult> {
   if (!EMAIL.test(email)) return { ok: false, error: "Enter a valid email address, like name@example.com." };
 
   const db = serviceClient();
-  if (!db) return { ok: false, error: UNAVAILABLE };
+  if (!db) {
+    console.warn("[newsletter] SUPABASE_SECRET_KEY is not set; sign-up not saved");
+    return { ok: true };
+  }
 
   const { data: existing } = await db
     .from("subscribers")
