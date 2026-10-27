@@ -1,9 +1,10 @@
 "use client";
 
 import { animate, useInView, useReducedMotion } from "motion/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 
 const format = (n: number) => Math.round(n).toLocaleString("en-NG");
+const noop = () => () => {};
 
 /** Counts up to `value` once, when it first scrolls into view. */
 export function CountUp({ value, suffix = "" }: { value: number; suffix?: string }) {
@@ -11,6 +12,8 @@ export function CountUp({ value, suffix = "" }: { value: number; suffix?: string
   const inView = useInView(ref, { once: true, margin: "0px 0px -15% 0px" });
   const reduced = useReducedMotion();
   const [shown, setShown] = useState(0);
+  // False while hydrating (matching the server's HTML), true afterwards.
+  const hydrated = useSyncExternalStore(noop, () => true, () => false);
 
   useEffect(() => {
     if (!inView || reduced) return;
@@ -18,8 +21,9 @@ export function CountUp({ value, suffix = "" }: { value: number; suffix?: string
     return () => controls.stop();
   }, [inView, reduced, value]);
 
-  // With reduced motion the final figure shows straight away.
-  const display = reduced ? value : shown;
+  // With reduced motion the final figure shows straight away (once hydrated, so the first
+  // render matches the server's).
+  const display = hydrated && reduced ? value : shown;
 
   return (
     <span ref={ref}>

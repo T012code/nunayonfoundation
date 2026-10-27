@@ -136,3 +136,103 @@
     align-items: start;
   }
 }
+
+/* ── Sideways rail (large screens, set by ProgrammesRail when motion is welcome) ── */
+.frame {
+  position: relative;
+}
+
+.drift {
+  display: block;
+  height: 100%;
+}
+
+.rail {
+  display: none;
+}
+
+.section[data-rail] {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100dvh;
+  padding-block: calc(var(--header-h) + var(--space-sm)) var(--space-lg);
+  overflow-x: clip;
+}
+
+.section[data-rail] .head {
+  margin-bottom: var(--space-lg);
+}
+
+/* A shorter heading while pinned, sized from the screen height. */
+.section[data-rail] .title {
+  max-width: 24ch;
+  font-size: clamp(2rem, 4.4vh, 3rem);
+}
+
+.section[data-rail] .intro {
+  font-size: var(--text-body);
+}
+
+.section[data-rail] .grid {
+  display: flex;
+  gap: clamp(1.25rem, 2vw, 2.5rem);
+  width: max-content;
+  will-change: transform;
+}
+
+/* Sized from the screen height so a card, its text and the heading always fit. */
+.section[data-rail] .item {
+  flex: none;
+  width: min(20vw, 28vh, 22rem);
+  margin-top: 0;
+}
+
+.section[data-rail] .item:nth-child(even) {
+  transform: translate3d(0, var(--space-md), 0);
+}
+
+.section[data-rail] .drift {
+  width: 120%;
+  margin-left: -10%;
+  will-change: transform;
+}
+
+.section[data-rail] .summary {
+  font-size: var(--text-sm);
+}
+
+.section[data-rail] .cardTitle {
+  font-size: clamp(1.125rem, 2.3vh, 1.5rem);
+}
+
+/* Short screens: the title and link are enough while the cards slide. */
+@media (max-height: 50rem) {
+  .section[data-rail] .summary {
+    display: none;
+  }
+}
+
+.section[data-rail] .foot {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  margin-top: var(--space-lg);
+}
+
+.section[data-rail] .rail {
+  display: block;
+  flex: 1;
+  height: 2px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--color-rule);
+}
+
+.section[data-rail] .rail span {
+  display: block;
+  height: 100%;
+  background: var(--leaf);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}

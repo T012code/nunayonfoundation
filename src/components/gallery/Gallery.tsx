@@ -4,6 +4,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, typ
 import { Picture } from "@/components/ui/Picture";
 import type { Album } from "@/content/pages";
 import { imageKey } from "@/content/images";
+import { Flip, gsap, useGSAP } from "@/lib/gsap";
 import { lockScroll } from "@/lib/scroll";
 import styles from "./Gallery.module.css";
 
@@ -22,6 +23,46 @@ export function Gallery({ albums }: { albums: Album[] }) {
   const touchX = useRef<number | null>(null);
   const tabsRef = useRef<HTMLDivElement>(null);
   const barRef = useRef<HTMLSpanElement>(null);
+  const gridRef = useRef<HTMLUListElement>(null);
+  const flipState = useRef<Flip.FlipState | null>(null);
+  const heightBefore = useRef(0);
+  const [settled, setSettled] = useState(false);
+
+  // Switching album: remember where every photo is, change the filter, then let Flip glide
+  // the photos that stay into their new places while the others fade out and new ones grow in.
+  const choose = (slug: string) => {
+    if (slug === filter) return;
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    flipState.current = reduced || !gridRef.current ? null : Flip.getState(gridRef.current.children);
+    heightBefore.current = gridRef.current?.offsetHeight ?? 0;
+    setSettled(true);
+    setFilter(slug);
+  };
+
+  useGSAP(
+    () => {
+      const state = flipState.current;
+      const grid = gridRef.current;
+      if (!state || !grid) return;
+      flipState.current = null;
+      // While photos fly, they're lifted out of the layout; hold the list's height so the
+      // rest of the page doesn't jump up underneath them.
+      grid.style.minHeight = `${heightBefore.current}px`;
+      Flip.from(state, {
+        onComplete: () => {
+          grid.style.minHeight = "";
+        },
+        duration: 0.75,
+        ease: "power3.inOut",
+        absolute: true,
+        stagger: 0.015,
+        onEnter: (els) =>
+          gsap.fromTo(els, { opacity: 0, scale: 0.86 }, { opacity: 1, scale: 1, duration: 0.6, stagger: 0.03, ease: "expo.out" }),
+        onLeave: (els) => gsap.to(els, { opacity: 0, scale: 0.86, duration: 0.35, ease: "power2.in" }),
+      });
+    },
+    { dependencies: [filter], scope: gridRef },
+  );
 
   // The underline slides to the chosen album (transform only) and the row scrolls it into view.
   useLayoutEffect(() => {
@@ -41,7 +82,10 @@ export function Gallery({ albums }: { albums: Album[] }) {
     return () => ro.disconnect();
   }, [filter]);
 
-  const go = useCallback((dir: 1 | -1) => setOpen((i) => (i === null ? i : (i + dir + shown.length) % shown.length)), [shown.length]);
+  const go = useCallback(
+    (dir: 1 | -1) => setOpen((i) => (i === null ? i : (i + dir + shown.length) % shown.length)),
+    [shown.length],
+  );
 
   useEffect(() => {
     const d = dialog.current;
@@ -76,7 +120,7 @@ export function Gallery({ albums }: { albums: Album[] }) {
               type="button"
               className={styles.filter}
               aria-pressed={filter === a.slug}
-              onClick={() => setFilter(a.slug)}
+              onClick={() => choose(a.slug)}
             >
               {a.title}
               <span className={styles.count}>
@@ -94,19 +138,38 @@ export function Gallery({ albums }: { albums: Album[] }) {
         Showing {shown.length} photos
       </p>
 
-      {/* Re-keyed on filter change so the photos animate in again. */}
-      <ul key={filter} className={styles.grid}>
-        {shown.map((p, i) => (
-          <li key={`${imageKey(p.image)}-${i}`} className={styles.item} style={{ "--i": i } as CSSProperties}>
-            <button type="button" className={styles.thumb} onClick={() => setOpen(i)} aria-label={`Open photo: ${p.caption}`}>
-              <Picture image={p.image} sizes="(min-width: 64rem) 30vw, (min-width: 40rem) 45vw, 92vw" className={styles.photo} alt="" />
-              <span className={styles.caption} aria-hidden="true">
-                <span className={styles.album}>{p.album}</span>
-                {p.caption}
-              </span>
-            </button>
-          </li>
-        ))}
+      {/* Every photo stays in the page; those outside the chosen album are hidden, so Flip can
+          move the rest from where they were. */}
+      <ul ref={gridRef} className={styles.grid} data-settled={settled || undefined}>
+        {all.map((p, i) => {
+          const index = shown.indexOf(p);
+          return (
+            <li
+              key={`${imageKey(p.image)}-${i}`}
+              className={styles.item}
+              hidden={index < 0}
+              style={{ "--i": i } as CSSProperties}
+            >
+              <button
+                type="button"
+                className={styles.thumb}
+                onClick={() => setOpen(index)}
+                aria-label={`Open photo: ${p.caption}`}
+              >
+                <Picture
+                  image={p.image}
+                  sizes="(min-width: 64rem) 30vw, (min-width: 40rem) 45vw, 92vw"
+                  className={styles.photo}
+                  alt=""
+                />
+                <span className={styles.caption} aria-hidden="true">
+                  <span className={styles.album}>{p.album}</span>
+                  {p.caption}
+                </span>
+              </button>
+            </li>
+          );
+        })}
       </ul>
 
       <dialog
@@ -141,13 +204,25 @@ export function Gallery({ albums }: { albums: Album[] }) {
           </figure>
         ) : null}
         <button type="button" className={`${styles.nav} ${styles.prev}`} onClick={() => go(-1)} aria-label="Previous photo">
-          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3.5 5.5 8l4.5 4.5" /></svg>
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M10 3.5 5.5 8l4.5 4.5" />
+          </svg>
         </button>
         <button type="button" className={`${styles.nav} ${styles.next}`} onClick={() => go(1)} aria-label="Next photo">
-          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5 10.5 8 6 12.5" /></svg>
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M6 3.5 10.5 8 6 12.5" />
+          </svg>
         </button>
-        <button type="button" className={styles.close} onClick={() => dialog.current?.close()} aria-label="Close viewer" autoFocus>
-          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" /></svg>
+        <button
+          type="button"
+          className={styles.close}
+          onClick={() => dialog.current?.close()}
+          aria-label="Close viewer"
+          autoFocus
+        >
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M4 4l8 8M12 4l-8 8" />
+          </svg>
         </button>
       </dialog>
     </>

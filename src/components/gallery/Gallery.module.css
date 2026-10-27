@@ -97,6 +97,16 @@
   animation-delay: calc(min(var(--i), 12) * 50ms);
 }
 
+/* After the first album switch, Flip handles the motion; the load-in animation must not
+   replay when a hidden photo is shown again. */
+.grid[data-settled] .item {
+  animation: none;
+}
+
+.item[hidden] {
+  display: none;
+}
+
 @keyframes appear {
   from {
     opacity: 0;

@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { CountUp } from "@/components/motion/CountUp";
 import { Reveal } from "@/components/motion/Reveal";
 import { CtaBand } from "@/components/page/CtaBand";
+import { GrowingSteps } from "@/components/page/GrowingSteps";
 import { PageHero } from "@/components/page/PageHero";
 import { SectionHead } from "@/components/page/SectionHead";
 import { Arrow } from "@/components/ui/Arrow";
@@ -84,17 +85,7 @@ export default async function ProgrammePage({ params }: { params: Promise<{ slug
       <section className={b.section} aria-labelledby="how-title">
         <div className="wrap">
           <SectionHead id="how-title" eyebrow="How it works" title="From the first visit to the follow-up" />
-          <ol className={b.steps}>
-            {p.steps.map((s, i) => (
-              <li key={s.title} className={b.step}>
-                <Reveal as="span" variant="draw" delay={i * 0.1} className={b.stepRule} />
-                <Reveal delay={0.1 + i * 0.1}>
-                  <h3 className={b.stepTitle}>{s.title}</h3>
-                  <p className={b.stepBody}>{s.body}</p>
-                </Reveal>
-              </li>
-            ))}
-          </ol>
+          <GrowingSteps steps={p.steps} />
         </div>
       </section>
 

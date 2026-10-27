@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { VolunteerForm } from "@/components/forms/VolunteerForm";
 import { Reveal } from "@/components/motion/Reveal";
 import { Faq } from "@/components/page/Faq";
+import { GrowingSteps } from "@/components/page/GrowingSteps";
 import { PageHero } from "@/components/page/PageHero";
 import { SectionHead } from "@/components/page/SectionHead";
 import { ButtonLink } from "@/components/ui/Button";
@@ -52,17 +53,7 @@ export default function VolunteerPage() {
       <section className={b.section} aria-labelledby="how-title">
         <div className="wrap">
           <SectionHead id="how-title" eyebrow="How it works" title="Three steps to your first outreach" />
-          <ol className={b.steps}>
-            {volunteer.steps.map((s, i) => (
-              <li key={s.title} className={b.step}>
-                <Reveal as="span" variant="draw" delay={i * 0.1} className={b.stepRule} />
-                <Reveal delay={0.1 + i * 0.1}>
-                  <h3 className={b.stepTitle}>{s.title}</h3>
-                  <p className={b.stepBody}>{s.body}</p>
-                </Reveal>
-              </li>
-            ))}
-          </ol>
+          <GrowingSteps steps={volunteer.steps} />
         </div>
       </section>
 
