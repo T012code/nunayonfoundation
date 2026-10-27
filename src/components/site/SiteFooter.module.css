@@ -64,6 +64,51 @@
   padding: clamp(1.5rem, 1rem + 2.5vw, 3rem);
   border-radius: var(--radius);
   background: var(--leaf-deep);
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.give > :not(.giveArt) {
+  position: relative;
+  z-index: 1;
+}
+
+/* Logo sprouts behind the panel's words (animated by GiveLeaves). */
+.giveArt {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.giveSprout {
+  position: absolute;
+  opacity: var(--o);
+  transform: rotate(var(--angle));
+  transform-origin: 50% 100%;
+}
+
+.giveSprout svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  transform-origin: 50% 100%;
+}
+
+/* Until the panel comes into view (and GSAP takes over), the sprouts wait unseen. */
+:global(.js) .giveArt:not([data-state]) .giveSprout {
+  visibility: hidden;
+}
+
+/* A soft band of light that crosses the panel once. */
+.giveSheen {
+  position: absolute;
+  inset: -20% 0;
+  width: 60%;
+  background: linear-gradient(100deg, transparent, var(--veil-fill-hover) 45%, var(--veil-fill) 55%, transparent);
+  opacity: 0;
+  pointer-events: none;
 }
 
 .giveTitle {

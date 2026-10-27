@@ -5,6 +5,7 @@ import { Reveal } from "@/components/motion/Reveal";
 import { Words } from "@/components/motion/Words";
 import { getSettings } from "@/lib/content";
 import { BackToTop } from "./BackToTop";
+import { GiveLeaves } from "./GiveLeaves";
 import { NewsletterForm } from "./NewsletterForm";
 import styles from "./SiteFooter.module.css";
 
@@ -61,6 +62,7 @@ export async function SiteFooter({ year }: { year: number }) {
           </div>
 
           <Reveal delay={0.2} className={styles.give}>
+            <GiveLeaves />
             <p className={styles.giveTitle}>Every outreach starts with someone like you.</p>
             <div className={styles.giveLinks}>
               <Link href="/donate" className={styles.pill}>
