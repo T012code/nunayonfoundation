@@ -1479,3 +1479,61 @@
 .pagerStep[aria-disabled] {
   opacity: 0.45;
 }
+
+/* On / off switch (e.g. "show on home page" in a list). */
+.switch {
+  position: relative;
+  display: inline-block;
+  flex-shrink: 0;
+  width: 2.75rem;
+  height: 1.625rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: oklch(78% 0.02 80);
+  cursor: pointer;
+  transition: background-color var(--dur-base) var(--ease-out);
+}
+
+.switch span {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  background: var(--white);
+  box-shadow: 0 1px 3px oklch(20% 0.03 215 / 0.25);
+  transition: transform var(--dur-base) var(--ease-out-expo);
+}
+
+.switch[aria-checked="true"] {
+  background: var(--leaf-deep);
+}
+
+.switch[aria-checked="true"] span {
+  transform: translate3d(1.125rem, 0, 0);
+}
+
+.switch:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.rowToggle,
+.rowConfirm {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2xs);
+}
+
+.rowError {
+  font-size: var(--text-xs);
+  color: var(--color-error);
+}
+
+.rowEnd {
+  text-align: right;
+  white-space: nowrap;
+}

@@ -2,6 +2,7 @@ import "server-only";
 import { cache } from "react";
 import { about, albums as albumsSeed, type Album, type Person } from "@/content/pages";
 import type { ImageRef } from "@/content/images";
+import { HOME_STORIES } from "@/lib/home";
 import {
   articles as articlesSeed,
   bank,
@@ -117,7 +118,7 @@ export const getArticles = cache(async (): Promise<Article[]> => {
     () =>
       publicClient()
         .from("articles")
-        .select("slug, title, excerpt, body, image, photos, programme, published_at")
+        .select("slug, title, excerpt, body, image, photos, programme, published_at, featured")
         .order("published_at", { ascending: false, nullsFirst: false }),
     null,
   );
@@ -129,6 +130,15 @@ export const getArticles = cache(async (): Promise<Article[]> => {
     date: published_at ?? undefined,
   }));
 });
+
+/** Home page stories: the ones picked in the admin (up to five), with the newest filling any gaps. */
+export async function getHomeArticles() {
+  const all = await getArticles();
+  const picked = all.filter((a) => a.featured).slice(0, HOME_STORIES);
+  const rest = all.filter((a) => !picked.includes(a)).slice(0, HOME_STORIES - picked.length);
+  // Keep the page's newest-first order across both groups.
+  return [...picked, ...rest].sort((a, b) => (b.date ?? "").localeCompare(a.date ?? ""));
+}
 
 type AlbumRow = { slug: string; title: string; photos: { image: ImageRef; caption: string; sort: number }[] };
 

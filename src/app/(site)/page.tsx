@@ -7,10 +7,10 @@ import { Stories } from "@/components/home/Stories";
 import { Story } from "@/components/home/Story";
 import { Ways } from "@/components/home/Ways";
 import { impact, story, ways } from "@/content/site";
-import { getArticles, getProgrammes, getSettings } from "@/lib/content";
+import { getHomeArticles, getProgrammes, getSettings } from "@/lib/content";
 
 export default async function HomePage() {
-  const [settings, programmes, articles] = await Promise.all([getSettings(), getProgrammes(), getArticles()]);
+  const [settings, programmes, articles] = await Promise.all([getSettings(), getProgrammes(), getHomeArticles()]);
   return (
     <>
       <Hero {...settings.hero} />

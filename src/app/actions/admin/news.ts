@@ -5,6 +5,7 @@ import { requireAction } from "@/lib/admin/access";
 import { bool, imageRef, imageRefs, required, slugify, str } from "@/lib/admin/form";
 import { check, refreshSite, run, type ActionResult } from "@/lib/admin/result";
 import { ActionError } from "@/lib/admin/access";
+import { HOME_STORIES } from "@/lib/home";
 
 export async function saveArticle(id: string | null, _: unknown, fd: FormData): Promise<ActionResult> {
   let created: string | null = null;
@@ -49,4 +50,30 @@ export async function deleteArticle(id: string) {
   });
   if (result.ok) redirect("/admin/news");
   return result;
+}
+
+/** Picks a story for the home page from the list (up to five), or takes it off. */
+export async function setFeatured(id: string, featured: boolean): Promise<ActionResult> {
+  return run(async () => {
+    const { supabase } = await requireAction("news");
+    if (featured) {
+      const { count } = await supabase.from("articles").select("id", { count: "exact", head: true }).eq("featured", true).neq("id", id);
+      if ((count ?? 0) >= HOME_STORIES) {
+        throw new ActionError(`The home page already has ${HOME_STORIES} stories. Take one off first.`);
+      }
+    }
+    check(await supabase.from("articles").update({ featured }).eq("id", id), "update the story");
+    refreshSite();
+    return { ok: true, message: featured ? "Now on the home page" : "Taken off the home page" };
+  });
+}
+
+/** Deletes a story straight from the list. */
+export async function deleteArticleInList(id: string): Promise<ActionResult> {
+  return run(async () => {
+    const { supabase } = await requireAction("news");
+    check(await supabase.from("articles").delete().eq("id", id), "delete the story");
+    refreshSite();
+    return { ok: true, message: "Story deleted" };
+  });
 }

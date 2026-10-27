@@ -222,6 +222,8 @@ export type Article = {
   photos?: ImageRef[];
   /** ISO date it was published. */
   date?: string;
+  /** Picked for the home page in the admin. */
+  featured?: boolean;
 };
 
 export const articles: Article[] = [
