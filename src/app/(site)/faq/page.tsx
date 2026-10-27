@@ -4,8 +4,8 @@ import { Faq } from "@/components/page/Faq";
 import { PageHero } from "@/components/page/PageHero";
 import { Toc } from "@/components/page/Toc";
 import { ButtonLink } from "@/components/ui/Button";
-import { faq } from "@/content/pages";
-import { site } from "@/content/site";
+import { getSettings } from "@/lib/content";
+import { getCopy } from "@/lib/copy";
 import styles from "@/components/page/LegalArticle.module.css";
 
 export const metadata: Metadata = {
@@ -14,16 +14,16 @@ export const metadata: Metadata = {
   alternates: { canonical: "/faq" },
 };
 
-// Lets search engines show the answers directly in results.
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: faq.groups.flatMap((g) =>
-    g.items.map((i) => ({ "@type": "Question", name: i.q, acceptedAnswer: { "@type": "Answer", text: i.a } })),
-  ),
-};
-
-export default function FaqPage() {
+export default async function FaqPage() {
+  const [faq, site] = await Promise.all([getCopy("faq"), getSettings()]);
+  // Lets search engines show the answers directly in results.
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faq.groups.flatMap((g) =>
+      g.items.map((i) => ({ "@type": "Question", name: i.q, acceptedAnswer: { "@type": "Answer", text: i.a } })),
+    ),
+  };
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
@@ -31,7 +31,7 @@ export default function FaqPage() {
 
       <div className={`wrap ${styles.layout}`}>
         <aside className={styles.aside}>
-          <Toc label="Topics" items={faq.groups.map((g) => ({ id: g.id, label: g.title }))} />
+          <Toc label={faq.topics} items={faq.groups.map((g) => ({ id: g.id, label: g.title }))} />
         </aside>
         <div className={styles.body}>
           {faq.groups.map((g) => (
@@ -46,15 +46,15 @@ export default function FaqPage() {
       </div>
 
       <CtaBand
-        title="Still have a question?"
-        body="Send us a message and we'll reply within two working days. For something quick, WhatsApp is fastest."
+        title={faq.cta.title}
+        body={faq.cta.body}
         actions={
           <>
             <ButtonLink href="/contact" variant="cta">
-              Send a message
+              {faq.cta.button}
             </ButtonLink>
             <ButtonLink href={`https://wa.me/${site.whatsapp.replace(/\D/g, "")}`} variant="inverse">
-              WhatsApp us
+              {faq.cta.whatsapp}
             </ButtonLink>
           </>
         }

@@ -8,6 +8,7 @@ import { Picture } from "@/components/ui/Picture";
 import { getArticles, getProgrammes } from "@/lib/content";
 import b from "@/components/page/blocks.module.css";
 import styles from "./news.module.css";
+import { getCopy } from "@/lib/copy";
 
 export const metadata: Metadata = {
   title: "News & stories",
@@ -16,20 +17,16 @@ export const metadata: Metadata = {
 };
 
 export default async function NewsPage() {
-  const [articles, programmes] = await Promise.all([getArticles(), getProgrammes()]);
+  const [articles, programmes, c] = await Promise.all([getArticles(), getProgrammes(), getCopy("news")]);
   const programmeTitle = (slug: string) => programmes.find((p) => p.slug === slug)?.title ?? "";
   const [lead, ...rest] = articles;
   return (
     <>
-      <PageHero
-        eyebrow="News"
-        title="Stories from the field."
-        lead="What happened at our outreaches, who we met, and what your support made possible."
-      />
+      <PageHero {...c.hero} />
 
       <section className={b.section} style={{ paddingTop: 0 }} aria-label="Stories">
         <div className="wrap">
-          {!lead ? <p className={styles.excerpt}>New stories are on their way. Check back soon.</p> : null}
+          {!lead ? <p className={styles.excerpt}>{c.empty}</p> : null}
           {lead ? (
             <Reveal as="article">
               <Link href={`/news/${lead.slug}`} className={styles.feature}>
@@ -43,7 +40,7 @@ export default async function NewsPage() {
                   <span className={styles.featureTitle}>{lead.title}</span>
                   <span className={styles.excerpt}>{lead.excerpt}</span>
                   <span className={styles.read}>
-                    Read the story <Arrow className={styles.arrow} />
+                    {c.read} <Arrow className={styles.arrow} />
                   </span>
                 </span>
               </Link>

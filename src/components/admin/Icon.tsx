@@ -1,6 +1,8 @@
 // Line icons for the admin (24px grid, stroke drawn with currentColor).
 const PATHS = {
   home: "M4 11.5 12 5l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5h-5v5H5a1 1 0 0 1-1-1z",
+  // A document with lines of text: page words.
+  pages: "M7 4h7l4 4v11a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zM14 4v4h4M9 12h6M9 15h6M9 9h3",
   // A page with a hero band: the home page layout.
   layout: "M4 6.5A1.5 1.5 0 0 1 5.5 5h13A1.5 1.5 0 0 1 20 6.5v11a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5zM4 11h16M8 14.5h8M8 16.5h5",
   signout: "M14 7V5.5A1.5 1.5 0 0 0 12.5 4h-6A1.5 1.5 0 0 0 5 5.5v13A1.5 1.5 0 0 0 6.5 20h6a1.5 1.5 0 0 0 1.5-1.5V17M10 12h10M17 9l3 3-3 3",

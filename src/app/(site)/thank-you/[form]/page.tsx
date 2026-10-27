@@ -5,37 +5,29 @@ import { Words } from "@/components/motion/Words";
 import { ButtonLink } from "@/components/ui/Button";
 import { ThanksGate } from "./ThanksGate";
 import styles from "./thank-you.module.css";
+import { getCopy } from "@/lib/copy";
 
-// One thank-you page per form. Forms redirect here after a successful submission.
+// One thank-you page per form. Forms redirect here after a successful submission. The words
+// are edited in the admin (Pages › Site-wide text); the links stay here.
 const PAGES = {
   newsletter: {
-    title: "You're nearly on the list.",
-    body: "We've sent a confirmation email. Click the link inside and the next story from the field will land in your inbox.",
-    next: { href: "/news", label: "Read our latest stories" },
+    next: "/news",
     form: "/news",
   },
   contact: {
-    title: "Thank you. Your message is with us.",
-    body: "Someone from the foundation will reply within two working days. If it's urgent, call or WhatsApp us.",
-    next: { href: "/programmes", label: "See what we do" },
+    next: "/programmes",
     form: "/contact",
   },
   volunteer: {
-    title: "Thank you for offering your time.",
-    body: "We'll be in touch about the next outreach near you and how you'd like to help.",
-    next: { href: "/gallery", label: "See past outreaches" },
+    next: "/gallery",
     form: "/volunteer",
   },
   partner: {
-    title: "Thank you for reaching out to partner with us.",
-    body: "Our team will review your details and contact you to talk about what we can do together.",
-    next: { href: "/programmes", label: "Explore our programmes" },
+    next: "/programmes",
     form: "/contact?topic=partnership",
   },
   donation: {
-    title: "Thank you for your gift.",
-    body: "We'll confirm when your transfer arrives and let you know where it goes. Your kindness keeps children in school and families on their feet.",
-    next: { href: "/news", label: "See your support at work" },
+    next: "/news",
     form: "/donate",
   },
 } as const;
@@ -57,6 +49,7 @@ export default async function ThankYouPage({ params }: { params: Promise<{ form:
   const { form } = await params;
   if (!(form in PAGES)) notFound();
   const page = PAGES[form as Form];
+  const words = (await getCopy("site")).thanks[form as Form];
 
   return (
     <ThanksGate form={form} fallback={page.form}>
@@ -67,12 +60,12 @@ export default async function ThankYouPage({ params }: { params: Promise<{ form:
             <Logo variant="mark" className={styles.mark} />
           </div>
           <h1 className={styles.title}>
-            <Words text={page.title} />
+            <Words text={words.title} />
           </h1>
-          <p className={styles.body}>{page.body}</p>
+          <p className={styles.body}>{words.body}</p>
           <div className={styles.actions}>
-            <ButtonLink href={page.next.href} variant="primary">
-              {page.next.label}
+            <ButtonLink href={page.next} variant="primary">
+              {words.button}
             </ButtonLink>
             <ButtonLink href="/" variant="ghost" arrow={false}>
               Back to home

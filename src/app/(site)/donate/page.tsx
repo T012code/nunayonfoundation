@@ -5,10 +5,10 @@ import { Reveal } from "@/components/motion/Reveal";
 import { Faq } from "@/components/page/Faq";
 import { PageHero } from "@/components/page/PageHero";
 import { SectionHead } from "@/components/page/SectionHead";
-import { donate } from "@/content/pages";
 import { getProgrammes, getSettings } from "@/lib/content";
 import b from "@/components/page/blocks.module.css";
 import styles from "./donate.module.css";
+import { getCopy } from "@/lib/copy";
 
 export const metadata: Metadata = {
   title: "Donate",
@@ -17,23 +17,23 @@ export const metadata: Metadata = {
 };
 
 export default async function DonatePage() {
-  const [settings, programmes] = await Promise.all([getSettings(), getProgrammes()]);
+  const [settings, programmes, c, home] = await Promise.all([getSettings(), getProgrammes(), getCopy("donate"), getCopy("home")]);
   return (
     <>
-      <PageHero {...donate.hero} />
+      <PageHero {...c.hero} />
 
-      <DonateBand accounts={settings.bankAccounts} />
+      <DonateBand accounts={settings.bankAccounts} copy={home.donate} />
 
       <section className={b.section} aria-labelledby="uses-title">
         <div className="wrap">
           <SectionHead
             id="uses-title"
-            eyebrow="What your gift does"
-            title="Every amount does something real"
-            lead="These are typical costs from our recent outreaches."
+            eyebrow={c.uses.eyebrow}
+            title={c.uses.title}
+            lead={c.uses.lead}
           />
           <ul className={b.grid4}>
-            {donate.uses.map((u, i) => (
+            {c.uses.items.map((u, i) => (
               <Reveal as="li" key={u.value} delay={i * 0.08}>
                 <div className={`${b.card} ${styles.use}`}>
                   <span className={styles.value}>{u.value}</span>
@@ -48,9 +48,9 @@ export default async function DonatePage() {
       <section id="tell-us" className={`${b.section} ${b.sand} ${styles.anchor}`} aria-labelledby="tell-title">
         <div className={`wrap ${b.split}`}>
           <div className={b.stickyAside}>
-            <SectionHead id="tell-title" eyebrow="Already given?" title="Tell us you've given" />
+            <SectionHead id="tell-title" eyebrow={c.tell.eyebrow} title={c.tell.title} />
             <Reveal as="p" className={styles.note}>
-              We&apos;ll match your transfer, send a receipt to your email and let you know where your gift went.
+              {c.tell.note}
             </Reveal>
           </div>
           <Reveal className={b.formCard}>
@@ -61,8 +61,8 @@ export default async function DonatePage() {
 
       <section className={b.section} aria-labelledby="faq-title">
         <div className={`wrap ${styles.faq}`}>
-          <SectionHead id="faq-title" eyebrow="Questions" title="About giving" />
-          <Faq items={donate.faqs} />
+          <SectionHead id="faq-title" eyebrow={c.faq.eyebrow} title={c.faq.title} />
+          <Faq items={c.faq.items} />
         </div>
       </section>
     </>

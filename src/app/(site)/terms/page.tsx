@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import { LegalArticle } from "@/components/page/LegalArticle";
-import { terms } from "@/content/legal";
+import { getCopy } from "@/lib/copy";
 
-export const metadata: Metadata = {
-  title: terms.eyebrow,
-  description: terms.description,
-  alternates: { canonical: "/terms" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await getCopy("terms");
+  return { title: page.eyebrow, description: page.description, alternates: { canonical: "/terms" } };
+}
 
-export default function TermsPage() {
-  return <LegalArticle page={terms} />;
+export default async function TermsPage() {
+  return <LegalArticle page={await getCopy("terms")} />;
 }

@@ -11,6 +11,7 @@ import { getArticles, getProgrammes } from "@/lib/content";
 import { SITE_URL } from "@/lib/env";
 import { ShareLinks } from "./ShareLinks";
 import styles from "./article.module.css";
+import { getCopy } from "@/lib/copy";
 
 export async function generateStaticParams() {
   return (await getArticles()).map((a) => ({ slug: a.slug }));
@@ -33,7 +34,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const [articles, programmes] = await Promise.all([getArticles(), getProgrammes()]);
+  const [articles, programmes, c] = await Promise.all([getArticles(), getProgrammes(), getCopy("story")]);
   const a = articles.find((x) => x.slug === slug);
   if (!a) notFound();
   const programme = programmes.find((p) => p.slug === a.programme);
@@ -84,13 +85,13 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
               ))}
             </div>
           ) : null}
-          <ShareLinks url={`${SITE_URL}/news/${a.slug}`} title={a.title} />
+          <ShareLinks url={`${SITE_URL}/news/${a.slug}`} title={a.title} label={c.share} />
         </div>
       </article>
 
       <section className={styles.more} aria-labelledby="more-title">
         <div className="wrap">
-          <SectionHead id="more-title" eyebrow="Keep reading" title="More stories" />
+          <SectionHead id="more-title" eyebrow={c.more.eyebrow} title={c.more.title} />
           <ul className={styles.moreGrid}>
             {more.map((m, i) => (
               <Reveal as="li" key={m.slug} delay={i * 0.1}>

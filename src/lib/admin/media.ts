@@ -2,8 +2,8 @@ import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { COLUMNS } from "@/app/admin/(auth)/columns";
 import { BUILTIN_IMAGES, type ImageRef, type MediaRef } from "@/content/images";
-import { about, donate, volunteer } from "@/content/pages";
-import { story, ways } from "@/content/site";
+import { COPY_PAGES } from "@/content/copy";
+import { getCopy } from "@/lib/copy";
 
 export type MediaRow = {
   id: string;
@@ -36,15 +36,6 @@ const BUILTIN = new Set<string>(BUILTIN_IMAGES);
 const refId = (r: unknown) =>
   r && typeof r === "object" && "id" in r ? String((r as MediaRef).id) : typeof r === "string" && BUILTIN.has(r) ? r : null;
 
-/** Built-in photos used by pages whose words and photos live in the code, not the admin. */
-const FIXED_PAGES: { label: string; href: string; content: unknown }[] = [
-  { label: "About page", href: "/about", content: about },
-  { label: "Volunteer page", href: "/volunteer", content: volunteer },
-  { label: "Donate page", href: "/donate", content: donate },
-  { label: "Home page: Our story", href: "/#story", content: story },
-  { label: "Home page: Get involved", href: "/", content: ways },
-  { label: "Admin sign-in screen", href: "/admin/login", content: COLUMNS },
-];
 
 function eachImage(value: unknown, fn: (ref: unknown) => void) {
   if (typeof value === "string") fn(value);
@@ -93,6 +84,9 @@ export async function mediaUsage(db: SupabaseClient) {
   for (const r of ((settings.data?.hero as { slides?: ImageRef[] })?.slides ?? [])) {
     add(r, { label: "Home page slideshow", href: "/admin/homepage" });
   }
-  for (const page of FIXED_PAGES) eachImage(page.content, (r) => add(r, { label: page.label, href: page.href }));
+  // Photos in page text (Pages), and the sign-in screen's photo wall.
+  const pages = await Promise.all(COPY_PAGES.map(async (p) => ({ ...p, content: await getCopy(p.key) })));
+  for (const p of pages) eachImage(p.content, (r) => add(r, { label: `Page: ${p.title}`, href: `/admin/pages/${p.key}` }));
+  eachImage(COLUMNS, (r) => add(r, { label: "Admin sign-in screen", href: "/admin/login" }));
   return map;
 }

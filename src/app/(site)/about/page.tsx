@@ -5,17 +5,15 @@ import { Reveal } from "@/components/motion/Reveal";
 import { CtaBand } from "@/components/page/CtaBand";
 import { PageHero } from "@/components/page/PageHero";
 import { SectionHead } from "@/components/page/SectionHead";
-import { about } from "@/content/pages";
-import { story } from "@/content/site";
 import { Picture } from "@/components/ui/Picture";
 import { getPeople, getSettings } from "@/lib/content";
+import { fill, getCopy } from "@/lib/copy";
 import b from "@/components/page/blocks.module.css";
 
-export const metadata: Metadata = {
-  title: "About us",
-  description: about.hero.lead,
-  alternates: { canonical: "/about" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const c = await getCopy("about");
+  return { title: "About us", description: c.hero.lead, alternates: { canonical: "/about" } };
+}
 
 const initials = (name: string) =>
   name
@@ -25,25 +23,25 @@ const initials = (name: string) =>
     .join("");
 
 export default async function AboutPage() {
-  const [site, people] = await Promise.all([getSettings(), getPeople()]);
+  const [site, people, c, home] = await Promise.all([getSettings(), getPeople(), getCopy("about"), getCopy("home")]);
   return (
     <>
-      <PageHero {...about.hero} />
+      <PageHero {...c.hero} />
 
-      <Story {...story} hideLink />
+      <Story {...home.story} hideLink />
 
       <section className={b.section} aria-labelledby="purpose-title">
         <div className="wrap">
-          <SectionHead id="purpose-title" eyebrow="Why we exist" title="What we are working towards" />
+          <SectionHead id="purpose-title" eyebrow={c.purpose.eyebrow} title={c.purpose.title} />
           <div className={b.pair}>
             <Reveal className={b.statement}>
-              <p className={b.statementLabel}>Our mission</p>
-              <p className={b.statementText}>{about.mission}</p>
+              <p className={b.statementLabel}>{c.purpose.missionLabel}</p>
+              <p className={b.statementText}>{c.purpose.mission}</p>
               <Logo variant="mark" className={`${b.statementMark} logo-reversed`} aria-hidden="true" />
             </Reveal>
             <Reveal delay={0.12} className={b.statement}>
-              <p className={b.statementLabel}>Our vision</p>
-              <p className={b.statementText}>{about.vision}</p>
+              <p className={b.statementLabel}>{c.purpose.visionLabel}</p>
+              <p className={b.statementText}>{c.purpose.vision}</p>
               <Logo variant="mark" className={`${b.statementMark} logo-reversed`} aria-hidden="true" />
             </Reveal>
           </div>
@@ -54,12 +52,12 @@ export default async function AboutPage() {
         <div className="wrap">
           <SectionHead
             id="values-title"
-            eyebrow="Our values"
-            title="Four things that shape every outreach"
-            lead="They guide who we work with, how we spend every gift, and how we treat the families we meet."
+            eyebrow={c.values.eyebrow}
+            title={c.values.title}
+            lead={c.values.lead}
           />
           <ul className={b.grid4}>
-            {about.values.map((v, i) => (
+            {c.values.items.map((v, i) => (
               <Reveal as="li" key={v.title} delay={i * 0.08}>
                 <div className={b.card}>
                   <Logo variant="mark" className={b.cardIcon} aria-hidden="true" />
@@ -76,9 +74,9 @@ export default async function AboutPage() {
         <div className="wrap">
           <SectionHead
             id="people-title"
-            eyebrow="Our people"
-            title="Founder, trustees and team"
-            lead="A small team in Lagos, a board of trustees who hold us to account, and hundreds of volunteers across the country."
+            eyebrow={c.people.eyebrow}
+            title={c.people.title}
+            lead={c.people.lead}
           />
           <ul className={b.grid3}>
             {people.map((p, i) => (
@@ -100,17 +98,17 @@ export default async function AboutPage() {
         <div className="wrap">
           <SectionHead
             id="where-title"
-            eyebrow="Where we work"
-            title="Based in Lagos, reaching communities across Nigeria"
+            eyebrow={c.where.eyebrow}
+            title={c.where.title}
           />
           <div className={b.where}>
             <Reveal className={b.office}>
-              <p className={b.statementLabel}>Our office</p>
+              <p className={b.statementLabel}>{c.where.officeLabel}</p>
               <p>{site.address}</p>
-              <p>Visits by appointment. Call or WhatsApp {site.phone}.</p>
+              <p>{fill(c.where.officeNote, { phone: site.phone })}</p>
             </Reveal>
             <ul className={b.states} aria-label="States we have held outreaches in">
-              {about.states.map((s, i) => (
+              {c.where.states.map((s, i) => (
                 <Reveal as="li" variant="up" key={s} delay={i * 0.04}>
                   {s}
                 </Reveal>

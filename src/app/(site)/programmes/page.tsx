@@ -10,6 +10,7 @@ import { Picture } from "@/components/ui/Picture";
 import { getProgrammes } from "@/lib/content";
 import b from "@/components/page/blocks.module.css";
 import styles from "./programmes.module.css";
+import { getCopy } from "@/lib/copy";
 
 export const metadata: Metadata = {
   title: "Programmes",
@@ -19,15 +20,11 @@ export const metadata: Metadata = {
 };
 
 export default async function ProgrammesPage() {
-  const programmes = await getProgrammes();
+  const [programmes, c] = await Promise.all([getProgrammes(), getCopy("programmes")]);
   return (
     <>
-      <PageHero
-        eyebrow="Programmes"
-        title="Every programme, one aim: families who can stand on their own."
-        lead="Every outreach is planned with local leaders and followed up after the day. Choose a programme to see what it covers and how it works."
-      >
-        <ul className={styles.jump} aria-label="Jump to a programme">
+      <PageHero {...c.hero}>
+        <ul className={styles.jump} aria-label={c.jumpLabel}>
           {programmes.map((p) => (
             <li key={p.slug}>
               <a href={`#${p.slug}`}>
@@ -70,7 +67,7 @@ export default async function ProgrammesPage() {
                     <strong>{p.stat.value}</strong> {p.stat.label}
                   </span>
                   <Link href={`/programmes/${p.slug}`} className={styles.more}>
-                    About this programme <Arrow className={styles.arrow} />
+                    {c.more} <Arrow className={styles.arrow} />
                   </Link>
                 </Reveal>
               </div>
@@ -79,7 +76,7 @@ export default async function ProgrammesPage() {
         ))}
       </div>
 
-      <CtaBand title="Help us reach the next family." />
+      <CtaBand title={c.cta.title} body={c.cta.body} />
     </>
   );
 }

@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import { LegalArticle } from "@/components/page/LegalArticle";
-import { privacy } from "@/content/legal";
+import { getCopy } from "@/lib/copy";
 
-export const metadata: Metadata = {
-  title: privacy.eyebrow,
-  description: privacy.description,
-  alternates: { canonical: "/privacy" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await getCopy("privacy");
+  return { title: page.eyebrow, description: page.description, alternates: { canonical: "/privacy" } };
+}
 
-export default function PrivacyPage() {
-  return <LegalArticle page={privacy} />;
+export default async function PrivacyPage() {
+  return <LegalArticle page={await getCopy("privacy")} />;
 }

@@ -4,6 +4,7 @@ import { CtaBand } from "@/components/page/CtaBand";
 import { PageHero } from "@/components/page/PageHero";
 import { getAlbums } from "@/lib/content";
 import b from "@/components/page/blocks.module.css";
+import { getCopy } from "@/lib/copy";
 
 export const metadata: Metadata = {
   title: "Gallery",
@@ -12,20 +13,16 @@ export const metadata: Metadata = {
 };
 
 export default async function GalleryPage() {
-  const albums = await getAlbums();
+  const [albums, c] = await Promise.all([getAlbums(), getCopy("gallery")]);
   return (
     <>
-      <PageHero
-        eyebrow="Gallery"
-        title="Moments from our outreaches."
-        lead="Choose an album, or open any photo to see it full size. Use the arrow keys or swipe to move between photos."
-      />
+      <PageHero {...c.hero} />
       <section className={b.section} style={{ paddingTop: 0 }} aria-label="Photos">
         <div className="wrap">
           <Gallery albums={albums} />
         </div>
       </section>
-      <CtaBand title="Be part of the next photo." body="Join us at an outreach as a volunteer, or give so the next one can happen." />
+      <CtaBand title={c.cta.title} body={c.cta.body} />
     </>
   );
 }

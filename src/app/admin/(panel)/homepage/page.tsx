@@ -19,6 +19,10 @@ export default async function HomepageAdmin() {
             <Link href="/admin/news" className={s.textLink}>
               News
             </Link>
+            ; section headings and the rest of the words are in{" "}
+            <Link href="/admin/pages/home" className={s.textLink}>
+              Pages › Home page
+            </Link>
             .
           </>
         }

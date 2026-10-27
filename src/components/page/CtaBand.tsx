@@ -3,6 +3,7 @@ import { Reveal } from "@/components/motion/Reveal";
 import { Words } from "@/components/motion/Words";
 import type { ReactNode } from "react";
 import { ButtonLink } from "@/components/ui/Button";
+import { getCopy } from "@/lib/copy";
 import styles from "./CtaBand.module.css";
 
 const LEAVES: Leaf[] = [
@@ -11,10 +12,10 @@ const LEAVES: Leaf[] = [
   { top: "70%", left: "56%", size: "clamp(3.5rem, 5vw, 5rem)", speed: 0.7, rotate: -80, angle: 30, opacity: 0.16, sway: 9 },
 ];
 
-/** Closing call to action on inner pages. */
-export function CtaBand({
-  title = "There is a place for you in this work.",
-  body = "Give by bank transfer, volunteer at an outreach, or partner with us as a church, school or company.",
+/** Closing call to action on inner pages. Empty title or body fall back to the site-wide text. */
+export async function CtaBand({
+  title,
+  body,
   actions,
 }: {
   title?: string;
@@ -22,6 +23,9 @@ export function CtaBand({
   /** Buttons in place of the default Donate and Volunteer. */
   actions?: ReactNode;
 }) {
+  const site = (await getCopy("site")).cta;
+  title ||= site.title;
+  body ||= site.body;
   return (
     <section className={styles.band} aria-labelledby="cta-title">
       <LeafField leaves={LEAVES} />
@@ -36,10 +40,10 @@ export function CtaBand({
           {actions ?? (
             <>
               <ButtonLink href="/donate" variant="cta">
-                Donate
+                {site.donate}
               </ButtonLink>
               <ButtonLink href="/volunteer" variant="inverse">
-                Volunteer
+                {site.volunteer}
               </ButtonLink>
             </>
           )}

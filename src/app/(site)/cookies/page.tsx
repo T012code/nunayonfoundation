@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import { LegalArticle } from "@/components/page/LegalArticle";
-import { cookies } from "@/content/legal";
+import { getCopy } from "@/lib/copy";
 
-export const metadata: Metadata = {
-  title: cookies.eyebrow,
-  description: cookies.description,
-  alternates: { canonical: "/cookies" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await getCopy("cookies");
+  return { title: page.eyebrow, description: page.description, alternates: { canonical: "/cookies" } };
+}
 
-export default function CookiesPage() {
-  return <LegalArticle page={cookies} />;
+export default async function CookiesPage() {
+  return <LegalArticle page={await getCopy("cookies")} />;
 }

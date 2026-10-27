@@ -15,6 +15,7 @@ import { getArticles, getProgrammes } from "@/lib/content";
 import { SITE_URL } from "@/lib/env";
 import b from "@/components/page/blocks.module.css";
 import styles from "./programme.module.css";
+import { fill, getCopy } from "@/lib/copy";
 
 export async function generateStaticParams() {
   return (await getProgrammes()).map((p) => ({ slug: p.slug }));
@@ -43,7 +44,7 @@ function parseStat(value: string) {
 
 export default async function ProgrammePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const [programmes, articles] = await Promise.all([getProgrammes(), getArticles()]);
+  const [programmes, articles, c] = await Promise.all([getProgrammes(), getArticles(), getCopy("programme")]);
   const p = programmes.find((x) => x.slug === slug);
   if (!p) notFound();
   const stories = articles.filter((a) => a.programme === p.slug);
@@ -63,7 +64,7 @@ export default async function ProgrammePage({ params }: { params: Promise<{ slug
       <section className={`${b.section} ${b.sand}`} aria-labelledby="covers-title">
         <div className={`wrap ${styles.covers}`}>
           <div>
-            <SectionHead id="covers-title" eyebrow="What it covers" title="Where your support goes" />
+            <SectionHead id="covers-title" eyebrow={c.covers.eyebrow} title={c.covers.title} />
             <ul className={b.checks}>
               {p.covers.map((c, i) => (
                 <Reveal as="li" key={c} delay={i * 0.06}>
@@ -84,7 +85,7 @@ export default async function ProgrammePage({ params }: { params: Promise<{ slug
 
       <section className={b.section} aria-labelledby="how-title">
         <div className="wrap">
-          <SectionHead id="how-title" eyebrow="How it works" title="From the first visit to the follow-up" />
+          <SectionHead id="how-title" eyebrow={c.how.eyebrow} title={c.how.title} />
           <GrowingSteps steps={p.steps} />
         </div>
       </section>
@@ -93,11 +94,11 @@ export default async function ProgrammePage({ params }: { params: Promise<{ slug
         <div className="wrap">
           <SectionHead
             id="photos-title"
-            eyebrow="In pictures"
-            title="From our outreaches"
+            eyebrow={c.photos.eyebrow}
+            title={c.photos.title}
             action={
               <Link href="/gallery" className={styles.link}>
-                Open the gallery <Arrow />
+                {c.photos.link} <Arrow />
               </Link>
             }
           />
@@ -114,7 +115,7 @@ export default async function ProgrammePage({ params }: { params: Promise<{ slug
       {stories.length ? (
         <section className={`${b.section} ${b.sand}`} aria-labelledby="stories-title">
           <div className="wrap">
-            <SectionHead id="stories-title" eyebrow="Stories" title="Recent news from this programme" />
+            <SectionHead id="stories-title" eyebrow={c.stories.eyebrow} title={c.stories.title} />
             <ul className={b.grid2}>
               {stories.map((a, i) => (
                 <Reveal as="li" key={a.slug} delay={i * 0.1}>
@@ -136,7 +137,7 @@ export default async function ProgrammePage({ params }: { params: Promise<{ slug
 
       <section className={`${b.section} ${b.ruled}`} aria-labelledby="others-title">
         <div className="wrap">
-          <SectionHead id="others-title" eyebrow="More programmes" title="See what else we do" />
+          <SectionHead id="others-title" eyebrow={c.others.eyebrow} title={c.others.title} />
           <ul className={styles.others}>
             {others.map((o, i) => (
               <Reveal as="li" key={o.slug} delay={i * 0.05}>
@@ -150,7 +151,7 @@ export default async function ProgrammePage({ params }: { params: Promise<{ slug
         </div>
       </section>
 
-      <CtaBand title={`Support ${p.title.toLowerCase()}.`} />
+      <CtaBand title={fill(c.cta.title, { programme: p.title.toLowerCase() })} body={c.cta.body} />
     </>
   );
 }

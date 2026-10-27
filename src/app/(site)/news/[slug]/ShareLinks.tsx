@@ -43,7 +43,7 @@ function Icon({ name }: { name: keyof typeof ICONS }) {
  * share link for web pages: on phones the button opens the device's share sheet (which lists
  * Instagram); elsewhere it copies the link and opens Instagram, ready to paste.
  */
-export function ShareLinks({ url, title }: { url: string; title: string }) {
+export function ShareLinks({ url, title, label = "Share this story" }: { url: string; title: string; label?: string }) {
   const [note, setNote] = useState<{ text: string; key: number } | null>(null);
   const [copied, setCopied] = useState(false);
   const timer = useRef(0);
@@ -118,7 +118,7 @@ export function ShareLinks({ url, title }: { url: string; title: string }) {
 
   return (
     <div className={styles.share}>
-      <span className={styles.shareLabel}>Share this story</span>
+      <span className={styles.shareLabel}>{label}</span>
       <div className={styles.shareButtons}>
         {buttons.map((btn) => (
           <button key={btn.name} type="button" onClick={() => share(btn.name)} className={styles.shareButton} data-network={btn.name}>

@@ -7,6 +7,7 @@ import { SectionHead } from "@/components/page/SectionHead";
 import { getSettings } from "@/lib/content";
 import b from "@/components/page/blocks.module.css";
 import styles from "./contact.module.css";
+import { getCopy } from "@/lib/copy";
 
 export const metadata: Metadata = {
   title: "Contact us",
@@ -22,29 +23,25 @@ const ICONS = {
 };
 
 export default async function ContactPage() {
-  const site = await getSettings();
+  const [site, c] = await Promise.all([getSettings(), getCopy("contact")]);
   const tel = site.phone.replace(/\s/g, "");
   const wa = `https://wa.me/${site.whatsapp.replace(/\D/g, "")}`;
   const ways = [
-    { label: "Email", icon: ICONS.email, value: site.email, href: `mailto:${site.email}` },
-    { label: "Phone", icon: ICONS.phone, value: site.phone, href: `tel:${tel}` },
-    { label: "WhatsApp", icon: ICONS.chat, value: "Chat with us", href: wa },
-    { label: "Office", icon: ICONS.office, value: site.address, href: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(site.address)}` },
+    { key: "email", label: c.tiles.email, icon: ICONS.email, value: site.email, href: `mailto:${site.email}` },
+    { key: "phone", label: c.tiles.phone, icon: ICONS.phone, value: site.phone, href: `tel:${tel}` },
+    { key: "whatsapp", label: c.tiles.whatsapp, icon: ICONS.chat, value: c.tiles.whatsappValue, href: wa },
+    { key: "office", label: c.tiles.office, icon: ICONS.office, value: site.address, href: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(site.address)}` },
   ];
 
   return (
     <>
-      <PageHero
-        eyebrow="Contact"
-        title="We'd love to hear from you."
-        lead="Questions, partnerships, volunteering or press: send us a message and someone from the team will reply within two working days."
-      />
+      <PageHero {...c.hero} />
 
       <section className={b.section} style={{ paddingTop: 0 }} aria-label="Ways to reach us">
         <div className="wrap">
           <ul className={styles.ways}>
             {ways.map((w, i) => (
-              <Reveal as="li" key={w.label} delay={i * 0.08}>
+              <Reveal as="li" key={w.key} delay={i * 0.08}>
                 <a
                   href={w.href}
                   className={styles.way}
@@ -55,7 +52,7 @@ export default async function ContactPage() {
                   </svg>
                   <span className={styles.wayLabel}>{w.label}</span>
                   <span className={styles.wayValue}>
-                    {w.label === "Email" ? (
+                    {w.key === "email" ? (
                       <>
                         {w.value.split("@")[0]}
                         <wbr />@{w.value.split("@")[1]}
@@ -74,15 +71,12 @@ export default async function ContactPage() {
       <section id="message" className={`${b.section} ${b.sand} ${styles.anchor}`} aria-labelledby="form-title">
         <div className={`wrap ${b.split}`}>
           <div className={b.stickyAside}>
-            <SectionHead id="form-title" eyebrow="Send a message" title="Tell us how we can help" />
+            <SectionHead id="form-title" eyebrow={c.form.eyebrow} title={c.form.title} />
             <Reveal className={styles.aside}>
-              <h3>Partnering with us?</h3>
-              <p>
-                Churches, mosques, schools and companies sponsor outreaches and whole programmes. Choose
-                &ldquo;Partnership&rdquo; and tell us a little about your organisation.
-              </p>
-              <h3>Office hours</h3>
-              <p>Monday to Friday, 9am to 5pm. Visits by appointment.</p>
+              <h3>{c.aside.partnerTitle}</h3>
+              <p>{c.aside.partnerText}</p>
+              <h3>{c.aside.hoursTitle}</h3>
+              <p>{c.aside.hoursText}</p>
             </Reveal>
           </div>
           <Reveal className={b.formCard}>

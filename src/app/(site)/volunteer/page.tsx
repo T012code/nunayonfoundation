@@ -7,9 +7,9 @@ import { PageHero } from "@/components/page/PageHero";
 import { SectionHead } from "@/components/page/SectionHead";
 import { ButtonLink } from "@/components/ui/Button";
 import { Picture } from "@/components/ui/Picture";
-import { volunteer } from "@/content/pages";
 import b from "@/components/page/blocks.module.css";
 import styles from "./volunteer.module.css";
+import { getCopy } from "@/lib/copy";
 
 export const metadata: Metadata = {
   title: "Volunteer",
@@ -17,12 +17,13 @@ export const metadata: Metadata = {
   alternates: { canonical: "/volunteer" },
 };
 
-export default function VolunteerPage() {
+export default async function VolunteerPage() {
+  const c = await getCopy("volunteer");
   return (
     <>
-      <PageHero {...volunteer.hero}>
+      <PageHero {...c.hero}>
         <ButtonLink href="#sign-up" variant="cta">
-          Sign up to volunteer
+          {c.hero.button}
         </ButtonLink>
       </PageHero>
 
@@ -30,12 +31,12 @@ export default function VolunteerPage() {
         <div className="wrap">
           <SectionHead
             id="roles-title"
-            eyebrow="Ways to help"
-            title="Bring what you're good at"
-            lead="Every outreach needs a mix of people. Choose one role or a few; we'll match you to where you're needed."
+            eyebrow={c.roles.eyebrow}
+            title={c.roles.title}
+            lead={c.roles.lead}
           />
           <ul className={b.grid4}>
-            {volunteer.roles.map((r, i) => (
+            {c.roles.items.map((r, i) => (
               <Reveal as="li" key={r.title} delay={i * 0.08}>
                 <div className={styles.role}>
                   <Reveal as="span" variant="unveil" delay={i * 0.08} className={styles.roleMedia}>
@@ -52,17 +53,17 @@ export default function VolunteerPage() {
 
       <section className={b.section} aria-labelledby="how-title">
         <div className="wrap">
-          <SectionHead id="how-title" eyebrow="How it works" title="Three steps to your first outreach" />
-          <GrowingSteps steps={volunteer.steps} />
+          <SectionHead id="how-title" eyebrow={c.how.eyebrow} title={c.how.title} />
+          <GrowingSteps steps={c.how.steps} />
         </div>
       </section>
 
       <section id="sign-up" className={`${b.section} ${b.sand} ${styles.anchor}`} aria-labelledby="signup-title">
         <div className={`wrap ${b.split}`}>
           <div className={b.stickyAside}>
-            <SectionHead id="signup-title" eyebrow="Sign up" title="Join the volunteer team" />
+            <SectionHead id="signup-title" eyebrow={c.signup.eyebrow} title={c.signup.title} />
             <Reveal as="p" className={styles.note}>
-              It takes about two minutes. We&apos;ll call you within a week to say hello and talk about the next outreach.
+              {c.signup.note}
             </Reveal>
           </div>
           <Reveal className={b.formCard}>
@@ -73,8 +74,8 @@ export default function VolunteerPage() {
 
       <section className={b.section} aria-labelledby="faq-title">
         <div className={`wrap ${styles.faq}`}>
-          <SectionHead id="faq-title" eyebrow="Questions" title="Before you sign up" />
-          <Faq items={volunteer.faqs} />
+          <SectionHead id="faq-title" eyebrow={c.faq.eyebrow} title={c.faq.title} />
+          <Faq items={c.faq.items} />
         </div>
       </section>
     </>

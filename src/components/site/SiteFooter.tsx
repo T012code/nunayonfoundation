@@ -4,6 +4,7 @@ import { LeafField, type Leaf } from "@/components/motion/LeafField";
 import { Reveal } from "@/components/motion/Reveal";
 import { Words } from "@/components/motion/Words";
 import { getSettings } from "@/lib/content";
+import { getCopy } from "@/lib/copy";
 import { BackToTop } from "./BackToTop";
 import { GiveLeaves } from "./GiveLeaves";
 import { NewsletterForm } from "./NewsletterForm";
@@ -38,7 +39,8 @@ const LEAVES: Leaf[] = [
 ];
 
 export async function SiteFooter({ year }: { year: number }) {
-  const site = await getSettings();
+  const [site, copy] = await Promise.all([getSettings(), getCopy("site")]);
+  const f = copy.footer;
   return (
     <footer className={styles.footer}>
       <LeafField leaves={LEAVES} />
@@ -47,14 +49,13 @@ export async function SiteFooter({ year }: { year: number }) {
         <div className={styles.top}>
           <div className={styles.news}>
             <Reveal as="p" className={styles.kicker}>
-              Newsletter
+              {f.kicker}
             </Reveal>
             <h2 className={styles.newsTitle} data-reveal="words">
-              <Words text="Stories from the field, in your inbox." />
+              <Words text={f.title} />
             </h2>
             <Reveal as="p" delay={0.3} className={styles.newsText}>
-              One email a month about the families we meet and what your support did. No spam, and you can leave any
-              time.
+              {f.text}
             </Reveal>
             <Reveal delay={0.4}>
               <NewsletterForm />
@@ -63,13 +64,13 @@ export async function SiteFooter({ year }: { year: number }) {
 
           <Reveal delay={0.2} className={styles.give}>
             <GiveLeaves />
-            <p className={styles.giveTitle}>Every outreach starts with someone like you.</p>
+            <p className={styles.giveTitle}>{f.giveTitle}</p>
             <div className={styles.giveLinks}>
               <Link href="/donate" className={styles.pill}>
-                Donate
+                {f.giveDonate}
               </Link>
               <Link href="/volunteer" className={`${styles.pill} ${styles.pillGhost}`}>
-                Volunteer
+                {f.giveVolunteer}
               </Link>
             </div>
           </Reveal>
@@ -79,7 +80,7 @@ export async function SiteFooter({ year }: { year: number }) {
           <Reveal as="span" variant="draw" className={styles.rule} />
           <Reveal as="div" delay={0.05}>
             <nav aria-label="Explore">
-              <h3 className={styles.heading}>Explore</h3>
+              <h3 className={styles.heading}>{f.explore}</h3>
               <ul>
                 {explore.map((l) => (
                   <li key={l.href}>
@@ -91,7 +92,7 @@ export async function SiteFooter({ year }: { year: number }) {
           </Reveal>
           <Reveal as="div" delay={0.15}>
             <nav aria-label="Get involved">
-              <h3 className={styles.heading}>Get involved</h3>
+              <h3 className={styles.heading}>{f.involved}</h3>
               <ul>
                 {involved.map((l) => (
                   <li key={l.href}>
@@ -103,14 +104,14 @@ export async function SiteFooter({ year }: { year: number }) {
           </Reveal>
           <Reveal as="div" delay={0.25}>
             <address className={styles.contact}>
-              <h3 className={styles.heading}>Visit or write</h3>
+              <h3 className={styles.heading}>{f.visit}</h3>
               <p>{site.address}</p>
               <p>
                 <a href={`mailto:${site.email}`}>{site.email}</a>
                 <br />
                 <a href={`tel:${site.phone.replace(/\s/g, "")}`}>{site.phone}</a>
                 <br />
-                <a href={`https://wa.me/${site.whatsapp.replace(/\D/g, "")}`}>WhatsApp us</a>
+                <a href={`https://wa.me/${site.whatsapp.replace(/\D/g, "")}`}>{f.whatsapp}</a>
               </p>
               <p className={styles.socials}>
                 {site.socials.map((s) => (
