@@ -53,7 +53,7 @@ export function ShareLinks({ url, title }: { url: string; title: string }) {
   useEffect(() => () => window.clearTimeout(timer.current), []);
 
   const say = (message: string) => {
-    setNote({ text: message, key: Date.now() });
+    setNote((n) => ({ text: message, key: (n?.key ?? 0) + 1 }));
     window.clearTimeout(timer.current);
     timer.current = window.setTimeout(() => {
       setNote(null);
@@ -100,27 +100,31 @@ export function ShareLinks({ url, title }: { url: string; title: string }) {
     { name: "whatsapp" as const, label: "WhatsApp", href: `https://wa.me/?text=${encodeURIComponent(`${title} ${url}`)}` },
   ];
 
+  // Real buttons, not links: privacy and ad blockers (Brave Shields, uBlock and others) hide
+  // any link pointing at Facebook's, X's or WhatsApp's share addresses, which left only
+  // Instagram and Copy link visible for many visitors. The share address is opened on click.
+  const share = (name: "facebook" | "x" | "instagram" | "whatsapp") => {
+    if (name === "instagram") return void onInstagram();
+    const href = links.find((l) => l.name === name)!.href;
+    window.open(href, "_blank", "noopener,noreferrer,width=640,height=640");
+  };
+
+  const buttons = [
+    { name: "facebook" as const, label: "Facebook" },
+    { name: "x" as const, label: "X" },
+    { name: "instagram" as const, label: "Instagram" },
+    { name: "whatsapp" as const, label: "WhatsApp" },
+  ];
+
   return (
     <div className={styles.share}>
       <span className={styles.shareLabel}>Share this story</span>
       <div className={styles.shareButtons}>
-        {links.slice(0, 2).map((l) => (
-          <a key={l.name} href={l.href} target="_blank" rel="noopener noreferrer" className={styles.shareButton} data-network={l.name}>
-            <Icon name={l.name} />
-            <span>{l.label}</span>
-            <span className="visually-hidden"> (opens in a new tab)</span>
-          </a>
-        ))}
-        <button type="button" onClick={onInstagram} className={styles.shareButton} data-network="instagram">
-          <Icon name="instagram" />
-          <span>Instagram</span>
-        </button>
-        {links.slice(2).map((l) => (
-          <a key={l.name} href={l.href} target="_blank" rel="noopener noreferrer" className={styles.shareButton} data-network={l.name}>
-            <Icon name={l.name} />
-            <span>{l.label}</span>
-            <span className="visually-hidden"> (opens in a new tab)</span>
-          </a>
+        {buttons.map((btn) => (
+          <button key={btn.name} type="button" onClick={() => share(btn.name)} className={styles.shareButton} data-network={btn.name}>
+            <Icon name={btn.name} />
+            <span>{btn.label}</span>
+          </button>
         ))}
         <button type="button" onClick={onCopy} className={styles.shareButton} data-network="copy" data-copied={copied || undefined}>
           <Icon name={copied ? "check" : "link"} />
