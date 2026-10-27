@@ -200,7 +200,7 @@
   gap: var(--space-3xs);
   justify-self: start;
   padding: var(--space-3xs);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius);
   background: var(--cream);
   box-shadow: var(--shadow-card);
   font-size: var(--text-xs);

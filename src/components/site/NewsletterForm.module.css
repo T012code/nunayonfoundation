@@ -11,7 +11,7 @@
   gap: var(--space-3xs);
   padding: var(--space-3xs);
   border: 1px solid var(--veil-rule-strong);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-sm);
   background: var(--veil-fill);
   transition: border-color var(--dur-micro) var(--ease-out);
 }

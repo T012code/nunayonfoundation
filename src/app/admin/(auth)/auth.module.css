@@ -249,7 +249,7 @@
   width: 8rem;
   height: 3px;
   overflow: hidden;
-  border-radius: var(--radius-pill);
+  border-radius: 2px;
   background: var(--color-rule);
 }
 
