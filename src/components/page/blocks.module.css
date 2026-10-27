@@ -42,8 +42,9 @@
   color: var(--mint);
 }
 
+/* Mint-pale on this green fell short of 4.5:1 at this size; cream reads clearly. */
 .statement:nth-child(2) .statementLabel {
-  color: var(--mint-pale);
+  color: var(--cream);
 }
 
 .statementText {
