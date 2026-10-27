@@ -201,6 +201,12 @@
   backdrop-filter: blur(6px);
 }
 
+@media (prefers-reduced-transparency: reduce) {
+  .viewer::backdrop {
+    backdrop-filter: none;
+  }
+}
+
 .viewer[open] {
   display: grid;
   place-items: center;

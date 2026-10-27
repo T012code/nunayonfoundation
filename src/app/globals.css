@@ -113,6 +113,30 @@
   --stagger: 55ms;
 }
 
+/* System setting "Increase contrast": quieter text and hairlines step up. */
+@media (prefers-contrast: more) {
+  :root {
+    --color-ink-muted: var(--teal);
+    --color-on-inverse-muted: var(--cream);
+    --color-rule: oklch(62% 0.03 80);
+    --veil-rule: oklch(100% 0 0 / 0.4);
+    --veil-rule-strong: oklch(100% 0 0 / 0.6);
+    --veil-text: var(--white);
+    --ink-rule: oklch(30% 0.053 216.8 / 0.45);
+    --color-scrim: oklch(18% 0.04 215 / 0.8);
+    --scrim-mid: oklch(18% 0.04 215 / 0.6);
+  }
+}
+
+/* System setting "Reduce transparency": see-through layers become solid. */
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --paper-glass: var(--cream);
+    --scrim-deep: oklch(18% 0.04 215);
+    --color-scrim: oklch(18% 0.04 215 / 0.85);
+  }
+}
+
 /* ── Base ────────────────────────────────────────────────────────────────── */
 *,
 *::before,
