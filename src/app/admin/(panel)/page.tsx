@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Icon } from "@/components/admin/Icon";
 import { adminStyles as s, Badge, Card, Empty, formatTime, Notice, PageHead } from "@/components/admin/ui";
 import { can, requirePage } from "@/lib/admin/access";
 import { serviceClient } from "@/lib/supabase/server";
@@ -8,7 +7,6 @@ import { serviceClient } from "@/lib/supabase/server";
 export const metadata: Metadata = { title: "Dashboard" };
 
 const KIND: Record<string, string> = { contact: "Message", partner: "Partnership", volunteer: "Volunteer", donation: "Donation" };
-const ANALYTICS_URL = "https://vercel.com/layo5/nunayonfoundation/analytics";
 
 type Row = { id: string; kind: string; name: string; status: string; created_at: string };
 
@@ -111,11 +109,6 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
           </Card>
         ) : null}
 
-        <Card title="Visitors" lead="Page views, top pages and where visitors come from, without cookies.">
-          <a href={ANALYTICS_URL} target="_blank" rel="noopener noreferrer" className={s.textLink}>
-            Open visitor statistics on Vercel <Icon name="external" className={s.inlineIcon} />
-          </a>
-        </Card>
       </div>
     </div>
   );

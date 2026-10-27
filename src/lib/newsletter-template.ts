@@ -131,7 +131,7 @@ export function letterhead({
 <tr><td align="center">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background:#ffffff;border-radius:18px;overflow:hidden;">
 <tr><td style="background:${C.teal};padding:26px 28px 22px;">
-<a href="${esc(site)}" style="text-decoration:none;"><img src="${esc(site)}/email/logo-reversed.png" width="190" alt="Nunayon Foundation" style="display:block;width:190px;height:auto;border:0;color:#ffffff;font-size:20px;font-weight:800;"></a>
+<a href="${esc(site)}" style="text-decoration:none;"><img src="${esc(site)}/email/logo-stacked-reversed.png" width="150" height="50" alt="Nunayon Foundation" style="display:block;width:150px;height:auto;border:0;color:#ffffff;font-size:20px;font-weight:800;"></a>
 <p style="margin:14px 0 0;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:${C.mint};font-weight:600;">News from the field</p>
 </td></tr>
 <tr><td style="height:4px;line-height:4px;font-size:0;background:${C.leaf};">&nbsp;</td></tr>
@@ -144,7 +144,7 @@ ${bodyHtml}
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid ${C.rule};"><tr><td style="padding-top:20px;font-size:13px;line-height:1.7;color:${C.muted};">
 ${socials ? `<p style="margin:0 0 10px;">${socials}</p>` : ""}
 ${contact ? `<p style="margin:0 0 10px;">${contact}</p>` : ""}
-<p style="margin:0;">You're getting this because you subscribed to news from Nunayon Foundation. <a href="${esc(unsubscribe)}" style="color:${C.muted};">Unsubscribe</a> &nbsp;·&nbsp; <a href="${esc(site)}" style="color:${C.muted};">${esc(site.replace(/^https?:\/\//, ""))}</a></p>
+<p style="margin:0;"><a href="${esc(unsubscribe)}" style="color:${C.muted};">Unsubscribe</a></p>
 </td></tr></table>
 </td></tr>
 </table>

@@ -30,9 +30,10 @@
   text-decoration: none;
 }
 
-.brand svg {
-  width: 1.75rem;
-  height: auto;
+.brandLogo {
+  display: block;
+  width: auto;
+  height: 2.4rem;
 }
 
 .brandTag {
@@ -213,10 +214,12 @@
 }
 
 .meName {
+  display: -webkit-box;
   overflow: hidden;
   font-weight: var(--weight-bold);
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .meRole {
@@ -238,7 +241,7 @@
 /* View site and Sign out, side by side. */
 .meActions {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-3xs);
   padding-top: var(--space-2xs);
   border-top: 1px solid var(--veil-rule);
@@ -254,7 +257,8 @@
   justify-content: center;
   gap: var(--space-3xs);
   min-height: 2.5rem;
-  padding: 0 var(--space-2xs);
+  min-width: 0;
+  padding: 0 var(--space-3xs);
   border: 0;
   border-radius: calc(var(--radius) - var(--space-2xs));
   background: transparent;
@@ -542,7 +546,7 @@
   gap: var(--space-2xs);
   padding: var(--space-2xs) var(--space-sm);
   border: 1px solid var(--color-rule);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-sm);
   background: var(--color-surface);
   color: var(--color-ink);
   font-size: var(--text-sm);
@@ -1845,4 +1849,17 @@
 .copyTools {
   display: flex;
   gap: var(--space-3xs);
+}
+
+/* Bank accounts: the less common details, folded away until needed. */
+.bankGroup {
+  border-top: 1px solid var(--color-rule);
+  padding-top: var(--space-sm);
+}
+
+.bankGroup summary {
+  margin-bottom: var(--space-sm);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  cursor: pointer;
 }

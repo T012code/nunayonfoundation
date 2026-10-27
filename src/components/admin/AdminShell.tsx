@@ -43,8 +43,7 @@ export function AdminShell({
     <div className={styles.shell}>
       <header className={styles.sidebar}>
         <Link href="/admin" className={styles.brand}>
-          <Logo variant="mark" className="logo-reversed" aria-hidden="true" />
-          <span>Nunayon</span>
+          <Logo variant="stacked" className={`${styles.brandLogo} logo-reversed`} title="Nunayon Foundation admin" />
           <span className={styles.brandTag}>Admin</span>
         </Link>
         <button
