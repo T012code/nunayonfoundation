@@ -24,13 +24,15 @@ export async function confirmSubscription(token: string) {
 export async function unsubscribe(token: string) {
   const db = serviceClient();
   if (!db || !UUID.test(token)) return false;
-  const { error } = await db
+  // Success only when the link matched someone on the list (already unsubscribed counts).
+  const { data, error } = await db
     .from("subscribers")
     .update({ status: "unsubscribed", unsubscribed_at: new Date().toISOString() })
-    .eq("token", token);
-  return !error;
+    .eq("token", token)
+    .select("id");
+  return !error && !!data?.length;
 }
 
 export async function unsubscribeAction(fd: FormData) {
-  await unsubscribe(String(fd.get("token") ?? ""));
+  return unsubscribe(String(fd.get("token") ?? ""));
 }

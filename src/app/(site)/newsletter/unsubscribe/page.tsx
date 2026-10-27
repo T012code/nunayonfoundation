@@ -8,8 +8,29 @@ export const metadata: Metadata = { title: "Unsubscribe", robots: { index: false
 
 // A button rather than an automatic unsubscribe, so email security scanners that open links
 // can't take people off the list by accident.
-export default async function UnsubscribePage({ searchParams }: { searchParams: Promise<{ token?: string; done?: string }> }) {
-  const { token = "", done } = await searchParams;
+export default async function UnsubscribePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ token?: string; done?: string; failed?: string }>;
+}) {
+  const { token = "", done, failed } = await searchParams;
+  // Opened without the personal part of the link (or the link didn't match anyone): say so
+  // plainly instead of offering a button that can't do anything.
+  if (failed || (!done && !token)) {
+    return (
+      <Notice
+        title="This unsubscribe link isn't complete."
+        body="Use the Unsubscribe link at the bottom of any of our newsletters, or write to us and we'll take you off the list ourselves."
+      >
+        <ButtonLink href="/contact" variant="primary">
+          Contact us
+        </ButtonLink>
+        <ButtonLink href="/" variant="ghost" arrow={false}>
+          Back to home
+        </ButtonLink>
+      </Notice>
+    );
+  }
   if (done) {
     return (
       <Notice title="You've been unsubscribed." body="You won't get any more newsletters from us. If you change your mind, you can sign up again at any time.">
@@ -21,8 +42,8 @@ export default async function UnsubscribePage({ searchParams }: { searchParams: 
   }
   async function leave(fd: FormData) {
     "use server";
-    await unsubscribeAction(fd);
-    redirect("/newsletter/unsubscribe?done=1");
+    const ok = await unsubscribeAction(fd);
+    redirect(ok ? "/newsletter/unsubscribe?done=1" : "/newsletter/unsubscribe?failed=1");
   }
   return (
     <Notice title="Unsubscribe from our newsletter?" body="We'll stop sending you stories from the field. You can sign up again whenever you like.">
