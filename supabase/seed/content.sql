@@ -3,10 +3,10 @@
 begin;
 
 update public.site_settings set
-  email = 'hello@nunayonfoundation.org', phone = '+234 800 000 0000', whatsapp = '+234 800 000 0000', address = '12 Placeholder Street, Ikeja, Lagos',
+  email = 'hello@nunayonfoundation.org', phone = '+234 806 923 0583', whatsapp = '+234 806 923 0583', address = '12 Placeholder Street, Ikeja, Lagos',
   notify_email = 'molayokunmi@gmail.com',
-  socials = '[{"label":"Instagram","href":"https://instagram.com/"},{"label":"Facebook","href":"https://facebook.com/"},{"label":"X","href":"https://x.com/"},{"label":"LinkedIn","href":"https://linkedin.com/"}]'::jsonb,
-  bank_accounts = '[{"currency":"NGN","bank":"Placeholder Bank PLC","name":"Nunayon Foundation","number":"0123456789"}]'::jsonb,
+  socials = '[{"label":"Instagram","href":"https://instagram.com/"},{"label":"Facebook","href":"https://facebook.com/"},{"label":"X","href":"https://x.com/"}]'::jsonb,
+  bank_accounts = '[{"currency":"NGN","bank":"United Bank for Africa (UBA)","name":"Nunayon Foundation","number":"2082059772"}]'::jsonb,
   impact = '[{"value":2400,"suffix":"+","label":"Children kept in school"},{"value":650,"suffix":"","label":"Families supported with business grants"},{"value":38,"suffix":"","label":"Community outreaches held"},{"value":12,"suffix":"","label":"States reached"}]'::jsonb,
   hero = '{"title":"Helping families across Nigeria grow stronger, together.","lead":"We put children in school, help mothers start and grow small businesses, and bring care and clean water to communities that need it.","slides":["children-waving","classroom-smiles","health-check","volunteer-children","village-group"]}'::jsonb
 where id;

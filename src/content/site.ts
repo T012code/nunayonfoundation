@@ -11,13 +11,12 @@ export const site = {
     "Nunayon Foundation runs education, health, livelihood and relief outreaches for families in communities across Nigeria, from our office in Lagos.",
   address: "12 Placeholder Street, Ikeja, Lagos",
   email: "hello@nunayonfoundation.org",
-  phone: "+234 800 000 0000",
-  whatsapp: "+234 800 000 0000",
+  phone: "+234 806 923 0583",
+  whatsapp: "+234 806 923 0583",
   socials: [
     { label: "Instagram", href: "https://instagram.com/" },
     { label: "Facebook", href: "https://facebook.com/" },
     { label: "X", href: "https://x.com/" },
-    { label: "LinkedIn", href: "https://linkedin.com/" },
   ],
 };
 
@@ -314,6 +313,6 @@ export type Stat = { value: number; suffix: string; label: string };
 
 export const bank = {
   accounts: [
-    { currency: "NGN", bank: "Placeholder Bank PLC", name: "Nunayon Foundation", number: "0123456789" },
+    { currency: "NGN", bank: "United Bank for Africa (UBA)", name: "Nunayon Foundation", number: "2082059772" },
   ],
 };
