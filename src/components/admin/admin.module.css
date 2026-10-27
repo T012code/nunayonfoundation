@@ -1403,3 +1403,79 @@
   opacity: 0.55;
   cursor: not-allowed;
 }
+
+/* Filters above a list (activity log). */
+.toolbar > .field {
+  flex: 1 1 14rem;
+  max-width: 22rem;
+}
+
+.filterActions {
+  display: flex;
+  gap: var(--space-2xs);
+  align-self: end;
+}
+
+/* Page numbers under a long list. */
+.pager {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+}
+
+.pager ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pager li {
+  display: grid;
+  place-items: center;
+  min-width: 2.5rem;
+  color: var(--color-ink-muted);
+}
+
+.pager ol a {
+  display: grid;
+  place-items: center;
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+  border-radius: var(--radius-sm);
+  color: var(--color-ink);
+  text-decoration: none;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (hover: hover) {
+  .pager ol a:hover {
+    background: var(--sand);
+  }
+}
+
+.pager ol a[aria-current="page"] {
+  background: var(--teal);
+  color: var(--cream);
+}
+
+.pagerStep {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.5rem;
+  padding: 0 var(--space-sm);
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-sm);
+  color: var(--color-ink);
+  text-decoration: none;
+}
+
+.pagerStep[aria-disabled] {
+  opacity: 0.45;
+}

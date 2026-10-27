@@ -12,7 +12,7 @@ const ENTITY: Record<string, string> = {
   programmes: "programme",
   albums: "album",
   photos: "photo",
-  people: "person",
+  people: "board member",
   media: "photo upload",
   site_settings: "site settings",
   mail_settings: "email set-up",
@@ -23,88 +23,192 @@ const ENTITY: Record<string, string> = {
   session: "",
 };
 
-const PAGE = 100;
+// What the "Type" filter offers, in the order people think of them.
+const TYPES: { value: string; label: string }[] = [
+  { value: "session", label: "Sign-ins and sign-outs" },
+  { value: "articles", label: "News" },
+  { value: "programmes", label: "Programmes" },
+  { value: "albums,photos", label: "Gallery" },
+  { value: "people", label: "Board members" },
+  { value: "media", label: "Media uploads" },
+  { value: "site_settings", label: "Site settings and home page" },
+  { value: "submissions", label: "Inbox" },
+  { value: "subscribers,campaigns", label: "Newsletter" },
+  { value: "admins", label: "Team" },
+  { value: "mail_settings", label: "Email set-up" },
+];
 
-export default async function ActivityAdmin({ searchParams }: { searchParams: Promise<{ page?: string; who?: string }> }) {
+const PAGE = 20;
+
+type Params = { page?: string; who?: string; type?: string };
+
+export default async function ActivityAdmin({ searchParams }: { searchParams: Promise<Params> }) {
   const params = await searchParams;
-  const page = Math.max(0, Number(params.page) || 0);
+  const page = Math.max(1, Math.floor(Number(params.page)) || 1);
+  const who = params.who ?? "";
+  const type = TYPES.some((t) => t.value === params.type) ? params.type! : "";
   const { supabase } = await requirePage("activity");
+
   let q = supabase
     .from("activity_log")
-    .select("id, actor_email, action, entity, summary, created_at")
+    .select("id, actor_email, action, entity, summary, created_at", { count: "exact" })
     .order("created_at", { ascending: false })
-    .range(page * PAGE, page * PAGE + PAGE);
-  if (params.who) q = q.eq("actor_email", params.who);
-  const { data } = await q;
+    .range((page - 1) * PAGE, page * PAGE - 1);
+  if (who) q = q.eq("actor_email", who);
+  if (type) q = q.in("entity", type.split(","));
+  const { data, count } = await q;
   const rows = (data ?? []) as Row[];
-  const more = rows.length > PAGE;
-  const shown = rows.slice(0, PAGE);
-  const qs = (p: number) => `/admin/activity?${new URLSearchParams({ ...(params.who ? { who: params.who } : {}), ...(p ? { page: String(p) } : {}) })}`;
+  const total = count ?? 0;
+  const pages = Math.max(1, Math.ceil(total / PAGE));
+
+  // People to filter by: the team (as far as this person may see it) plus anyone in the log.
+  const [{ data: team }, { data: actors }] = await Promise.all([
+    supabase.from("admins").select("email, name").order("name"),
+    supabase.from("activity_log").select("actor_email").not("actor_email", "is", null).order("created_at", { ascending: false }).limit(500),
+  ]);
+  const people = new Map<string, string>();
+  for (const m of (team ?? []) as { email: string; name: string }[]) people.set(m.email, m.name || m.email);
+  for (const a of (actors ?? []) as { actor_email: string }[]) if (!people.has(a.actor_email)) people.set(a.actor_email, a.actor_email);
+
+  const href = (p: number) => {
+    const sp = new URLSearchParams();
+    if (who) sp.set("who", who);
+    if (type) sp.set("type", type);
+    if (p > 1) sp.set("page", String(p));
+    const qs = sp.toString();
+    return `/admin/activity${qs ? `?${qs}` : ""}`;
+  };
+  const filtered = !!(who || type);
+  const first = total ? (page - 1) * PAGE + 1 : 0;
+  const last = Math.min(total, page * PAGE);
 
   return (
     <div className={s.page}>
-      <PageHead
-        title="Activity log"
-        lead={
-          params.who ? (
-            <>
-              Showing changes by {params.who}.{" "}
-              <Link href="/admin/activity" className={s.textLink}>
-                Show everyone
-              </Link>
-            </>
-          ) : (
-            "Every sign-in and change made in the admin, newest first."
-          )
-        }
-      />
-      {shown.length ? (
-        <div className={s.tableWrap}>
-          <table className={s.table}>
-            <thead>
-              <tr>
-                <th scope="col">When</th>
-                <th scope="col">Who</th>
-                <th scope="col">What</th>
-              </tr>
-            </thead>
-            <tbody>
-              {shown.map((r) => (
-                <tr key={r.id}>
-                  <td className={`${s.small} ${s.muted} ${s.nowrap}`}>{formatTime(r.created_at)}</td>
-                  <td className={s.small}>
-                    {r.actor_email ? (
-                      <Link href={`/admin/activity?who=${encodeURIComponent(r.actor_email)}`} className={s.textLink}>
-                        {r.actor_email}
-                      </Link>
-                    ) : (
-                      "System"
-                    )}
-                  </td>
-                  <td className={s.small}>
-                    <strong>{r.action[0].toUpperCase() + r.action.slice(1)}</strong> {ENTITY[r.entity] ?? r.entity}
-                    {r.summary && r.entity !== "session" ? <span className={s.muted}> · {r.summary}</span> : null}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      <PageHead title="Activity log" lead="Every sign-in and change made in the admin, newest first." />
+
+      <form className={s.toolbar} action="/admin/activity" role="search" aria-label="Filter the activity log">
+        <label className={s.field}>
+          <span className={s.label}>Person</span>
+          <select name="who" defaultValue={who} className={s.select}>
+            <option value="">Everyone</option>
+            {[...people].map(([email, name]) => (
+              <option key={email} value={email}>
+                {name === email ? email : `${name} (${email})`}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className={s.field}>
+          <span className={s.label}>Type</span>
+          <select name="type" defaultValue={type} className={s.select}>
+            <option value="">Everything</option>
+            {TYPES.map((t) => (
+              <option key={t.value} value={t.value}>
+                {t.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <div className={s.filterActions}>
+          <button type="submit" className={s.secondaryButton}>
+            Show
+          </button>
+          {filtered ? (
+            <Link href="/admin/activity" className={s.ghostButton}>
+              Clear
+            </Link>
+          ) : null}
         </div>
+      </form>
+
+      {rows.length ? (
+        <>
+          <p className={`${s.small} ${s.muted}`} aria-live="polite">
+            {first}–{last} of {total} {filtered ? "matching entries" : "entries"}
+          </p>
+          <div className={s.tableWrap}>
+            <table className={s.table}>
+              <thead>
+                <tr>
+                  <th scope="col">When</th>
+                  <th scope="col">Who</th>
+                  <th scope="col">What</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((r) => (
+                  <tr key={r.id}>
+                    <td className={`${s.small} ${s.muted} ${s.nowrap}`}>{formatTime(r.created_at)}</td>
+                    <td className={s.small}>
+                      {r.actor_email ? (
+                        <Link href={`/admin/activity?who=${encodeURIComponent(r.actor_email)}`} className={s.textLink}>
+                          {people.get(r.actor_email) ?? r.actor_email}
+                        </Link>
+                      ) : (
+                        "System"
+                      )}
+                    </td>
+                    <td className={s.small}>
+                      <strong>{r.action[0].toUpperCase() + r.action.slice(1)}</strong> {ENTITY[r.entity] ?? r.entity}
+                      {r.summary && r.entity !== "session" ? <span className={s.muted}> · {r.summary}</span> : null}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       ) : (
-        <Empty>No activity yet.</Empty>
+        <Empty>{filtered ? "Nothing matches these filters." : "No activity yet."}</Empty>
       )}
-      <div className={s.actions}>
-        {page > 0 ? (
-          <Link href={qs(page - 1)} className={s.secondaryButton}>
-            Newer
-          </Link>
-        ) : null}
-        {more ? (
-          <Link href={qs(page + 1)} className={s.secondaryButton}>
-            Older
-          </Link>
-        ) : null}
-      </div>
+
+      {pages > 1 ? <Pager page={page} pages={pages} href={href} /> : null}
     </div>
+  );
+}
+
+/** Previous / next plus page numbers (first, last and the pages around this one). */
+function Pager({ page, pages, href }: { page: number; pages: number; href: (p: number) => string }) {
+  const nums: (number | "gap")[] = [];
+  for (let p = 1; p <= pages; p++) {
+    if (p === 1 || p === pages || Math.abs(p - page) <= 1) nums.push(p);
+    else if (nums[nums.length - 1] !== "gap") nums.push("gap");
+  }
+  return (
+    <nav className={s.pager} aria-label="Pages">
+      {page > 1 ? (
+        <Link href={href(page - 1)} className={s.pagerStep} rel="prev">
+          ← Newer
+        </Link>
+      ) : (
+        <span className={s.pagerStep} aria-disabled="true">
+          ← Newer
+        </span>
+      )}
+      <ol>
+        {nums.map((n, i) =>
+          n === "gap" ? (
+            <li key={`gap${i}`} aria-hidden="true">
+              …
+            </li>
+          ) : (
+            <li key={n}>
+              <Link href={href(n)} aria-current={n === page ? "page" : undefined} aria-label={`Page ${n}`}>
+                {n}
+              </Link>
+            </li>
+          ),
+        )}
+      </ol>
+      {page < pages ? (
+        <Link href={href(page + 1)} className={s.pagerStep} rel="next">
+          Older →
+        </Link>
+      ) : (
+        <span className={s.pagerStep} aria-disabled="true">
+          Older →
+        </span>
+      )}
+    </nav>
   );
 }
