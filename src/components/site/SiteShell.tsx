@@ -9,6 +9,7 @@ import { jumpTo, lockScroll } from "@/lib/scroll";
 import { nav } from "@/content/site";
 import { SiteHeader } from "./SiteHeader";
 import styles from "./SiteShell.module.css";
+import { isCurrent } from "@/lib/nav";
 
 /**
  * Page frame with the drawer menu used below desktop widths: the menu sits behind the page,
@@ -117,7 +118,7 @@ export function SiteShell({ children, footer, contact: site }: { children: React
           </li>
           {nav.map((item) => (
             <li key={item.href}>
-              <Link href={item.href} aria-current={pathname.startsWith(item.href) ? "page" : undefined}>
+              <Link href={item.href} aria-current={isCurrent(pathname, item.href) ? "page" : undefined}>
                 {item.label}
               </Link>
             </li>

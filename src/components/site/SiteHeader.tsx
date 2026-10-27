@@ -8,6 +8,7 @@ import { ButtonLink } from "@/components/ui/Button";
 import { nav } from "@/content/site";
 import { onLayout, onScroll } from "@/lib/scroll";
 import styles from "./SiteHeader.module.css";
+import { isCurrent } from "@/lib/nav";
 
 export function SiteHeader({
   open,
@@ -67,7 +68,7 @@ export function SiteHeader({
                 <Link
                   href={item.href}
                   className={styles.link}
-                  aria-current={pathname.startsWith(item.href) ? "page" : undefined}
+                  aria-current={isCurrent(pathname, item.href) ? "page" : undefined}
                 >
                   {item.label}
                 </Link>
