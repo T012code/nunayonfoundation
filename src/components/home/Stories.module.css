@@ -82,7 +82,7 @@
 }
 
 .row {
-  grid-template-columns: 7.5rem 1fr;
+  grid-template-columns: min(7.5rem, 38vw) minmax(0, 1fr);
   align-items: start;
   gap: var(--space-sm);
 }

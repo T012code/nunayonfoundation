@@ -14,7 +14,7 @@
 }
 
 .statValue {
-  font-size: clamp(3rem, 2rem + 4vw, 5.5rem);
+  font-size: min(clamp(3rem, 2rem + 4vw, 5.5rem), 13vw);
   font-weight: var(--weight-heavy);
   line-height: 1;
   letter-spacing: -0.04em;

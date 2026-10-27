@@ -55,13 +55,14 @@
 
 .brand {
   display: block;
-  flex-shrink: 0;
+  min-width: 0;
   border-radius: var(--radius-sm);
 }
 
 .logo {
   display: block;
   width: auto;
+  max-width: 100%;
   height: 2.6rem;
 }
 
@@ -120,6 +121,7 @@
 
 .menuButton {
   display: inline-grid;
+  flex-shrink: 0;
   place-items: center;
   width: 3rem;
   height: 3rem;

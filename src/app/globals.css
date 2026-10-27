@@ -65,8 +65,8 @@
   --text-body: 1.0625rem;
   --text-lead: clamp(1.125rem, 1rem + 0.5vw, 1.3125rem);
   --text-h3: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
-  --text-h2: clamp(2rem, 1.5rem + 2.2vw, 3.25rem);
-  --text-h1: clamp(2.5rem, 1.6rem + 4vw, 5rem);
+  --text-h2: min(clamp(2rem, 1.5rem + 2.2vw, 3.25rem), 9vw);
+  --text-h1: min(clamp(2.5rem, 1.6rem + 4vw, 5rem), 11.5vw);
   --text-stat: clamp(2.75rem, 2rem + 3.2vw, 4.5rem);
   --tracking-eyebrow: 0.16em;
   --weight-regular: 400;
@@ -137,6 +137,7 @@ body {
   font-family: var(--font-sans);
   font-size: var(--text-body);
   line-height: 1.65;
+  overflow-wrap: break-word;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
@@ -150,6 +151,8 @@ h4 {
   line-height: 1.1;
   letter-spacing: -0.02em;
   text-wrap: balance;
+  /* With very large text settings a long word can be wider than a phone; let it wrap. */
+  overflow-wrap: break-word;
 }
 
 p {
@@ -165,6 +168,20 @@ img {
 
 a {
   color: inherit;
+}
+
+/* Grid and flex items default to never shrinking below their longest word, so with very
+   large text settings one long word could push a whole column off a phone screen. Letting
+   them shrink changes nothing at normal sizes (checked page by page) and keeps every column
+   on screen when text is enlarged. */
+:where(main, footer, .wrap) :where(*):not(svg, svg *, img, picture, video, input, button, select, textarea) {
+  min-width: 0;
+}
+
+/* An email address is one long word; with large text settings it would otherwise push its
+   column wider than a phone. */
+a[href^="mailto:"] {
+  overflow-wrap: anywhere;
 }
 
 button,

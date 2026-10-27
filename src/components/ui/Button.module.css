@@ -8,17 +8,21 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-2xs);
+  /* Kept on one line where it fits; with very large text it wraps rather than run off screen. */
+  flex-shrink: 0;
+  max-width: 100%;
   min-height: 3rem;
-  padding: 0 var(--space-md);
+  padding: var(--space-3xs) var(--space-md);
   border: 1.5px solid var(--btn-border);
   border-radius: var(--radius-pill);
   background: var(--btn-bg);
   color: var(--btn-fg);
   font-size: var(--text-sm);
   font-weight: var(--weight-bold);
-  line-height: 1;
+  line-height: 1.15;
+  text-align: center;
   text-decoration: none;
-  white-space: nowrap;
+  text-wrap: balance;
   cursor: pointer;
   position: relative;
   overflow: hidden;
