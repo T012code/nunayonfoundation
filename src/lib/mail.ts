@@ -76,32 +76,63 @@ const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
 /**
- * The branded email frame. Email clients don't support modern CSS colour functions, so the
- * brand colours are written here as plain hex values (teal, leaf, cream, ink).
+ * The branded email frame, matching the newsletter letterhead: a teal band with the logo and
+ * a leaf-green line, the message on white, and a short footer. Email clients don't support
+ * modern CSS colour functions, so the brand colours are plain hex values here.
  */
-export function layout({ preheader = "", body, footer }: { preheader?: string; body: string; footer?: string }) {
+export function layout({
+  preheader = "",
+  body,
+  footer,
+  kicker = "",
+}: {
+  preheader?: string;
+  body: string;
+  footer?: string;
+  /** Small line under the logo, e.g. "Website inbox". */
+  kicker?: string;
+}) {
   return `<!doctype html>
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"></head>
 <body style="margin:0;padding:0;background:#f7f1e6;font-family:Montserrat,Segoe UI,Helvetica,Arial,sans-serif;color:#0f2f33;">
 <span style="display:none!important;opacity:0;color:transparent;height:0;width:0;overflow:hidden">${esc(preheader)}</span>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f7f1e6;padding:32px 16px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f7f1e6;padding:28px 12px;">
 <tr><td align="center">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;">
-<tr><td style="padding:0 8px 20px;">
-<a href="${SITE_URL}" style="text-decoration:none;color:#0f2f33;font-weight:800;font-size:22px;letter-spacing:-0.02em;">nunayon <span style="color:#2f8a57;">foundation</span></a>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background:#ffffff;border-radius:18px;overflow:hidden;">
+<tr><td style="background:#00393e;padding:24px 28px 20px;">
+<a href="${SITE_URL}" style="text-decoration:none;"><img src="${SITE_URL}/email/logo-stacked-reversed.png" width="150" height="50" alt="Nunayon Foundation" style="display:block;width:150px;height:auto;border:0;color:#ffffff;font-size:20px;font-weight:800;"></a>
+${kicker ? `<p style="margin:12px 0 0;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:#8fd3a8;font-weight:600;">${esc(kicker)}</p>` : ""}
 </td></tr>
-<tr><td style="background:#ffffff;border-radius:16px;padding:32px 28px;font-size:16px;line-height:1.65;">
+<tr><td style="height:4px;line-height:4px;font-size:0;background:#2f8a57;">&nbsp;</td></tr>
+<tr><td style="padding:32px 28px 28px;font-size:16px;line-height:1.65;">
 ${body}
 </td></tr>
-<tr><td style="padding:20px 8px;font-size:12px;line-height:1.6;color:#5b6b6c;">
-${footer ?? `Nunayon Foundation · Lagos, Nigeria · <a href="${SITE_URL}" style="color:#5b6b6c;">nunayonfoundation.org</a>`}
+<tr><td style="padding:0 28px 26px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid #e6ddcc;"><tr><td style="padding-top:18px;font-size:12px;line-height:1.6;color:#5b6b6c;">
+${footer ?? `Nunayon Foundation · <a href="${SITE_URL}" style="color:#5b6b6c;">${SITE_URL.replace(/^https?:\/\//, "")}</a>`}
+</td></tr></table>
 </td></tr>
 </table>
 </td></tr>
 </table>
 </body>
 </html>`;
+}
+
+/** A submission's details as label / value rows, for alerts and forwards. */
+export function detailRows(rows: { label: string; value: string }[]) {
+  return rows
+    .map(
+      (r) =>
+        `<p style="margin:0 0 4px;font-size:13px;color:#5b6b6c;">${esc(r.label)}</p><p style="margin:0 0 16px;white-space:pre-wrap;">${esc(r.value)}</p>`,
+    )
+    .join("");
+}
+
+/** Comma- or line-separated addresses into a clean list. */
+export function addressList(value: string) {
+  return [...new Set(value.split(/[\s,;]+/).map((a) => a.trim().toLowerCase()).filter((a) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(a)))];
 }
 
 export function button(href: string, label: string) {

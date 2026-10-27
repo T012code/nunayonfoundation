@@ -310,10 +310,11 @@ export const articles: Article[] = [
 
 // Placeholder bank details; real ones come from the admin.
 export type Social = { label: string; href: string };
-export type BankAccount = { currency: string; bank: string; name: string; number: string };
+import type { BankAccount } from "./bank";
+export type { BankAccount };
 export type Stat = { value: number; suffix: string; label: string };
 
-export const bank = {
+export const bank: { accounts: BankAccount[] } = {
   accounts: [
     { currency: "NGN", bank: "United Bank for Africa (UBA)", name: "Nunayon Foundation", number: "2082059772" },
   ],

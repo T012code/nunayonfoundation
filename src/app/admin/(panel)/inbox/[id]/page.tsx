@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Card, formatTime, PageHead, adminStyles as s } from "@/components/admin/ui";
 import { requirePage } from "@/lib/admin/access";
 import { KINDS, type Submission } from "@/lib/admin/inbox";
+import { ForwardForm } from "./ForwardForm";
 import { InboxActions } from "./InboxActions";
 
 export const metadata: Metadata = { title: "Inbox" };
@@ -19,6 +20,8 @@ export default async function InboxItem({ params }: { params: Promise<{ id: stri
     item.status = "read";
   }
   const wa = item.phone.replace(/\D/g, "");
+  // Team members to forward to (only visible to the super admin and admins; others type an address).
+  const { data: team } = await supabase.from("admins").select("name, email").eq("active", true).order("name");
   const subject = `Re: your ${KINDS[item.kind].toLowerCase()} to Nunayon Foundation`;
 
   return (
@@ -67,6 +70,9 @@ export default async function InboxItem({ params }: { params: Promise<{ id: stri
             </div>
             <InboxActions id={item.id} status={item.status} />
           </div>
+        </Card>
+        <Card title="Forward" lead="Send this message to a team member or anyone else, in the site's email style. Their reply goes straight to the person who wrote in.">
+          <ForwardForm id={item.id} team={(team ?? []) as { name: string; email: string }[]} />
         </Card>
       </div>
     </div>

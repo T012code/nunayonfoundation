@@ -2,7 +2,7 @@
 
 import { after } from "next/server";
 import { headers } from "next/headers";
-import { getMailer, layout, button, escapeHtml } from "@/lib/mail";
+import { addressList, button, detailRows, escapeHtml, getMailer, layout } from "@/lib/mail";
 import { SITE_URL } from "@/lib/env";
 import { serviceClient } from "@/lib/supabase/server";
 import { domainAcceptsMail } from "@/lib/dns";
@@ -126,23 +126,20 @@ export async function submitForm(kind: Kind, fd: FormData): Promise<FormResult> 
         getMailer(),
         db.from("site_settings").select("notify_email").maybeSingle<{ notify_email: string }>(),
       ]);
-      if (!mailer || !settings?.notify_email) return;
+      const to = addressList(settings?.notify_email ?? "");
+      if (!mailer || !to.length) return;
       const rows = [{ label: "Name", value: name }, { label: "Email", value: email }, ...(phone ? [{ label: "Phone", value: phone }] : []), ...fields];
       await mailer.send({
-        to: settings.notify_email,
+        to: to.join(", "),
         replyTo: email,
         subject: `${spec.subject} from ${name}`,
         text: rows.map((r) => `${r.label}: ${r.value}`).join("\n\n") + `\n\nOpen the inbox: ${SITE_URL}/admin/inbox`,
         html: layout({
+          kicker: "Website inbox",
           preheader: `${spec.subject} from ${name}`,
           body:
             `<h1 style="margin:0 0 20px;font-size:22px;">${escapeHtml(spec.subject)}</h1>` +
-            rows
-              .map(
-                (r) =>
-                  `<p style="margin:0 0 4px;font-size:13px;color:#5b6b6c;">${escapeHtml(r.label)}</p><p style="margin:0 0 16px;white-space:pre-wrap;">${escapeHtml(r.value)}</p>`,
-              )
-              .join("") +
+            detailRows(rows) +
             button(`${SITE_URL}/admin/inbox`, "Open the inbox") +
             `<p style="margin:12px 0 0;font-size:13px;color:#5b6b6c;">Reply to this email to answer ${escapeHtml(name)} directly.</p>`,
         }),
@@ -208,6 +205,7 @@ async function sendConfirmation(email: string, token: string) {
     subject: "Please confirm your subscription",
     text: `Thank you for signing up to news from Nunayon Foundation.\n\nConfirm your subscription: ${url}\n\nIf you didn't sign up, ignore this email and you won't hear from us.`,
     html: layout({
+      kicker: "Newsletter",
       preheader: "One click to confirm, and you'll get our stories from the field.",
       body:
         `<h1 style="margin:0 0 16px;font-size:22px;">Confirm your subscription</h1>` +

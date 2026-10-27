@@ -3,26 +3,38 @@
 import { ActionError, requireAction } from "@/lib/admin/access";
 import { imageRefs, json, required, str } from "@/lib/admin/form";
 import { check, refreshSite, run, type ActionResult } from "@/lib/admin/result";
+import { bankProblems, cleanAccount, type BankAccount } from "@/content/bank";
+import { addressList } from "@/lib/mail";
 import { emailProblem } from "@/lib/validate";
 
 type Social = { label: string; href: string };
-type Account = { currency: string; bank: string; name: string; number: string };
 type Stat = { value: number; suffix: string; label: string };
 
 export async function saveSettings(_: unknown, fd: FormData): Promise<ActionResult> {
   return run(async () => {
     const { supabase } = await requireAction("settings");
     const email = required(fd, "email", "Public email", 200);
-    const notify = str(fd, "notify_email", 200);
-    for (const [label, v] of [["Public email", email], ["Alerts email", notify]] as const) {
-      const problem = v ? emailProblem(v) : null;
-      if (problem) throw new ActionError(`${label}: ${problem}`);
+    const emailIssue = emailProblem(email);
+    if (emailIssue) throw new ActionError(`Public email: ${emailIssue}`);
+    // Form alerts: ticked team members plus any other addresses.
+    const other = str(fd, "notify_other", 2000);
+    const typed = other.split(/[\s,;]+/).filter(Boolean);
+    for (const a of typed) {
+      const problem = emailProblem(a);
+      if (problem) throw new ActionError(`Form alerts, "${a}": ${problem}`);
     }
+    const notify = addressList([...fd.getAll("notify_members").map(String), ...typed].join(",")).join(", ");
     const socials = json<Social[]>(fd, "socials", []).filter((s) => s.label && s.href);
     for (const s of socials) {
       if (!/^https:\/\//.test(s.href)) throw new ActionError(`The ${s.label} link should start with https://`);
     }
-    const accounts = json<Account[]>(fd, "bank_accounts", []).filter((a) => a.number);
+    const accounts = json<Partial<BankAccount>[]>(fd, "bank_accounts", [])
+      .map(cleanAccount)
+      .filter((a) => a.number || a.iban);
+    accounts.forEach((a, i) => {
+      const problems = bankProblems(a);
+      if (problems.length) throw new ActionError(`Bank account ${i + 1} (${a.currency}): ${problems.join(", ")}.`);
+    });
 
     check(
       await supabase

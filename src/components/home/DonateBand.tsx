@@ -2,11 +2,11 @@ import { LeafField, type Leaf } from "@/components/motion/LeafField";
 import { Reveal } from "@/components/motion/Reveal";
 import { Words } from "@/components/motion/Words";
 import { ButtonLink } from "@/components/ui/Button";
-import { CopyButton } from "@/components/ui/CopyButton";
+import type { BankAccount } from "@/content/bank";
 import { COPY, type Copy } from "@/content/copy";
+import { BankAccounts } from "./BankAccounts";
 import styles from "./DonateBand.module.css";
 
-type Account = { currency: string; bank: string; name: string; number: string };
 
 const LEAVES: Leaf[] = [
   { top: "-8%", left: "-6%", size: "clamp(14rem, 30vw, 26rem)", speed: 0.18, rotate: 18, angle: -12, opacity: 0.13 },
@@ -15,7 +15,7 @@ const LEAVES: Leaf[] = [
   { top: "78%", left: "88%", size: "clamp(4rem, 7vw, 6rem)", speed: 0.6, rotate: -60, angle: 40, opacity: 0.16, sway: 10 },
 ];
 
-export function DonateBand({ accounts, copy = COPY.home.donate }: { accounts: Account[]; copy?: Copy<"home">["donate"] }) {
+export function DonateBand({ accounts, copy = COPY.home.donate }: { accounts: BankAccount[]; copy?: Copy<"home">["donate"] }) {
   return (
     <section className={styles.section} aria-labelledby="donate-title">
       <LeafField leaves={LEAVES} />
@@ -38,27 +38,7 @@ export function DonateBand({ accounts, copy = COPY.home.donate }: { accounts: Ac
         </div>
 
         <Reveal delay={0.25} className={styles.cards}>
-          {accounts.map((a) => (
-            <dl key={a.number} className={styles.card}>
-              <div className={styles.row}>
-                <dt>{copy.bankLabel}</dt>
-                <dd>{a.bank}</dd>
-              </div>
-              <div className={styles.row}>
-                <dt>{copy.nameLabel}</dt>
-                <dd>{a.name}</dd>
-              </div>
-              <div className={`${styles.row} ${styles.numberRow}`}>
-                <dt>
-                  {copy.numberLabel} ({a.currency})
-                </dt>
-                <dd>
-                  <span className={styles.number}>{a.number}</span>
-                  <CopyButton value={a.number} label="account number" />
-                </dd>
-              </div>
-            </dl>
-          ))}
+          <BankAccounts accounts={accounts} copy={copy} />
         </Reveal>
       </div>
     </section>

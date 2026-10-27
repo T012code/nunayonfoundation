@@ -100,3 +100,82 @@
     gap: var(--space-3xl);
   }
 }
+
+/* Several accounts: currency tabs above the card. */
+.accounts {
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3xs);
+  padding: var(--space-3xs);
+  border: 1px solid var(--veil-rule);
+  border-radius: var(--radius-sm);
+  justify-self: start;
+}
+
+.tab {
+  min-height: 2.75rem;
+  padding: 0 var(--space-sm);
+  border: 0;
+  border-radius: calc(var(--radius-sm) - 2px);
+  background: transparent;
+  color: var(--color-on-inverse-muted);
+  font: inherit;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition:
+    background-color var(--dur-base) var(--ease-out),
+    color var(--dur-base) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .tab:hover {
+    color: var(--white);
+  }
+}
+
+.tab[aria-selected="true"] {
+  background: var(--cream);
+  color: var(--teal);
+}
+
+/* Codes such as SWIFT, sort code and IBAN: readable, copyable, smaller than the account number. */
+.code {
+  font-size: var(--text-lead);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.03em;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+  color: var(--white);
+}
+
+.subgroup {
+  display: grid;
+  gap: var(--space-md);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--veil-rule);
+}
+
+.subhead {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+  color: var(--mint);
+}
+
+/* The newly picked account eases in. */
+.card {
+  animation: card-in 420ms var(--ease-out-expo);
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 0.5rem, 0);
+  }
+}
