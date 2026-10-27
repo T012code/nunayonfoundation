@@ -42,26 +42,32 @@ export const getAccess = cache(async (): Promise<State> => {
   return { state: "ok", access };
 });
 
-export const can = (a: Access, perm: Permission) => a.role === "super_admin" || a.permissions.includes(perm);
+/** Super admin and admins: every permission, plus the team and email set-up. */
+export const isManager = (a: Access) => a.role === "super_admin" || a.role === "admin";
+
+export const can = (a: Access, perm: Permission) => isManager(a) || a.permissions.includes(perm);
+
+type Level = Permission | "super" | "manage";
+
+const allowed = (a: Access, perm?: Level) =>
+  !perm || (perm === "super" ? a.role === "super_admin" : perm === "manage" ? isManager(a) : can(a, perm));
 
 /** For admin pages: sends people to sign in, verify MFA, or back to the dashboard as needed. */
-export async function requirePage(perm?: Permission | "super") {
+export async function requirePage(perm?: Level) {
   const s = await getAccess();
   if (s.state === "signed-out") redirect("/admin/login");
   if (s.state === "no-access") redirect("/admin/login?error=no-access");
   if (s.state === "needs-mfa") redirect("/admin/mfa");
-  if (perm === "super" ? s.access.role !== "super_admin" : perm && !can(s.access, perm)) redirect("/admin?denied=1");
+  if (!allowed(s.access, perm)) redirect("/admin?denied=1");
   return { access: s.access, supabase: await createClient() };
 }
 
 export class ActionError extends Error {}
 
 /** For admin server actions: the same checks, as an error the form can show. */
-export async function requireAction(perm?: Permission | "super") {
+export async function requireAction(perm?: Level) {
   const s = await getAccess();
   if (s.state !== "ok") throw new ActionError("Your session has ended. Sign in again to continue.");
-  if (perm === "super" ? s.access.role !== "super_admin" : perm && !can(s.access, perm)) {
-    throw new ActionError("You don't have permission to do that.");
-  }
+  if (!allowed(s.access, perm)) throw new ActionError("You don't have permission to do that.");
   return { access: s.access, supabase: await createClient() };
 }

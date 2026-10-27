@@ -1,6 +1,6 @@
 import { signOut } from "@/app/actions/admin/auth";
 import { AdminShell, type NavGroup, type NavItem } from "@/components/admin/AdminShell";
-import { can, requirePage, ROLE_LABELS } from "@/lib/admin/access";
+import { can, isManager, requirePage, ROLE_LABELS } from "@/lib/admin/access";
 
 // Every page in the panel is personal and always fresh.
 export const dynamic = "force-dynamic";
@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export default async function PanelLayout({ children }: { children: React.ReactNode }) {
   const { access, supabase } = await requirePage();
   const has = (p: Parameters<typeof can>[1]) => can(access, p);
-  const isSuper = access.role === "super_admin";
+  const manager = isManager(access);
 
   let unread = 0;
   if (has("inbox")) {
@@ -44,8 +44,8 @@ export default async function PanelLayout({ children }: { children: React.ReactN
       label: "Site",
       items: [
         ...show(has("settings"), { href: "/admin/settings", label: "Site settings", icon: "settings" }),
-        ...show(isSuper, { href: "/admin/email", label: "Email set-up", icon: "mail" }),
-        ...show(isSuper, { href: "/admin/team", label: "Team & permissions", icon: "team" }),
+        ...show(manager, { href: "/admin/email", label: "Email set-up", icon: "mail" }),
+        ...show(manager, { href: "/admin/team", label: "Team & permissions", icon: "team" }),
         ...show(has("activity"), { href: "/admin/activity", label: "Activity log", icon: "activity" }),
       ],
     },

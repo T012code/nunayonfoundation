@@ -1370,3 +1370,36 @@
     transform: translate3d(0, 1rem, 0);
   }
 }
+
+/* Team: places used per role. */
+.places {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--text-sm);
+  color: var(--color-ink-muted);
+}
+
+.places li {
+  padding: var(--space-3xs) var(--space-sm);
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+}
+
+.places strong {
+  color: var(--color-ink);
+}
+
+.places li[data-full] {
+  border-color: var(--amber);
+}
+
+/* A choice that can't be picked right now (e.g. a role with no places left). */
+.check[data-disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}

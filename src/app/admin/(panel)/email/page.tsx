@@ -8,7 +8,7 @@ import { EmailForm } from "./EmailForm";
 export const metadata: Metadata = { title: "Email set-up" };
 
 export default async function EmailAdmin() {
-  const { supabase } = await requirePage("super");
+  const { supabase } = await requirePage("manage");
   const { data } = await supabase.from("mail_settings").select("*").maybeSingle();
   return (
     <div className={s.page}>

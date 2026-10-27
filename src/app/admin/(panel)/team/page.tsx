@@ -7,11 +7,23 @@ import { serviceClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = { title: "Team & permissions" };
 
-type Member = { id: string; user_id: string | null; name: string; email: string; role: Role; permissions: Permission[]; mfa_required: boolean; active: boolean };
+type Member = {
+  id: string;
+  user_id: string | null;
+  name: string;
+  email: string;
+  role: Role;
+  permissions: Permission[];
+  mfa_required: boolean;
+  active: boolean;
+};
 
 export default async function TeamAdmin() {
-  const { supabase } = await requirePage("super");
-  const { data } = await supabase.from("admins").select("id, user_id, name, email, role, permissions, mfa_required, active").order("created_at");
+  const { supabase } = await requirePage("manage");
+  const { data } = await supabase
+    .from("admins")
+    .select("id, user_id, name, email, role, permissions, mfa_required, active")
+    .order("created_at");
   const members = (data ?? []) as Member[];
 
   // Sign-in details (last sign-in, authenticator set up) come from the auth service.
@@ -23,13 +35,13 @@ export default async function TeamAdmin() {
       auth.set(u.id, { last: u.last_sign_in_at ?? null, mfa: (u.factors ?? []).some((f) => f.status === "verified") });
     }
   }
-  const admins = members.filter((m) => m.role === "admin" && m.active).length;
+  const used = (r: Role) => members.filter((m) => m.role === r && m.active).length;
 
   return (
     <div className={s.page}>
       <PageHead
         title="Team & permissions"
-        lead="Who can sign in to the admin and what each person can do. Roles set a starting point; you can tick or untick any permission per person."
+        lead="Who can sign in to the admin and what each person can do. Admins can do everything; for editors and communications, the role ticks the usual permissions and you can adjust them per person. Nobody can change or remove the super admin."
         actions={
           <Link href="/admin/team/new" className={s.primaryButton}>
             <Icon name="plus" /> Invite someone
@@ -37,7 +49,14 @@ export default async function TeamAdmin() {
         }
       />
       {!db ? <Notice>Add SUPABASE_SECRET_KEY in Vercel to invite people and see sign-in details.</Notice> : null}
-      <p className={`${s.small} ${s.muted}`}>{admins} of 3 admin places used.</p>
+      <ul className={s.places} aria-label="Places used">
+        {(["admin", "editor", "communications"] as const).map((r) => (
+          <li key={r} data-full={used(r) >= 3 || undefined}>
+            <strong>{{ admin: "Admins", editor: "Editors", communications: "Communications" }[r]}</strong> {used(r)} of
+            3
+          </li>
+        ))}
+      </ul>
       <div className={s.tableWrap}>
         <table className={s.table}>
           <thead>
@@ -52,7 +71,10 @@ export default async function TeamAdmin() {
           <tbody>
             {members.map((m) => {
               const a = m.user_id ? auth.get(m.user_id) : undefined;
-              const perms = m.role === "super_admin" ? "Everything" : m.permissions.map((p) => PERMISSION_LABELS[p].label).join(", ") || "Nothing yet";
+              const perms =
+                m.role === "super_admin" || m.role === "admin"
+                  ? "Everything"
+                  : m.permissions.map((p) => PERMISSION_LABELS[p].label).join(", ") || "Nothing yet";
               return (
                 <tr key={m.id}>
                   <td>
@@ -62,13 +84,22 @@ export default async function TeamAdmin() {
                     <div className={`${s.small} ${s.muted}`}>{m.email}</div>
                   </td>
                   <td>
-                    <Badge tone={m.role === "super_admin" ? "teal" : undefined}>{ROLE_LABELS[m.role]}</Badge> {!m.active ? <Badge tone="red">Off</Badge> : null}
+                    <Badge tone={m.role === "super_admin" ? "teal" : undefined}>{ROLE_LABELS[m.role]}</Badge>{" "}
+                    {!m.active ? <Badge tone="red">Off</Badge> : null}
                   </td>
                   <td className={`${s.small} ${s.muted}`}>{perms}</td>
                   <td className={s.small}>
-                    {a?.mfa ? <Badge tone="green">Set up</Badge> : m.mfa_required ? <Badge tone="amber">Required</Badge> : <span className={s.muted}>Optional</span>}
+                    {a?.mfa ? (
+                      <Badge tone="green">Set up</Badge>
+                    ) : m.mfa_required ? (
+                      <Badge tone="amber">Required</Badge>
+                    ) : (
+                      <span className={s.muted}>Optional</span>
+                    )}
                   </td>
-                  <td className={`${s.small} ${s.muted} ${s.nowrap}`}>{a?.last ? formatTime(a.last) : m.user_id ? "Never" : "Not set up"}</td>
+                  <td className={`${s.small} ${s.muted} ${s.nowrap}`}>
+                    {a?.last ? formatTime(a.last) : m.user_id ? "Never" : "Not set up"}
+                  </td>
                 </tr>
               );
             })}

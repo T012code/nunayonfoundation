@@ -8,7 +8,7 @@ import { emailProblem } from "@/lib/validate";
 
 export async function saveMailSettings(_: unknown, fd: FormData): Promise<ActionResult> {
   return run(async () => {
-    const { supabase } = await requireAction("super");
+    const { supabase } = await requireAction("manage");
     const provider = str(fd, "provider", 20) as keyof typeof SMTP_PRESETS;
     if (!(provider in SMTP_PRESETS)) throw new ActionError("Choose your email provider.");
     const preset = SMTP_PRESETS[provider];
@@ -44,7 +44,7 @@ export async function saveMailSettings(_: unknown, fd: FormData): Promise<Action
 
 export async function sendTestEmail(): Promise<ActionResult> {
   return run(async () => {
-    const { access } = await requireAction("super");
+    const { access } = await requireAction("manage");
     const mailer = await getMailer();
     if (!mailer) throw new ActionError("Email isn't fully set up yet: save the details and password first (and make sure the server key is added in Vercel).");
     try {
