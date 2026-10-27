@@ -1,14 +1,31 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { thumbUrl, type MediaRef } from "@/content/images";
+import { BUILTIN_IMAGES, builtinInfo, thumbUrl, type ImageRef } from "@/content/images";
 import { createClient } from "@/lib/supabase/browser";
 import { Icon } from "./Icon";
 import styles from "./admin.module.css";
 
-type Row = { id: string; width: number; height: number; sizes: number[]; blur: string; alt: string; format: "webp" | "jpg"; name: string };
+type Row = {
+  id: string;
+  width: number;
+  height: number;
+  sizes: number[];
+  blur: string;
+  alt: string;
+  format: "webp" | "jpg";
+  name: string;
+};
 
-/** Picks photos already in the media library. */
+// Each choice: an upload (its row) or a photo built into the site (its name).
+type Choice = { key: string; ref: ImageRef; label: string; blur: string; builtin: boolean };
+
+const builtins: Choice[] = BUILTIN_IMAGES.map((slug) => {
+  const info = builtinInfo(slug);
+  return { key: slug, ref: slug, label: info.alt, blur: info.blur, builtin: true };
+});
+
+/** Picks photos already in the media library: uploads first, then the built-in photos. */
 export function MediaDialog({
   open,
   multiple,
@@ -18,7 +35,7 @@ export function MediaDialog({
   open: boolean;
   multiple?: boolean;
   onClose: () => void;
-  onPick: (refs: MediaRef[]) => void;
+  onPick: (refs: ImageRef[]) => void;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   const [rows, setRows] = useState<Row[] | null>(null);
@@ -41,8 +58,15 @@ export function MediaDialog({
   }, [open]);
 
   const q = query.trim().toLowerCase();
-  const shown = (rows ?? []).filter((r) => !q || r.name.toLowerCase().includes(q) || r.alt.toLowerCase().includes(q));
-  const toRef = (r: Row): MediaRef => ({ id: r.id, w: r.width, h: r.height, sizes: r.sizes, blur: r.blur, alt: r.alt, ext: r.format });
+  const uploads: Choice[] = (rows ?? []).map((r) => ({
+    key: r.id,
+    ref: { id: r.id, w: r.width, h: r.height, sizes: r.sizes, blur: r.blur, alt: r.alt, ext: r.format },
+    label: r.alt || r.name,
+    blur: r.blur,
+    builtin: false,
+  }));
+  const all = [...uploads, ...builtins];
+  const shown = all.filter((c) => !q || c.label.toLowerCase().includes(q) || c.key.toLowerCase().includes(q));
 
   return (
     <dialog
@@ -65,7 +89,7 @@ export function MediaDialog({
       <input
         type="search"
         className={styles.input}
-        placeholder="Search by file name or description"
+        placeholder="Search by name or description"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         aria-label="Search photos"
@@ -74,28 +98,47 @@ export function MediaDialog({
         {rows === null ? (
           <p className={styles.muted}>Loading photos…</p>
         ) : shown.length === 0 ? (
-          <p className={styles.muted}>No photos yet. Upload one instead.</p>
+          <p className={styles.muted}>No photos match.</p>
         ) : (
-          <div className={styles.images}>
-            {shown.map((r) => {
-              const on = chosen.includes(r.id);
-              return (
-                <button
-                  key={r.id}
-                  type="button"
-                  className={styles.pick}
-                  aria-pressed={on}
-                  onClick={() =>
-                    multiple ? setChosen((c) => (on ? c.filter((x) => x !== r.id) : [...c, r.id])) : (onPick([toRef(r)]), ref.current?.close())
-                  }
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={thumbUrl(toRef(r), 300)} alt="" loading="lazy" style={{ backgroundImage: `url(${r.blur})` }} />
-                  <span className={styles.pickName}>{r.alt || r.name}</span>
-                </button>
-              );
-            })}
-          </div>
+          <>
+            {[
+              { title: "Uploaded", list: shown.filter((c) => !c.builtin) },
+              { title: "Built into the site", list: shown.filter((c) => c.builtin) },
+            ]
+              .filter((g) => g.list.length)
+              .map((g) => (
+                <section key={g.title} className={styles.pickGroup}>
+                  <h3 className={styles.pickGroupTitle}>{g.title}</h3>
+                  <div className={styles.images}>
+                    {g.list.map((c) => {
+                      const on = chosen.includes(c.key);
+                      return (
+                        <button
+                          key={c.key}
+                          type="button"
+                          className={styles.pick}
+                          aria-pressed={on}
+                          onClick={() =>
+                            multiple
+                              ? setChosen((list) => (on ? list.filter((x) => x !== c.key) : [...list, c.key]))
+                              : (onPick([c.ref]), ref.current?.close())
+                          }
+                        >
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={thumbUrl(c.ref, 300)}
+                            alt=""
+                            loading="lazy"
+                            style={{ backgroundImage: `url(${c.blur})` }}
+                          />
+                          <span className={styles.pickName}>{c.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </section>
+              ))}
+          </>
         )}
       </div>
       {multiple ? (
@@ -106,7 +149,7 @@ export function MediaDialog({
             className={styles.primaryButton}
             disabled={!chosen.length}
             onClick={() => {
-              onPick(chosen.map((id) => toRef((rows ?? []).find((r) => r.id === id)!)));
+              onPick(chosen.map((key) => all.find((c) => c.key === key)!.ref));
               ref.current?.close();
             }}
           >

@@ -6,20 +6,35 @@ import { useMemo, useRef, useState, useTransition } from "react";
 import { deleteMedia, updateAlt } from "@/app/actions/admin/media";
 import { Icon } from "@/components/admin/Icon";
 import { DropZone, UploadProgressList, useUploads } from "@/components/admin/ImageFields";
-import { mediaUrl, thumbUrl, type MediaRef } from "@/content/images";
+import { image, thumbUrl, type ImageRef } from "@/content/images";
 import { formatBytes } from "@/lib/admin/compress";
 import styles from "@/components/admin/admin.module.css";
 
 export type LibraryItem = {
-  ref: MediaRef;
+  /** The upload's id, or the built-in photo's name. */
+  key: string;
+  /** Uploaded in the admin, or built into the site (placeholders and defaults). */
+  kind: "upload" | "builtin";
+  ref: ImageRef;
   name: string;
+  alt: string;
+  width: number;
+  height: number;
+  sizes: number;
   bytes: number;
   format: "webp" | "jpg";
-  created: string;
+  created: string | null;
   usage: { label: string; href: string }[];
 };
 
-type Filter = "all" | "used" | "unused";
+type Filter = "all" | "upload" | "builtin" | "unused";
+const FILTERS: { key: Filter; label: string }[] = [
+  { key: "all", label: "All" },
+  { key: "upload", label: "Uploaded" },
+  { key: "builtin", label: "Built-in" },
+  { key: "unused", label: "Not used" },
+];
+const matches = (i: LibraryItem, f: Filter) => f === "all" || (f === "unused" ? i.usage.length === 0 : i.kind === f);
 const date = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric" });
 
 export function MediaLibrary({ items, totalBytes }: { items: LibraryItem[]; totalBytes: number }) {
@@ -30,16 +45,19 @@ export function MediaLibrary({ items, totalBytes }: { items: LibraryItem[]; tota
   const uploads = useUploads(() => router.refresh());
 
   const counts = useMemo(
-    () => ({ all: items.length, used: items.filter((i) => i.usage.length).length, unused: items.filter((i) => !i.usage.length).length }),
+    () =>
+      Object.fromEntries(FILTERS.map((f) => [f.key, items.filter((i) => matches(i, f.key)).length])) as Record<
+        Filter,
+        number
+      >,
     [items],
   );
   const q = query.trim().toLowerCase();
   const shown = items.filter(
-    (i) =>
-      (filter === "all" || (filter === "used" ? i.usage.length > 0 : i.usage.length === 0)) &&
-      (!q || i.name.toLowerCase().includes(q) || i.ref.alt.toLowerCase().includes(q)),
+    (i) => matches(i, filter) && (!q || i.name.toLowerCase().includes(q) || i.alt.toLowerCase().includes(q)),
   );
-  const current = items.find((i) => i.ref.id === openId) ?? null;
+  const current = items.find((i) => i.key === openId) ?? null;
+  const uploaded = items.filter((i) => i.kind === "upload").length;
 
   return (
     <>
@@ -50,9 +68,15 @@ export function MediaLibrary({ items, totalBytes }: { items: LibraryItem[]; tota
 
       <div className={styles.toolbar}>
         <div className={styles.tabs} role="group" aria-label="Show">
-          {(["all", "used", "unused"] as const).map((f) => (
-            <button key={f} type="button" className={styles.tab} aria-current={filter === f || undefined} onClick={() => setFilter(f)}>
-              {f === "all" ? "All" : f === "used" ? "In use" : "Not used"} <span className={styles.tabCount}>{counts[f]}</span>
+          {FILTERS.map((f) => (
+            <button
+              key={f.key}
+              type="button"
+              className={styles.tab}
+              aria-current={filter === f.key || undefined}
+              onClick={() => setFilter(f.key)}
+            >
+              {f.label} <span className={styles.tabCount}>{counts[f.key]}</span>
             </button>
           ))}
         </div>
@@ -65,31 +89,47 @@ export function MediaLibrary({ items, totalBytes }: { items: LibraryItem[]; tota
           aria-label="Search photos"
         />
         <span className={`${styles.small} ${styles.muted}`}>
-          {items.length} photos · {formatBytes(totalBytes)} stored
+          {uploaded} uploaded · {formatBytes(totalBytes)} stored · {items.length - uploaded} built in
         </span>
       </div>
 
       {shown.length === 0 ? (
-        <div className={styles.empty}>{items.length ? "No photos match." : "No photos uploaded yet. Drop some above to start."}</div>
+        <div className={styles.empty}>
+          {filter === "upload" && !q ? "No photos uploaded yet. Drop some above to start." : "No photos match."}
+        </div>
       ) : (
         <ul className={styles.images}>
           {shown.map((i) => (
-            <li key={i.ref.id} className={styles.imageCard}>
-              <button type="button" className={styles.pick} onClick={() => setOpenId(i.ref.id)} aria-label={`Details for ${i.name || "photo"}`}>
+            <li key={i.key} className={styles.imageCard}>
+              <button
+                type="button"
+                className={styles.pick}
+                onClick={() => setOpenId(i.key)}
+                aria-label={`Details for ${i.alt || i.name || "photo"}`}
+              >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={thumbUrl(i.ref, 300)} alt="" loading="lazy" style={{ backgroundImage: `url(${i.ref.blur})` }} />
-                <span className={styles.pickName}>{i.ref.alt || i.name}</span>
+                <img
+                  src={thumbUrl(i.ref, 300)}
+                  alt=""
+                  loading="lazy"
+                  style={{ backgroundImage: `url(${image(i.ref).blur})` }}
+                />
+                <span className={styles.pickName}>{i.alt || i.name}</span>
               </button>
               <span className={styles.mediaMeta}>
-                {i.usage.length ? <span className={styles.usedTag}>In use · {i.usage.length}</span> : <span className={styles.muted}>Not used</span>}
-                <span className={styles.muted}>{formatBytes(i.bytes)}</span>
+                {i.usage.length ? (
+                  <span className={styles.usedTag}>In use · {i.usage.length}</span>
+                ) : (
+                  <span className={styles.muted}>Not used</span>
+                )}
+                <span className={styles.muted}>{i.kind === "builtin" ? "Built in" : formatBytes(i.bytes)}</span>
               </span>
             </li>
           ))}
         </ul>
       )}
 
-      {current ? <Details key={current.ref.id} item={current} onClose={() => setOpenId(null)} /> : null}
+      {current ? <Details key={current.key} item={current} onClose={() => setOpenId(null)} /> : null}
     </>
   );
 }
@@ -97,12 +137,12 @@ export function MediaLibrary({ items, totalBytes }: { items: LibraryItem[]; tota
 function Details({ item, onClose }: { item: LibraryItem; onClose: () => void }) {
   const router = useRouter();
   const dialog = useRef<HTMLDialogElement>(null);
-  const [alt, setAlt] = useState(item.ref.alt);
+  const [alt, setAlt] = useState(item.alt);
   const [message, setMessage] = useState<{ tone: "ok" | "error"; text: string } | null>(null);
   const [confirming, setConfirming] = useState(false);
   const [pending, start] = useTransition();
-  const largest = item.ref.sizes[item.ref.sizes.length - 1];
-  const url = mediaUrl(item.ref.id, largest, item.ref.ext);
+  const builtin = item.kind === "builtin";
+  const url = image(item.ref).src;
 
   return (
     <dialog
@@ -125,18 +165,24 @@ function Details({ item, onClose }: { item: LibraryItem; onClose: () => void }) 
       <div />
       <div className={`${styles.dialogBody} ${styles.detailGrid}`}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img className={styles.detailPhoto} src={thumbUrl(item.ref, 960)} alt="" style={{ backgroundImage: `url(${item.ref.blur})` }} />
+        <img
+          className={styles.detailPhoto}
+          src={thumbUrl(item.ref, 960)}
+          alt=""
+          style={{ backgroundImage: `url(${image(item.ref).blur})` }}
+        />
         <div className={styles.fields}>
           <dl className={styles.dl}>
             <div>
               <dt>Size</dt>
               <dd>
-                {item.ref.w} × {item.ref.h}px · {formatBytes(item.bytes)} for {item.ref.sizes.length} sizes ({item.format.toUpperCase()})
+                {item.width} × {item.height}px · {builtin ? "" : `${formatBytes(item.bytes)} for `}
+                {item.sizes} sizes ({item.format.toUpperCase()})
               </dd>
             </div>
             <div>
-              <dt>Uploaded</dt>
-              <dd>{date.format(new Date(item.created))}</dd>
+              <dt>{builtin ? "Source" : "Uploaded"}</dt>
+              <dd>{builtin || !item.created ? "Built into the site" : date.format(new Date(item.created))}</dd>
             </div>
             <div>
               <dt>Used in</dt>
@@ -157,19 +203,35 @@ function Details({ item, onClose }: { item: LibraryItem; onClose: () => void }) 
               </dd>
             </div>
           </dl>
-          <label className={styles.field}>
-            <span className={styles.label}>Description (alt text)</span>
-            <span className={styles.help}>What the photo shows, for people using screen readers. Applies where the photo is used next.</span>
-            <textarea className={styles.textarea} value={alt} maxLength={300} rows={3} onChange={(e) => setAlt(e.target.value)} />
-          </label>
+          {builtin ? (
+            <p className={`${styles.small} ${styles.muted}`}>
+              Description: {item.alt}. Built-in photos come with the site, so they can&apos;t be edited or deleted here.
+              Use them anywhere through &ldquo;Choose from library&rdquo;.
+            </p>
+          ) : null}
+          {builtin ? null : (
+            <label className={styles.field}>
+              <span className={styles.label}>Description (alt text)</span>
+              <span className={styles.help}>
+                What the photo shows, for people using screen readers. Applies where the photo is used next.
+              </span>
+              <textarea
+                className={styles.textarea}
+                value={alt}
+                maxLength={300}
+                rows={3}
+                onChange={(e) => setAlt(e.target.value)}
+              />
+            </label>
+          )}
           <div className={styles.actions}>
             <button
               type="button"
               className={styles.primaryButton}
-              disabled={pending || alt === item.ref.alt}
+              disabled={pending || alt === item.alt}
               onClick={() =>
                 start(async () => {
-                  const r = await updateAlt(item.ref.id, alt);
+                  const r = await updateAlt(item.key, alt);
                   setMessage(r.ok ? { tone: "ok", text: r.message ?? "Saved" } : { tone: "error", text: r.error });
                   if (r.ok) router.refresh();
                 })
@@ -186,41 +248,45 @@ function Details({ item, onClose }: { item: LibraryItem; onClose: () => void }) 
               {message.text}
             </p>
           ) : null}
-          <div className={styles.dangerZone}>
-            {item.usage.length ? (
-              <p className={`${styles.small} ${styles.muted}`}>To delete this photo, remove it from the places above first.</p>
-            ) : confirming ? (
-              <div className={styles.actions}>
-                <span className={styles.small}>Delete this photo and all its sizes for good?</span>
-                <button
-                  type="button"
-                  className={styles.dangerButton}
-                  disabled={pending}
-                  onClick={() =>
-                    start(async () => {
-                      const r = await deleteMedia(item.ref.id);
-                      if (r.ok) {
-                        dialog.current?.close();
-                        router.refresh();
-                      } else {
-                        setMessage({ tone: "error", text: r.error });
-                        setConfirming(false);
-                      }
-                    })
-                  }
-                >
-                  Yes, delete
+          {builtin ? null : (
+            <div className={styles.dangerZone}>
+              {item.usage.length ? (
+                <p className={`${styles.small} ${styles.muted}`}>
+                  To delete this photo, remove it from the places above first.
+                </p>
+              ) : confirming ? (
+                <div className={styles.actions}>
+                  <span className={styles.small}>Delete this photo and all its sizes for good?</span>
+                  <button
+                    type="button"
+                    className={styles.dangerButton}
+                    disabled={pending}
+                    onClick={() =>
+                      start(async () => {
+                        const r = await deleteMedia(item.key);
+                        if (r.ok) {
+                          dialog.current?.close();
+                          router.refresh();
+                        } else {
+                          setMessage({ tone: "error", text: r.error });
+                          setConfirming(false);
+                        }
+                      })
+                    }
+                  >
+                    Yes, delete
+                  </button>
+                  <button type="button" className={styles.ghostButton} onClick={() => setConfirming(false)}>
+                    Cancel
+                  </button>
+                </div>
+              ) : (
+                <button type="button" className={styles.dangerButton} onClick={() => setConfirming(true)}>
+                  <Icon name="trash" /> Delete photo
                 </button>
-                <button type="button" className={styles.ghostButton} onClick={() => setConfirming(false)}>
-                  Cancel
-                </button>
-              </div>
-            ) : (
-              <button type="button" className={styles.dangerButton} onClick={() => setConfirming(true)}>
-                <Icon name="trash" /> Delete photo
-              </button>
-            )}
-          </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </dialog>

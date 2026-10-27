@@ -5,20 +5,13 @@ import { SplitText } from "gsap/SplitText";
 import { Logo } from "@/components/brand/Logo";
 import { LeafField, type Leaf } from "@/components/motion/LeafField";
 import { Picture } from "@/components/ui/Picture";
-import type { ImageSlug } from "@/content/images";
 import { gsap, useGSAP } from "@/lib/gsap";
+import { COLUMNS } from "./columns";
 import { usePressStates } from "@/lib/usePressStates";
 import styles from "./auth.module.css";
 
 gsap.registerPlugin(SplitText);
 
-// Three columns of photos from the field; the middle one runs the other way. Each list is
-// shown twice so the loop has no seam.
-const COLUMNS: ImageSlug[][] = [
-  ["children-waving", "classroom-smiles", "sewing-lagos", "health-check", "kids-pump"],
-  ["volunteer-children", "students-reading", "medical-outreach", "women-gathering", "computer-class"],
-  ["smiling-children", "relief-supplies", "boy-uniform", "health-children", "village-group"],
-];
 const SPEEDS = [64, 78, 56];
 
 const LEAVES: Leaf[] = [

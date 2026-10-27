@@ -25,6 +25,10 @@ export const mediaUrl = (id: string, w: number, ext?: "webp" | "jpg") =>
 
 const FALLBACK: ImageSlug = "children-waving";
 
+/** Every photo built into the site (in /public/placeholder), for the media library. */
+export const BUILTIN_IMAGES = Object.keys(manifest) as ImageSlug[];
+export const builtinInfo = (slug: ImageSlug) => manifest[slug];
+
 // Placeholder photos are pre-sized WebP files in /public/placeholder (see scripts/placeholder-images.mjs).
 // Uploaded photos follow the same pattern in storage: one file per width.
 export function image(ref: ImageRef | null | undefined): ImageSource {

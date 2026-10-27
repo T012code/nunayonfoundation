@@ -6,7 +6,7 @@ import { SaveBar, TextInput, Toggle } from "@/components/admin/fields";
 import { Icon } from "@/components/admin/Icon";
 import { DropZone, UploadProgressList, useUploads } from "@/components/admin/ImageFields";
 import { MediaDialog } from "@/components/admin/MediaDialog";
-import { imageKey, thumbUrl, type ImageRef } from "@/content/images";
+import { image, imageKey, thumbUrl, type ImageRef } from "@/content/images";
 import styles from "@/components/admin/admin.module.css";
 
 export type AlbumValues = { title: string; slug: string; published: boolean; photos: { id?: string; image: ImageRef; caption: string }[] };
@@ -99,7 +99,7 @@ export function AlbumForm({ id, values, justSaved }: { id: string | null; values
         multiple
         open={library}
         onClose={() => setLibrary(false)}
-        onPick={(refs) => setPhotos((p) => [...p, ...refs.map((ref) => ({ image: ref, caption: ref.alt }))])}
+        onPick={(refs) => setPhotos((p) => [...p, ...refs.map((ref) => ({ image: ref, caption: image(ref).alt }))])}
       />
 
       <SaveBar pending={pending || uploads.busy} state={state} label={uploads.busy ? "Uploading…" : "Save album"}>
