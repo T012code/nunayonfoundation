@@ -115,3 +115,8 @@
     transform: translate3d(0, 1rem, 0);
   }
 }
+
+/* Until the page knows the form was really sent (ThanksGate), the message waits unseen. */
+:global(.js) [data-thanks="waiting"] {
+  visibility: hidden;
+}

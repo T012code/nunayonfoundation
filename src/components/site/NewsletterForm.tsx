@@ -6,6 +6,7 @@ import { subscribe } from "@/app/actions/forms";
 import { Button } from "@/components/ui/Button";
 import { emailProblem } from "@/lib/validate";
 import styles from "./NewsletterForm.module.css";
+import { markThanks } from "@/lib/thanks";
 
 type Status = { kind: "idle" } | { kind: "sending" } | { kind: "error"; message: string } | { kind: "done" };
 
@@ -31,6 +32,7 @@ export function NewsletterForm() {
       const result = await subscribe(data);
       if (result.ok) {
         setStatus({ kind: "done" });
+        markThanks("newsletter");
         router.push("/thank-you/newsletter");
       } else {
         setStatus({ kind: "error", message: result.error });

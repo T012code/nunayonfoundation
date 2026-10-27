@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import type { FormResult } from "@/app/actions/forms";
+import { markThanks } from "@/lib/thanks";
 
 export type ThankYouForm = "contact" | "volunteer" | "partner" | "donation" | "newsletter";
 
@@ -69,6 +70,7 @@ export function useSiteForm(form: ThankYouForm, send: (data: FormData) => Promis
     try {
       const result = await send(new FormData(formEl));
       if (result.ok) {
+        markThanks(form);
         router.push(`/thank-you/${form}`);
         return;
       }
