@@ -1,7 +1,9 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { SITE_URL } from "@/lib/env";
-import { escapeHtml, getMailer, layout } from "@/lib/mail";
+import { getSettings } from "@/lib/content";
+import { getMailer } from "@/lib/mail";
+import { formatBody, formatBodyText, letterhead, type Letterhead } from "@/lib/newsletter-template";
 
 // Newsletter sending. A campaign is sent by queueing one row per confirmed subscriber, then
 // working through the queue in small batches (from the admin page while it's open, or from
@@ -21,34 +23,16 @@ export type Campaign = {
   failed_count: number;
 };
 
-/** Body text to email HTML: blank lines make paragraphs, "## " a heading, links become links. */
-function bodyHtml(body: string) {
-  const link = (s: string) =>
-    s.replace(/\bhttps?:\/\/[^\s<]+[^\s<.,;:!?)]/g, (url) => `<a href="${url}" style="color:#2f8a57;font-weight:600;">${url.replace(/^https?:\/\//, "")}</a>`);
-  const inline = (s: string) => link(escapeHtml(s)).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>").replace(/\n/g, "<br>");
-  return body
-    .split(/\n\s*\n/)
-    .map((block) => block.trim())
-    .filter(Boolean)
-    .map((block) =>
-      block.startsWith("## ")
-        ? `<h2 style="margin:28px 0 12px;font-size:19px;line-height:1.3;">${inline(block.slice(3))}</h2>`
-        : `<p style="margin:0 0 16px;">${inline(block)}</p>`,
-    )
-    .join("\n");
+/** Contact details for the letterhead footer, from Site settings. */
+export async function getLetterhead(): Promise<Letterhead> {
+  const s = await getSettings();
+  return { siteUrl: SITE_URL, address: s.address, phone: s.phone, email: s.email, socials: s.socials };
 }
 
-export function renderCampaign(c: Pick<Campaign, "subject" | "preheader" | "body">, token?: string) {
+export function renderCampaign(c: Pick<Campaign, "subject" | "preheader" | "body">, head: Letterhead, token?: string) {
   const unsubscribe = token ? `${SITE_URL}/newsletter/unsubscribe?token=${token}` : `${SITE_URL}/newsletter/unsubscribe`;
-  const html = layout({
-    preheader: c.preheader,
-    body: `<h1 style="margin:0 0 20px;font-size:24px;line-height:1.25;letter-spacing:-0.01em;">${escapeHtml(c.subject)}</h1>${bodyHtml(c.body)}`,
-    footer:
-      `You're getting this because you subscribed to news from Nunayon Foundation. ` +
-      `<a href="${unsubscribe}" style="color:#5b6b6c;">Unsubscribe</a> · ` +
-      `<a href="${SITE_URL}" style="color:#5b6b6c;">nunayonfoundation.org</a>`,
-  });
-  const text = `${c.subject}\n\n${c.body.replace(/\*\*(.+?)\*\*/g, "$1").replace(/^## /gm, "")}\n\n—\nUnsubscribe: ${unsubscribe}`;
+  const html = letterhead({ head, subject: c.subject, preheader: c.preheader, bodyHtml: formatBody(c.body), unsubscribe });
+  const text = `${c.subject}\n\n${formatBodyText(c.body)}\n\nWith gratitude,\nThe Nunayon Foundation team\n\n—\nUnsubscribe: ${unsubscribe}`;
   return { html, text, unsubscribe };
 }
 
@@ -79,6 +63,7 @@ export async function sendBatch(db: SupabaseClient, id: string, { limit = 20, de
   let sent = 0;
   let failed = 0;
   if (items.length) {
+    const head = await getLetterhead();
     const mailer = await getMailer({ pool: true });
     if (!mailer) throw new Error("Email isn't set up. Connect a mailbox in Email set-up first.");
     try {
@@ -97,7 +82,7 @@ export async function sendBatch(db: SupabaseClient, id: string, { limit = 20, de
           failed++;
           continue;
         }
-        const { html, text, unsubscribe } = renderCampaign(c, sub.token);
+        const { html, text, unsubscribe } = renderCampaign(c, head, sub.token);
         try {
           await mailer.send({
             to: sub.email,

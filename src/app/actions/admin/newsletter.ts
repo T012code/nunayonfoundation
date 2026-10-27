@@ -6,7 +6,7 @@ import { required, str } from "@/lib/admin/form";
 import { check, run, type ActionResult } from "@/lib/admin/result";
 import { button, getMailer, layout } from "@/lib/mail";
 import { SITE_URL } from "@/lib/env";
-import { renderCampaign, sendBatch, startCampaign } from "@/lib/newsletter";
+import { getLetterhead, renderCampaign, sendBatch, startCampaign } from "@/lib/newsletter";
 import { serviceClient } from "@/lib/supabase/server";
 
 function needService() {
@@ -38,7 +38,7 @@ export async function sendTest(id: string): Promise<ActionResult> {
     if (!c) throw new ActionError("Save the newsletter first.");
     const mailer = await getMailer();
     if (!mailer) throw new ActionError("Email isn't set up yet. The super admin can connect a mailbox in Email set-up.");
-    const { html, text } = renderCampaign(c);
+    const { html, text } = renderCampaign(c, await getLetterhead());
     await mailer.send({ to: access.email, subject: `[Test] ${c.subject}`, html, text });
     mailer.close();
     return { ok: true, message: `Test sent to ${access.email}` };

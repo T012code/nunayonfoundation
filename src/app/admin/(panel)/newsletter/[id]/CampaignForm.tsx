@@ -1,24 +1,26 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useActionState, useEffect, useRef, useState, useTransition } from "react";
+import { useActionState, useDeferredValue, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { continueSending, deleteCampaign, saveCampaign, schedule, sendNow, sendTest } from "@/app/actions/admin/newsletter";
-import { SaveBar, TextArea, TextInput } from "@/components/admin/fields";
+import { SaveBar, TextInput } from "@/components/admin/fields";
 import { formatTime } from "@/components/admin/ui";
 import type { Campaign } from "@/lib/newsletter";
+import { formatBody, letterhead, type Letterhead } from "@/lib/newsletter-template";
+import { BodyEditor } from "./BodyEditor";
 import styles from "@/components/admin/admin.module.css";
 
 export function CampaignForm({
   campaign,
   subscribers,
   justSaved,
-  preview,
+  head,
 }: {
   campaign: Campaign | null;
   subscribers: number;
   justSaved?: boolean;
-  /** The email as subscribers will see it. */
-  preview: string | null;
+  /** Contact details for the letterhead footer. */
+  head: Letterhead;
 }) {
   const router = useRouter();
   const id = campaign?.id ?? null;
@@ -29,6 +31,23 @@ export function CampaignForm({
   const [when, setWhen] = useState("");
   const [confirmSend, setConfirmSend] = useState(false);
   const sending = useRef(false);
+
+  // What's being written, for the live preview (exactly what subscribers will get).
+  const [subject, setSubject] = useState(campaign?.subject ?? "");
+  const [preheader, setPreheader] = useState(campaign?.preheader ?? "");
+  const [body, setBody] = useState(campaign?.body ?? "");
+  const draft = useDeferredValue({ subject, preheader, body });
+  const preview = useMemo(
+    () =>
+      letterhead({
+        head,
+        subject: draft.subject || "Your subject",
+        preheader: draft.preheader,
+        bodyHtml: formatBody(draft.body || "Start writing your message, and it appears here as subscribers will see it."),
+        unsubscribe: `${head.siteUrl}/newsletter/unsubscribe`,
+      }),
+    [draft, head],
+  );
 
   const report = (r: { ok: boolean; message?: string; error?: string }) => setNote({ ok: r.ok, text: (r.ok ? r.message : r.error) ?? "" });
 
@@ -54,7 +73,7 @@ export function CampaignForm({
     };
   }, [campaign?.status, id, router]);
 
-  // After each save, fetch the page again so the preview shows the saved version.
+  // After each save, fetch the page again so the status and send options are current.
   useEffect(() => {
     if (state?.ok) router.refresh();
   }, [state, router]);
@@ -85,22 +104,16 @@ export function CampaignForm({
         <form action={action} className={styles.form}>
           <section className={styles.card}>
             <div className={styles.fields}>
-              <TextInput name="subject" label="Subject" required defaultValue={campaign?.subject} maxLength={150} />
+              <TextInput name="subject" label="Subject" required defaultValue={campaign?.subject} maxLength={150} onValue={setSubject} />
               <TextInput
                 name="preheader"
                 label="Preview line"
                 defaultValue={campaign?.preheader}
                 maxLength={150}
                 help="Shown after the subject in most inboxes."
+                onValue={setPreheader}
               />
-              <TextArea
-                name="body"
-                label="Message"
-                required
-                tall
-                defaultValue={campaign?.body}
-                help="Leave a blank line between paragraphs. Start a line with ## for a heading, wrap words in **double stars** for bold. Links become clickable."
-              />
+              <BodyEditor value={body} onChange={setBody} siteUrl={head.siteUrl} />
             </div>
           </section>
           <SaveBar pending={pending} state={state} label="Save draft">
@@ -113,9 +126,10 @@ export function CampaignForm({
         </form>
       ) : null}
 
-      {preview ? (
+      {editable || campaign ? (
         <section className={styles.card}>
           <h2 className={styles.cardTitle}>Preview</h2>
+          {editable ? <p className={styles.cardLead}>Updates as you type. Save the draft to keep your changes.</p> : null}
           <div className={styles.preview}>
             <iframe srcDoc={preview} title="Email preview" sandbox="" />
           </div>
