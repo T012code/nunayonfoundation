@@ -7,6 +7,7 @@ import { logSignIn } from "@/app/actions/admin/auth";
 import { Button } from "@/components/ui/Button";
 import { createClient } from "@/lib/supabase/browser";
 import styles from "@/components/admin/admin.module.css";
+import { Welcome } from "../Welcome";
 
 const MESSAGES: Record<string, string> = {
   "no-access": "This account doesn't have access to the admin. Ask the super admin to add you.",
@@ -17,6 +18,7 @@ export function LoginForm({ notice }: { notice?: string }) {
   const router = useRouter();
   const [error, setError] = useState(notice ? MESSAGES[notice] : undefined);
   const [pending, setPending] = useState(false);
+  const [done, setDone] = useState(false);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -33,10 +35,13 @@ export function LoginForm({ notice }: { notice?: string }) {
       setError(error.message === "Invalid login credentials" ? "That email and password don't match." : error.message);
       return;
     }
+    setDone(true);
     await logSignIn("signed in");
     router.replace("/admin");
     router.refresh();
   }
+
+  if (done) return <Welcome />;
 
   return (
     <form className={styles.fields} onSubmit={onSubmit}>

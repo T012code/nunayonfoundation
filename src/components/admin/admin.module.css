@@ -802,39 +802,7 @@ a.tile:hover {
   transition: transform var(--dur-base) var(--ease-out);
 }
 
-/* ── Auth screens ── */
-.auth {
-  display: grid;
-  place-items: center;
-  min-height: 100dvh;
-  padding: var(--space-lg) var(--space-md);
-  background: var(--color-paper);
-}
-
-.authCard {
-  display: grid;
-  gap: var(--space-md);
-  width: min(100%, 26rem);
-  padding: clamp(1.5rem, 1rem + 2vw, 2.5rem);
-  border: 1px solid var(--color-rule);
-  border-radius: var(--radius);
-  background: var(--color-surface);
-  box-shadow: var(--shadow-card);
-  animation: rise-in var(--dur-slow) var(--ease-out-expo);
-}
-
-@keyframes rise-in {
-  from {
-    opacity: 0;
-    transform: translate3d(0, 1rem, 0);
-  }
-}
-
-.authLogo {
-  width: 9rem;
-  height: auto;
-}
-
+/* ── Auth screens (layout in app/admin/(auth)/auth.module.css) ── */
 .authTitle {
   font-size: var(--text-h3);
   letter-spacing: -0.02em;
@@ -1337,4 +1305,11 @@ a.tile:hover {
 
 .alignEnd {
   align-self: flex-end;
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 1rem, 0);
+  }
 }
