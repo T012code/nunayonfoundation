@@ -2,7 +2,7 @@
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  padding: var(--space-3xl) 0 clamp(7rem, 16vw, 15rem);
+  padding: var(--space-3xl) 0 calc(clamp(7rem, 16vw, 15rem) + env(safe-area-inset-bottom));
   background: var(--color-inverse);
   color: var(--color-on-inverse);
 }

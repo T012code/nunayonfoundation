@@ -29,7 +29,8 @@
   gap: var(--space-md);
   width: min(82vw, 24rem);
   height: 100dvh;
-  padding: var(--space-sm) var(--gutter) calc(var(--space-lg) + env(safe-area-inset-bottom));
+  padding: max(var(--space-sm), env(safe-area-inset-top)) max(var(--gutter), env(safe-area-inset-right))
+    calc(var(--space-lg) + env(safe-area-inset-bottom)) var(--gutter);
   overflow: clip auto;
   overscroll-behavior: contain;
   color: var(--color-on-inverse);

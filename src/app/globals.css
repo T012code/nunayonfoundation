@@ -156,6 +156,18 @@ html {
   scroll-padding-top: calc(var(--header-h) + var(--space-sm));
 }
 
+/* Controls: no double-tap zoom wait, and a long press doesn't select the label or open the
+   link menu on a button. */
+:where(a, button, input, select, textarea, label, summary, [role="button"]) {
+  touch-action: manipulation;
+}
+
+:where(button, summary, [role="button"]) {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 /* Touch screens: links, cards and controls dim while pressed, the way native lists do, so a
    tap is acknowledged the moment the finger lands. (Buttons also press in; see Button.) */
 @media (hover: none) {
@@ -242,7 +254,7 @@ select {
   width: 100%;
   max-width: calc(var(--container) + 2 * var(--gutter));
   margin-inline: auto;
-  padding-inline: var(--gutter);
+  padding-inline: max(var(--gutter), env(safe-area-inset-left)) max(var(--gutter), env(safe-area-inset-right));
 }
 
 .eyebrow {

@@ -30,6 +30,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: "#FDF7EC",
+  // Edge to edge on notched phones; page gutters keep text clear of the notch and home bar.
+  viewportFit: "cover",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

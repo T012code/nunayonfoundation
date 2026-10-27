@@ -9,7 +9,7 @@
   position: relative;
   display: grid;
   gap: var(--space-lg);
-  padding: var(--space-lg) var(--gutter) var(--space-2xl);
+  padding: var(--space-lg) max(var(--gutter), env(safe-area-inset-right)) var(--space-2xl) max(var(--gutter), env(safe-area-inset-left));
 }
 
 .copy {
