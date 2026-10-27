@@ -15,7 +15,6 @@
 .sway {
   display: block;
   opacity: var(--o);
-  transform: rotate(var(--angle));
   animation: sway var(--sway) var(--ease-in-out) var(--delay) infinite alternate;
 }
 
@@ -23,14 +22,17 @@
   display: block;
   width: 100%;
   height: auto;
+  transform: rotate(var(--angle));
 }
 
+/* Plain values only (the starting angle sits on the mark), so the browser can run the sway
+   off the main thread. */
 @keyframes sway {
   from {
-    transform: rotate(calc(var(--angle) - 5deg)) translate3d(-0.5rem, 0, 0);
+    transform: rotate(-5deg) translate3d(-0.5rem, 0, 0);
   }
   to {
-    transform: rotate(calc(var(--angle) + 6deg)) translate3d(0.75rem, -0.5rem, 0);
+    transform: rotate(6deg) translate3d(0.75rem, -0.5rem, 0);
   }
 }
 

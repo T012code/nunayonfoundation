@@ -346,6 +346,12 @@ select {
   }
 }
 
+/* Moved by MotionRoot on every scroll frame; their own layer keeps that off the paint path. */
+[data-parallax],
+[data-drift] {
+  will-change: transform;
+}
+
 .leaf-decor {
   position: absolute;
   z-index: 0;

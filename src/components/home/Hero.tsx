@@ -14,7 +14,10 @@ const SLIDE_MS = 6500;
 const TUCK = 3;
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const clamp01 = (n: number) => Math.min(1, Math.max(0, n));
-const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
+// Sine in-out: starts and settles softly but never rushes (peak speed 1.6x the scroll, not 3x).
+const easeInOut = (t: number) => (1 - Math.cos(Math.PI * t)) / 2;
+// Share of the hero's scroll spent opening the photo; the rest holds it full screen.
+const OPEN = 0.72;
 
 type Props = { title: string; lead: string; slides: ImageSlug[] };
 
@@ -31,7 +34,11 @@ export function Hero({ title, lead, slides }: Props) {
   const innerRef = useRef<HTMLDivElement>(null);
   const matRef = useRef<HTMLDivElement>(null);
   const scrimRef = useRef<HTMLDivElement>(null);
+  const darkCopyRef = useRef<HTMLDivElement>(null);
   const lightCopyRef = useRef<HTMLDivElement>(null);
+  const lightClipRef = useRef<HTMLDivElement>(null);
+  const lightInnerRef = useRef<HTMLDivElement>(null);
+  const cornersRef = useRef<HTMLDivElement>(null);
 
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -47,9 +54,14 @@ export function Hero({ title, lead, slides }: Props) {
     const clip = clipRef.current;
     const inner = innerRef.current;
     const mat = matRef.current;
+    const dark = darkCopyRef.current;
     const light = lightCopyRef.current;
+    const lightClip = lightClipRef.current;
+    const lightInner = lightInnerRef.current;
     const scrim = scrimRef.current;
-    if (!section || !stage || !clip || !inner || !mat || !light || !scrim) return;
+    const cornerBox = cornersRef.current;
+    if (!section || !stage || !clip || !inner || !mat || !dark || !light || !lightClip || !lightInner || !scrim || !cornerBox) return;
+    const corners = [...cornerBox.children] as HTMLElement[];
 
     const desktop = window.matchMedia("(min-width: 64rem)");
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -59,12 +71,10 @@ export function Hero({ title, lead, slides }: Props) {
 
     const reset = () => {
       delete stage.dataset.ready;
-      for (const el of [clip, inner, mat, scrim, light]) {
+      for (const el of [clip, inner, mat, scrim, light, lightClip, lightInner, ...corners]) {
         el.style.transform = "";
         el.style.opacity = "";
-        el.style.clipPath = "";
       }
-      clip.style.borderRadius = "";
     };
 
     const measure = () => {
@@ -88,9 +98,12 @@ export function Hero({ title, lead, slides }: Props) {
       g.fy = f.top - s.top + TUCK;
       g.fw = f.width - 2 * TUCK;
       g.fh = f.height - 2 * TUCK;
-      // The photo's corner follows the frame's rounded corner, inset by the tuck.
+      // The photo's corner follows the frame's rounded corner, inset by the tuck. The corners
+      // are drawn by four small paper pieces (sized in CSS to the same radius) rather than a
+      // border-radius on the photo, which would repaint the full-screen photo every frame.
       g.r = Math.max(0, parseFloat(getComputedStyle(mat).borderTopLeftRadius) - TUCK);
-      const c = light.getBoundingClientRect();
+      // The dark copy shares the white copy's box and is never moved.
+      const c = dark.getBoundingClientRect();
       g.lx = c.left - s.left;
       g.ly = c.top - s.top;
       g.lw = c.width;
@@ -100,7 +113,7 @@ export function Hero({ title, lead, slides }: Props) {
     const update = (y: number) => {
       if (!active) return;
       const p = clamp01((y - g.start) / g.travel);
-      const e = easeInOut(clamp01(p / 0.62));
+      const e = easeInOut(clamp01(p / OPEN));
       if (e === last) return;
       last = e;
       const { W, H, fx, fy, fw, fh, lx, ly, lw, lh } = g;
@@ -111,23 +124,38 @@ export function Hero({ title, lead, slides }: Props) {
       const m = Math.max(sx, sy);
       clip.style.transform = `translate3d(${(cx - W / 2).toFixed(2)}px, ${(cy - H / 2).toFixed(2)}px, 0) scale(${sx.toFixed(5)}, ${sy.toFixed(5)})`;
       inner.style.transform = `scale(${(m / sx).toFixed(5)}, ${(m / sy).toFixed(5)})`;
-      // The layer is stretched unevenly, so its corner radii are set in its own units (r/sx, r/sy)
-      // to look perfectly round on screen. They ease to square as the photo fills the screen.
-      const r = g.r * (1 - e);
-      clip.style.borderRadius = `${(r / sx).toFixed(2)}px / ${(r / sy).toFixed(2)}px`;
+      // Corner pieces ride on the photo's corners and shrink away as it fills the screen.
+      const hw = (W * sx) / 2;
+      const hh = (H * sy) / 2;
+      const k = (1 - e).toFixed(4);
+      // Each piece reaches 1px past the photo's edge to cover its anti-aliased rim.
+      const xs = [cx - hw - 1, cx + hw - g.r];
+      const ys = [cy - hh - 1, cy + hh - g.r];
+      corners.forEach((el, i) => {
+        el.style.transform = `translate3d(${xs[i & 1].toFixed(2)}px, ${ys[i >> 1].toFixed(2)}px, 0) scale(${k})`;
+      });
       mat.style.opacity = String(1 - clamp01(e / 0.08));
       scrim.style.opacity = String(clamp01((e - 0.15) / 0.5));
 
       // The white headline shows only where the photo sits behind it, so the text turns
-      // white exactly at the photo's edge as the photo slides under it.
-      const left = cx - (W * sx) / 2 - lx;
-      const right = lx + lw - (cx + (W * sx) / 2);
-      const top = cy - (H * sy) / 2 - ly;
-      const bottom = ly + lh - (cy + (H * sy) / 2);
+      // white exactly at the photo's edge as the photo slides under it. The cut is made by two
+      // nested overflow boxes shifted with translate (one trims left and top, the other right
+      // and bottom) and the text shifted back, so it never repaints. A clip-path here would
+      // repaint the whole page on every scroll frame.
+      const left = cx - hw - lx;
+      const right = lx + lw - (cx + hw);
+      const top = cy - hh - ly;
+      const bottom = ly + lh - (cy + hh);
       const overlaps = left < lw && right < lw && top < lh && bottom < lh;
       light.style.opacity = overlaps ? "1" : "0";
       if (overlaps) {
-        light.style.clipPath = `inset(${Math.max(0, top).toFixed(1)}px ${Math.max(0, right).toFixed(1)}px ${Math.max(0, bottom).toFixed(1)}px ${Math.max(0, left).toFixed(1)}px)`;
+        const l = Math.max(0, left);
+        const r = Math.max(0, right);
+        const t = Math.max(0, top);
+        const b = Math.max(0, bottom);
+        light.style.transform = `translate3d(${l.toFixed(2)}px, ${t.toFixed(2)}px, 0)`;
+        lightClip.style.transform = `translate3d(${(-l - r).toFixed(2)}px, ${(-t - b).toFixed(2)}px, 0)`;
+        lightInner.style.transform = `translate3d(${r.toFixed(2)}px, ${b.toFixed(2)}px, 0)`;
       }
     };
 
@@ -194,14 +222,24 @@ export function Hero({ title, lead, slides }: Props) {
           <div ref={scrimRef} className={styles.scrim} aria-hidden="true" />
           <div className={styles.cover} aria-hidden="true" />
         </div>
+        <div ref={cornersRef} className={styles.corners} aria-hidden="true">
+          <span />
+          <span />
+          <span />
+          <span />
+        </div>
         <div ref={matRef} className={styles.mat} aria-hidden="true" />
 
         <div className={styles.copy}>
-          <div className={styles.copyDark}>
+          <div ref={darkCopyRef} className={styles.copyDark}>
             {copy("dark")}
           </div>
           <div ref={lightCopyRef} className={styles.copyLight} aria-hidden="true">
-            {copy("light")}
+            <div ref={lightClipRef} className={styles.lightLayer}>
+              <div ref={lightInnerRef} className={styles.lightLayer}>
+                {copy("light")}
+              </div>
+            </div>
           </div>
           <div className={styles.actions}>
             <ButtonLink href="/donate" variant="cta">
