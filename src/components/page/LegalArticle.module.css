@@ -1,0 +1,75 @@
+.updated {
+  font-size: var(--text-sm);
+  color: var(--color-ink-muted);
+}
+
+.layout {
+  display: grid;
+  gap: var(--space-xl);
+  padding-block: var(--space-lg) var(--section-y);
+}
+
+.body {
+  max-width: 44rem;
+}
+
+.section + .section {
+  margin-top: var(--space-xl);
+  padding-top: var(--space-xl);
+  border-top: 1px solid var(--color-rule);
+}
+
+.heading {
+  margin-bottom: var(--space-sm);
+  font-size: var(--text-h3);
+  letter-spacing: -0.02em;
+}
+
+.body p + p,
+.body p + .list,
+.list + p {
+  margin-top: var(--space-sm);
+}
+
+.body p,
+.list {
+  color: var(--color-ink-muted);
+}
+
+.list {
+  display: grid;
+  gap: var(--space-2xs);
+  margin: var(--space-sm) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Small leaf-green check-style tick instead of default bullets. */
+.list li {
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.list li::before {
+  content: "";
+  position: absolute;
+  top: 0.62em;
+  left: 0.25rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 2px;
+  background: var(--leaf);
+  transform: rotate(45deg);
+}
+
+@media (min-width: 56rem) {
+  .layout {
+    grid-template-columns: minmax(12rem, 16rem) minmax(0, 1fr);
+    gap: clamp(2rem, 6vw, 6rem);
+    padding-top: var(--space-xl);
+  }
+
+  .aside {
+    align-self: stretch;
+  }
+}

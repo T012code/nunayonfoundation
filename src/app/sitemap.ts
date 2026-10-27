@@ -28,5 +28,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: abs("/volunteer"), changeFrequency: "monthly", priority: 0.8 },
     { url: abs("/donate"), changeFrequency: "monthly", priority: 0.9 },
     { url: abs("/contact"), changeFrequency: "yearly", priority: 0.7 },
+    { url: abs("/faq"), changeFrequency: "monthly", priority: 0.6 },
+    { url: abs("/privacy"), changeFrequency: "yearly", priority: 0.3 },
+    { url: abs("/terms"), changeFrequency: "yearly", priority: 0.3 },
+    { url: abs("/cookies"), changeFrequency: "yearly", priority: 0.3 },
   ];
 }

@@ -1,6 +1,7 @@
 import { LeafField, type Leaf } from "@/components/motion/LeafField";
 import { Reveal } from "@/components/motion/Reveal";
 import { Words } from "@/components/motion/Words";
+import type { ReactNode } from "react";
 import { ButtonLink } from "@/components/ui/Button";
 import styles from "./CtaBand.module.css";
 
@@ -14,9 +15,12 @@ const LEAVES: Leaf[] = [
 export function CtaBand({
   title = "There is a place for you in this work.",
   body = "Give by bank transfer, volunteer at an outreach, or partner with us as a church, school or company.",
+  actions,
 }: {
   title?: string;
   body?: string;
+  /** Buttons in place of the default Donate and Volunteer. */
+  actions?: ReactNode;
 }) {
   return (
     <section className={styles.band} aria-labelledby="cta-title">
@@ -29,12 +33,16 @@ export function CtaBand({
           {body}
         </Reveal>
         <Reveal delay={0.35} className={styles.actions}>
-          <ButtonLink href="/donate" variant="cta">
-            Donate
-          </ButtonLink>
-          <ButtonLink href="/volunteer" variant="inverse">
-            Volunteer
-          </ButtonLink>
+          {actions ?? (
+            <>
+              <ButtonLink href="/donate" variant="cta">
+                Donate
+              </ButtonLink>
+              <ButtonLink href="/volunteer" variant="inverse">
+                Volunteer
+              </ButtonLink>
+            </>
+          )}
         </Reveal>
       </div>
     </section>

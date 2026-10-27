@@ -144,3 +144,47 @@ export const albums: Album[] = [
 ];
 
 export const contactTopics = ["General enquiry", "Partnership", "Volunteering", "Donations", "Media & press", "Something else"];
+
+export type FaqGroup = { id: string; title: string; items: { q: string; a: string }[] };
+
+export const faq: { hero: { eyebrow: string; title: string; lead: string }; groups: FaqGroup[] } = {
+  hero: {
+    eyebrow: "FAQ",
+    title: "Questions people often ask us.",
+    lead: "About the foundation, giving, volunteering and partnering. If yours isn't here, send it to us and we'll answer.",
+  },
+  groups: [
+    {
+      id: "foundation",
+      title: "The foundation",
+      items: [
+        { q: "Where do you work?", a: "Our office is in Lagos, and we run outreaches in communities across Nigeria, planned with local leaders, schools and places of worship." },
+        { q: "Is Nunayon Foundation a religious organisation?", a: "Our work is shaped by faith, but we serve everyone in the communities we visit, whatever their beliefs." },
+        { q: "How do you choose communities?", a: "Usually through people who know them well: community leaders, teachers, health workers and partners who tell us where the need is greatest. We visit before every outreach to plan it with them." },
+        { q: "How can I see what you've done?", a: "Our News page has stories from recent outreaches, and the Gallery has photos from the field. We also share updates in our newsletter." },
+      ],
+    },
+    {
+      id: "giving",
+      title: "Giving",
+      items: [
+        ...donate.faqs,
+        { q: "How much of my gift reaches the people you serve?", a: "As much as we can manage. Volunteers do most of the work, and we keep running costs low. We'll publish yearly reports here as they're ready." },
+      ],
+    },
+    {
+      id: "volunteering",
+      title: "Volunteering",
+      items: volunteer.faqs,
+    },
+    {
+      id: "partnering",
+      title: "Partnering",
+      items: [
+        { q: "Who can partner with you?", a: "Churches, mosques, schools, companies, community groups and other charities. Partners fund a programme, sponsor an outreach, donate supplies or send volunteers." },
+        { q: "Can my company sponsor a specific outreach?", a: "Yes. We'll agree the plan and budget together, and report back with photos and figures afterwards." },
+        { q: "How do we start?", a: "Send us a message with the Partnership topic selected and tell us a little about your organisation. We usually reply within two working days." },
+      ],
+    },
+  ],
+};
