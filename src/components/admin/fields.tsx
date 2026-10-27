@@ -25,12 +25,14 @@ export function TextInput({
   maxLength = 200,
   placeholder,
   onValue,
+  readOnly,
 }: Base & {
   defaultValue?: string | number | null;
   type?: "text" | "email" | "url" | "number" | "datetime-local" | "password";
   maxLength?: number;
   placeholder?: string;
   onValue?: (v: string) => void;
+  readOnly?: boolean;
 }) {
   return (
     <label className={styles.field}>
@@ -44,6 +46,7 @@ export function TextInput({
         defaultValue={defaultValue ?? ""}
         maxLength={type === "number" ? undefined : maxLength}
         placeholder={placeholder}
+        readOnly={readOnly}
         onChange={onValue ? (e) => onValue(e.target.value) : undefined}
       />
     </label>

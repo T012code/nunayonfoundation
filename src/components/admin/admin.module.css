@@ -1638,3 +1638,68 @@
   font-weight: var(--weight-semibold);
   color: var(--color-ink-muted);
 }
+
+/* Email set-up: numbered steps and provider tiles. */
+.stepNum {
+  display: inline-grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  margin-right: var(--space-2xs);
+  border-radius: 50%;
+  background: var(--teal);
+  color: var(--cream);
+  font-size: var(--text-sm);
+  vertical-align: 0.1em;
+}
+
+.providerGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr));
+  gap: var(--space-xs);
+}
+
+.providerTile {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 3.5rem;
+  padding: var(--space-sm);
+  border: 1.5px solid var(--color-rule);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  font-weight: var(--weight-semibold);
+  cursor: pointer;
+  transition:
+    border-color var(--dur-micro) var(--ease-out),
+    background-color var(--dur-micro) var(--ease-out);
+}
+
+.providerTile input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (hover: hover) {
+  .providerTile:hover {
+    border-color: var(--leaf);
+  }
+}
+
+.providerTile:has(input:checked) {
+  border-color: var(--leaf-deep);
+  background: var(--mint-pale);
+}
+
+.providerTile:has(input:focus-visible) {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.guideSteps {
+  display: grid;
+  gap: var(--space-2xs);
+  margin: 0 0 var(--space-sm);
+  padding-left: 1.25rem;
+}
