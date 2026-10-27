@@ -53,9 +53,14 @@
   transition: transform var(--dur-slow) var(--ease-out-expo);
 }
 
-.card:hover .zoom,
 .card:focus-visible .zoom {
   transform: scale(1.05);
+}
+
+@media (hover: hover) {
+  .card:hover .zoom {
+    transform: scale(1.05);
+  }
 }
 
 .leadText {
@@ -122,11 +127,16 @@
   transition: transform var(--dur-slow) var(--ease-out-expo);
 }
 
-.card:hover .leadTitle::after,
-.card:hover .rowTitle::after,
 .card:focus-visible .leadTitle::after,
 .card:focus-visible .rowTitle::after {
   transform: none;
+}
+
+@media (hover: hover) {
+  .card:hover .leadTitle::after,
+  .card:hover .rowTitle::after {
+    transform: none;
+  }
 }
 
 @media (min-width: 64rem) {

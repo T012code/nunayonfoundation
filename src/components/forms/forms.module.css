@@ -42,8 +42,10 @@
     box-shadow var(--dur-micro) var(--ease-out);
 }
 
-.input:hover {
-  border-color: var(--slate);
+@media (hover: hover) {
+  .input:hover {
+    border-color: var(--slate);
+  }
 }
 
 .input:focus {
@@ -180,8 +182,10 @@
     transform var(--dur-micro) var(--ease-out);
 }
 
-.option:hover {
-  border-color: var(--slate);
+@media (hover: hover) {
+  .option:hover {
+    border-color: var(--slate);
+  }
 }
 
 .option:active {
@@ -328,8 +332,10 @@
     box-shadow var(--dur-micro) var(--ease-out);
 }
 
-.phone:hover {
-  border-color: var(--slate);
+@media (hover: hover) {
+  .phone:hover {
+    border-color: var(--slate);
+  }
 }
 
 .phone:focus-within {
@@ -376,8 +382,10 @@
   transform: translateY(-2px) rotate(45deg);
 }
 
-.phoneCountry:hover {
-  background: var(--color-paper);
+@media (hover: hover) {
+  .phoneCountry:hover {
+    background: var(--color-paper);
+  }
 }
 
 .phoneCountry:focus-visible {

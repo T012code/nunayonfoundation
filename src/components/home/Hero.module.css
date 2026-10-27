@@ -217,8 +217,10 @@
   transition: background-color var(--dur-micro) var(--ease-out);
 }
 
-.step:hover {
-  background: var(--sand);
+@media (hover: hover) {
+  .step:hover {
+    background: var(--sand);
+  }
 }
 
 .step svg {

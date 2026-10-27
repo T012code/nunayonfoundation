@@ -52,8 +52,10 @@
   transition: background-color var(--dur-micro) var(--ease-out);
 }
 
-.close:hover {
-  background: var(--veil-fill-hover);
+@media (hover: hover) {
+  .close:hover {
+    background: var(--veil-fill-hover);
+  }
 }
 
 .closeIcon {
@@ -102,9 +104,14 @@
     color var(--dur-micro) var(--ease-out);
 }
 
-.drawerLinks a:hover,
 .drawerLinks a[aria-current="page"] {
   color: var(--mint);
+}
+
+@media (hover: hover) {
+  .drawerLinks a:hover {
+    color: var(--mint);
+  }
 }
 
 .drawerDonate {

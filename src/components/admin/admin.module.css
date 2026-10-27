@@ -134,9 +134,11 @@
   stroke-linejoin: round;
 }
 
-.navLink:hover {
-  background: var(--veil-fill);
-  color: var(--color-on-inverse);
+@media (hover: hover) {
+  .navLink:hover {
+    background: var(--veil-fill);
+    color: var(--color-on-inverse);
+  }
 }
 
 .navLink[aria-current] {
@@ -225,8 +227,10 @@
   text-decoration: none;
 }
 
-.crumb:hover {
-  color: var(--color-ink);
+@media (hover: hover) {
+  .crumb:hover {
+    color: var(--color-ink);
+  }
 }
 
 .title {
@@ -290,9 +294,11 @@
     transform var(--dur-base) var(--ease-out);
 }
 
-a.tile:hover {
-  border-color: var(--leaf);
-  transform: translate3d(0, -2px, 0);
+@media (hover: hover) {
+  a.tile:hover {
+    border-color: var(--leaf);
+    transform: translate3d(0, -2px, 0);
+  }
 }
 
 .tileValue {
@@ -349,8 +355,10 @@ a.tile:hover {
   transition: background-color var(--dur-micro) var(--ease-out);
 }
 
-.table tbody tr:hover {
-  background: var(--color-paper);
+@media (hover: hover) {
+  .table tbody tr:hover {
+    background: var(--color-paper);
+  }
 }
 
 .rowLink {
@@ -359,9 +367,11 @@ a.tile:hover {
   text-decoration: none;
 }
 
-.rowLink:hover {
-  text-decoration: underline;
-  text-underline-offset: 0.2em;
+@media (hover: hover) {
+  .rowLink:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
 }
 
 .muted {
@@ -451,8 +461,10 @@ a.tile:hover {
   text-decoration: none;
 }
 
-.tab:hover {
-  border-color: var(--leaf);
+@media (hover: hover) {
+  .tab:hover {
+    border-color: var(--leaf);
+  }
 }
 
 .tab[aria-current] {
@@ -521,10 +533,12 @@ a.tile:hover {
   min-height: 18rem;
 }
 
-.input:hover,
-.textarea:hover,
-.select:hover {
-  border-color: var(--slate);
+@media (hover: hover) {
+  .input:hover,
+  .textarea:hover,
+  .select:hover {
+    border-color: var(--slate);
+  }
 }
 
 .input:focus,
@@ -667,14 +681,18 @@ a.tile:hover {
     color var(--dur-micro) var(--ease-out);
 }
 
-.iconButton:hover:not(:disabled) {
-  background: var(--sand);
-  color: var(--color-ink);
+@media (hover: hover) {
+  .iconButton:hover:not(:disabled) {
+    background: var(--sand);
+    color: var(--color-ink);
+  }
 }
 
-.iconButton[data-danger]:hover:not(:disabled) {
-  background: var(--error-wash);
-  color: var(--color-error);
+@media (hover: hover) {
+  .iconButton[data-danger]:hover:not(:disabled) {
+    background: var(--error-wash);
+    color: var(--color-error);
+  }
 }
 
 .iconButton:disabled {
@@ -738,9 +756,14 @@ a.tile:hover {
   transition: opacity var(--dur-micro) var(--ease-out);
 }
 
-.imageCard:hover .imageTools,
 .imageCard:focus-within .imageTools {
   opacity: 1;
+}
+
+@media (hover: hover) {
+  .imageCard:hover .imageTools {
+    opacity: 1;
+  }
 }
 
 @media (hover: none) {
@@ -767,10 +790,16 @@ a.tile:hover {
     background-color var(--dur-micro) var(--ease-out);
 }
 
-.drop:hover,
 .drop[data-over] {
   border-color: var(--leaf-deep);
   background: var(--mint-wash);
+}
+
+@media (hover: hover) {
+  .drop:hover {
+    border-color: var(--leaf-deep);
+    background: var(--mint-wash);
+  }
 }
 
 .drop svg {
@@ -1024,8 +1053,10 @@ a.tile:hover {
   color: var(--cream);
 }
 
-.primaryButton:hover:not(:disabled) {
-  background: var(--leaf-deep);
+@media (hover: hover) {
+  .primaryButton:hover:not(:disabled) {
+    background: var(--leaf-deep);
+  }
 }
 
 .secondaryButton {
@@ -1034,8 +1065,10 @@ a.tile:hover {
   color: var(--color-ink);
 }
 
-.secondaryButton:hover:not(:disabled) {
-  border-color: var(--slate);
+@media (hover: hover) {
+  .secondaryButton:hover:not(:disabled) {
+    border-color: var(--slate);
+  }
 }
 
 .ghostButton {
@@ -1043,9 +1076,11 @@ a.tile:hover {
   color: var(--color-ink-muted);
 }
 
-.ghostButton:hover:not(:disabled) {
-  color: var(--color-ink);
-  background: var(--sand);
+@media (hover: hover) {
+  .ghostButton:hover:not(:disabled) {
+    color: var(--color-ink);
+    background: var(--sand);
+  }
 }
 
 .dangerButton {
@@ -1054,8 +1089,10 @@ a.tile:hover {
   color: var(--color-error);
 }
 
-.dangerButton:hover:not(:disabled) {
-  background: var(--error-wash);
+@media (hover: hover) {
+  .dangerButton:hover:not(:disabled) {
+    background: var(--error-wash);
+  }
 }
 
 /* ── Dialogs ── */
@@ -1121,8 +1158,10 @@ a.tile:hover {
   transition: border-color var(--dur-micro) var(--ease-out), transform var(--dur-micro) var(--ease-out);
 }
 
-.pick:hover img {
-  border-color: var(--slate);
+@media (hover: hover) {
+  .pick:hover img {
+    border-color: var(--slate);
+  }
 }
 
 .pick[aria-pressed="true"] img {

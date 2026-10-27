@@ -89,10 +89,12 @@
     border-color var(--dur-base) var(--ease-out);
 }
 
-.card:hover {
-  transform: translate3d(0, -4px, 0);
-  border-color: var(--mint);
-  box-shadow: var(--shadow-card);
+@media (hover: hover) {
+  .card:hover {
+    transform: translate3d(0, -4px, 0);
+    border-color: var(--mint);
+    box-shadow: var(--shadow-card);
+  }
 }
 
 .cardIcon {

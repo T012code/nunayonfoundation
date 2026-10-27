@@ -17,8 +17,10 @@
   transition: color var(--dur-micro) var(--ease-out);
 }
 
-.footer a:hover {
-  color: var(--mint);
+@media (hover: hover) {
+  .footer a:hover {
+    color: var(--mint);
+  }
 }
 
 /* ── Newsletter and give ── */
@@ -108,13 +110,20 @@
   transition: transform var(--dur-base) var(--ease-out-expo);
 }
 
-.footer .pill:hover {
-  color: var(--teal);
+@media (hover: hover) {
+  .footer .pill:hover {
+    color: var(--teal);
+  }
 }
 
-.pill:hover::before,
 .pill:focus-visible::before {
   transform: none;
+}
+
+@media (hover: hover) {
+  .pill:hover::before {
+    transform: none;
+  }
 }
 
 .pill:active {
@@ -168,8 +177,10 @@
     color var(--dur-micro) var(--ease-out);
 }
 
-.links ul a:hover {
-  transform: translate3d(4px, 0, 0);
+@media (hover: hover) {
+  .links ul a:hover {
+    transform: translate3d(4px, 0, 0);
+  }
 }
 
 .contact {
@@ -228,8 +239,10 @@
   transition: border-color var(--dur-base) var(--ease-out);
 }
 
-.bottom > button:hover {
-  border-color: var(--mint);
+@media (hover: hover) {
+  .bottom > button:hover {
+    border-color: var(--mint);
+  }
 }
 
 .topIcon {
@@ -254,8 +267,10 @@
   transition: transform var(--dur-base) var(--ease-out-expo);
 }
 
-.bottom > button:hover .topIcon svg {
-  animation: lift 700ms var(--ease-out-expo);
+@media (hover: hover) {
+  .bottom > button:hover .topIcon svg {
+    animation: lift 700ms var(--ease-out-expo);
+  }
 }
 
 @keyframes lift {

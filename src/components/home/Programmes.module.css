@@ -58,14 +58,24 @@
   transition: transform var(--dur-slow) var(--ease-out-expo);
 }
 
-.card:hover .media,
 .card:focus-visible .media {
   transform: translate3d(0, -6px, 0);
 }
 
-.card:hover .zoom,
+@media (hover: hover) {
+  .card:hover .media {
+    transform: translate3d(0, -6px, 0);
+  }
+}
+
 .card:focus-visible .zoom {
   transform: scale(1.06);
+}
+
+@media (hover: hover) {
+  .card:hover .zoom {
+    transform: scale(1.06);
+  }
 }
 
 .body {
@@ -102,9 +112,14 @@
   transition: transform var(--dur-base) var(--ease-out);
 }
 
-.card:hover .arrow,
 .card:focus-visible .arrow {
   transform: translateX(4px);
+}
+
+@media (hover: hover) {
+  .card:hover .arrow {
+    transform: translateX(4px);
+  }
 }
 
 .foot {

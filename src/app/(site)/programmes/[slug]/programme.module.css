@@ -77,9 +77,11 @@
     box-shadow var(--dur-slow) var(--ease-out-expo);
 }
 
-.story:hover {
-  transform: translate3d(0, -4px, 0);
-  box-shadow: var(--shadow-card);
+@media (hover: hover) {
+  .story:hover {
+    transform: translate3d(0, -4px, 0);
+    box-shadow: var(--shadow-card);
+  }
 }
 
 .storyMedia {
@@ -136,16 +138,22 @@
   transition: transform var(--dur-slow) var(--ease-out-expo);
 }
 
-.other:hover {
-  color: var(--leaf-deep);
+@media (hover: hover) {
+  .other:hover {
+    color: var(--leaf-deep);
+  }
 }
 
-.other:hover span {
-  transform: translate3d(0.5rem, 0, 0);
+@media (hover: hover) {
+  .other:hover span {
+    transform: translate3d(0.5rem, 0, 0);
+  }
 }
 
-.other:hover .otherArrow {
-  transform: translate3d(0.25rem, 0, 0) rotate(-45deg);
+@media (hover: hover) {
+  .other:hover .otherArrow {
+    transform: translate3d(0.25rem, 0, 0) rotate(-45deg);
+  }
 }
 
 @media (min-width: 40rem) {

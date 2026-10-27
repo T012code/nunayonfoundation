@@ -160,14 +160,18 @@
   transition: transform var(--dur-base) var(--ease-out-expo);
 }
 
-.shareButton:hover {
-  border-color: var(--teal);
-  background: var(--teal);
-  color: var(--cream);
+@media (hover: hover) {
+  .shareButton:hover {
+    border-color: var(--teal);
+    background: var(--teal);
+    color: var(--cream);
+  }
 }
 
-.shareButton:hover .shareIcon {
-  transform: scale(1.12) rotate(-6deg);
+@media (hover: hover) {
+  .shareButton:hover .shareIcon {
+    transform: scale(1.12) rotate(-6deg);
+  }
 }
 
 .shareButton:active {
@@ -244,8 +248,10 @@
   transition: transform var(--dur-slow) var(--ease-out-expo);
 }
 
-.moreCard:hover .moreMedia img {
-  transform: scale(1.05);
+@media (hover: hover) {
+  .moreCard:hover .moreMedia img {
+    transform: scale(1.05);
+  }
 }
 
 .moreTitle {

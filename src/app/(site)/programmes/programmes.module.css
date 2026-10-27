@@ -40,14 +40,18 @@
   transition: transform var(--dur-base) var(--ease-out-expo), color var(--dur-micro) var(--ease-out);
 }
 
-.jump a:hover {
-  border-color: var(--leaf-deep);
-  color: var(--leaf-deep);
+@media (hover: hover) {
+  .jump a:hover {
+    border-color: var(--leaf-deep);
+    color: var(--leaf-deep);
+  }
 }
 
-.jump a:hover svg {
-  color: var(--leaf-deep);
-  transform: translate3d(0, 3px, 0);
+@media (hover: hover) {
+  .jump a:hover svg {
+    color: var(--leaf-deep);
+    transform: translate3d(0, 3px, 0);
+  }
 }
 
 .list {
@@ -135,8 +139,10 @@
   transition: transform var(--dur-base) var(--ease-out-expo);
 }
 
-.more:hover .arrow {
-  transform: translate3d(4px, 0, 0);
+@media (hover: hover) {
+  .more:hover .arrow {
+    transform: translate3d(4px, 0, 0);
+  }
 }
 
 @media (min-width: 64rem) {

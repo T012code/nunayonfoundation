@@ -54,15 +54,26 @@
   background: linear-gradient(180deg, var(--scrim-clear) 25%, var(--scrim-deep) 100%);
 }
 
-.card:hover,
 .card:focus-visible {
   transform: translate3d(0, -8px, 0);
   box-shadow: var(--shadow-frame);
 }
 
-.card:hover .photo,
+@media (hover: hover) {
+  .card:hover {
+    transform: translate3d(0, -8px, 0);
+    box-shadow: var(--shadow-frame);
+  }
+}
+
 .card:focus-visible .photo {
   transform: scale(1.06);
+}
+
+@media (hover: hover) {
+  .card:hover .photo {
+    transform: scale(1.06);
+  }
 }
 
 /* The description eases up a touch on hover, the call to action follows. */
@@ -71,14 +82,24 @@
   transition: transform var(--dur-slow) var(--ease-out-expo);
 }
 
-.card:hover .text,
 .card:focus-visible .text {
   transform: translate3d(0, -4px, 0);
 }
 
-.card:hover .cta,
+@media (hover: hover) {
+  .card:hover .text {
+    transform: translate3d(0, -4px, 0);
+  }
+}
+
 .card:focus-visible .cta {
   transform: translate3d(0, -4px, 0);
+}
+
+@media (hover: hover) {
+  .card:hover .cta {
+    transform: translate3d(0, -4px, 0);
+  }
 }
 
 .body {
@@ -113,9 +134,14 @@
   transition: transform var(--dur-base) var(--ease-out);
 }
 
-.card:hover .arrow,
 .card:focus-visible .arrow {
   transform: translateX(4px);
+}
+
+@media (hover: hover) {
+  .card:hover .arrow {
+    transform: translateX(4px);
+  }
 }
 
 @media (min-width: 56rem) {

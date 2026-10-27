@@ -33,8 +33,10 @@
   animation: marquee 40s linear infinite;
 }
 
-.marquee:hover .track {
-  animation-play-state: paused;
+@media (hover: hover) {
+  .marquee:hover .track {
+    animation-play-state: paused;
+  }
 }
 
 @keyframes marquee {

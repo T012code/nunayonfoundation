@@ -20,9 +20,11 @@
   transition: transform var(--dur-slow) var(--ease-out-expo), background-color var(--dur-base) var(--ease-out);
 }
 
-.way:hover {
-  transform: translate3d(0, -4px, 0);
-  background: var(--leaf-deep);
+@media (hover: hover) {
+  .way:hover {
+    transform: translate3d(0, -4px, 0);
+    background: var(--leaf-deep);
+  }
 }
 
 .wayLabel {
@@ -45,8 +47,10 @@
   transition: transform var(--dur-slow) var(--ease-out-expo);
 }
 
-.way:hover .wayIcon {
-  transform: translate3d(0, -2px, 0) rotate(-6deg);
+@media (hover: hover) {
+  .way:hover .wayIcon {
+    transform: translate3d(0, -2px, 0) rotate(-6deg);
+  }
 }
 
 .wayValue {

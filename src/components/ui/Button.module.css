@@ -45,14 +45,24 @@
   transition: transform var(--dur-base) var(--ease-out-expo);
 }
 
-.button:hover::before,
 .button:focus-visible::before {
   transform: none;
 }
 
-.button:hover,
+@media (hover: hover) {
+  .button:hover::before {
+    transform: none;
+  }
+}
+
 .button:focus-visible {
   color: var(--btn-hover-fg, var(--btn-fg));
+}
+
+@media (hover: hover) {
+  .button:hover {
+    color: var(--btn-hover-fg, var(--btn-fg));
+  }
 }
 
 .button:active {
@@ -78,9 +88,14 @@
   transition: transform var(--dur-base) var(--ease-out);
 }
 
-.button:hover .arrow,
 .button:focus-visible .arrow {
   transform: translateX(3px);
+}
+
+@media (hover: hover) {
+  .button:hover .arrow {
+    transform: translateX(3px);
+  }
 }
 
 .spinner {

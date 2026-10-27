@@ -33,8 +33,10 @@
   text-decoration: none;
 }
 
-.crumbs a:hover {
-  color: var(--color-ink);
+@media (hover: hover) {
+  .crumbs a:hover {
+    color: var(--color-ink);
+  }
 }
 
 .crumbs [aria-current] {

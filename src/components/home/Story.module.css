@@ -42,8 +42,10 @@
   transition: transform var(--dur-base) var(--ease-out-expo);
 }
 
-.values li:hover .valueMark {
-  transform: rotate(-12deg) scale(1.15);
+@media (hover: hover) {
+  .values li:hover .valueMark {
+    transform: rotate(-12deg) scale(1.15);
+  }
 }
 
 .main {

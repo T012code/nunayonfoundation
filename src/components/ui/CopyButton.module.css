@@ -17,8 +17,10 @@
     transform var(--dur-micro) var(--ease-out);
 }
 
-.button:hover {
-  background: var(--veil-fill-hover);
+@media (hover: hover) {
+  .button:hover {
+    background: var(--veil-fill-hover);
+  }
 }
 
 .button:active {

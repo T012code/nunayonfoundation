@@ -102,9 +102,14 @@
   transition: transform var(--dur-base) var(--ease-out);
 }
 
-.link:hover::after,
 .link[aria-current="page"]::after {
   transform: scaleX(1);
+}
+
+@media (hover: hover) {
+  .link:hover::after {
+    transform: scaleX(1);
+  }
 }
 
 .actions {
@@ -133,8 +138,10 @@
   transition: background-color var(--dur-micro) var(--ease-out);
 }
 
-.menuButton:hover {
-  background: var(--mint-pale);
+@media (hover: hover) {
+  .menuButton:hover {
+    background: var(--mint-pale);
+  }
 }
 
 .burger {
@@ -157,8 +164,10 @@
   transform: scaleX(0.6);
 }
 
-.menuButton:hover .burger span:nth-child(2) {
-  transform: none;
+@media (hover: hover) {
+  .menuButton:hover .burger span:nth-child(2) {
+    transform: none;
+  }
 }
 
 @media (min-width: 64rem) {

@@ -32,8 +32,10 @@
   transition: color var(--dur-base) var(--ease-out);
 }
 
-.link:hover {
-  color: var(--color-ink);
+@media (hover: hover) {
+  .link:hover {
+    color: var(--color-ink);
+  }
 }
 
 /* The section being read: leaf-green and bold, no box. */

@@ -53,8 +53,10 @@
   background: var(--veil-fill);
 }
 
-.card:hover {
-  border-color: var(--veil-rule-strong);
+@media (hover: hover) {
+  .card:hover {
+    border-color: var(--veil-rule-strong);
+  }
 }
 
 .row {

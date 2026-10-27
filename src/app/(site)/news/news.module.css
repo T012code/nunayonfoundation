@@ -29,11 +29,16 @@
   transition: transform var(--dur-slow) var(--ease-out-expo);
 }
 
-.feature:hover .zoom,
-.card:hover .zoom,
 .feature:focus-visible .zoom,
 .card:focus-visible .zoom {
   transform: scale(1.05);
+}
+
+@media (hover: hover) {
+  .feature:hover .zoom,
+  .card:hover .zoom {
+    transform: scale(1.05);
+  }
 }
 
 .photo {
@@ -81,8 +86,10 @@
   transition: transform var(--dur-base) var(--ease-out-expo);
 }
 
-.feature:hover .arrow {
-  transform: translate3d(4px, 0, 0);
+@media (hover: hover) {
+  .feature:hover .arrow {
+    transform: translate3d(4px, 0, 0);
+  }
 }
 
 .grid {
@@ -121,9 +128,14 @@
   transition: transform var(--dur-slow) var(--ease-out-expo);
 }
 
-.card:hover .cardTitle::after,
 .card:focus-visible .cardTitle::after {
   transform: none;
+}
+
+@media (hover: hover) {
+  .card:hover .cardTitle::after {
+    transform: none;
+  }
 }
 
 @media (min-width: 40rem) {
