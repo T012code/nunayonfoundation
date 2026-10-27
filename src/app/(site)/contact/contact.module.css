@@ -8,9 +8,10 @@
 
 .way {
   display: grid;
+  align-content: start;
   gap: var(--space-2xs);
   height: 100%;
-  padding: var(--space-lg);
+  padding: var(--space-md);
   border-radius: var(--radius);
   background: var(--teal);
   color: var(--cream);
@@ -32,10 +33,26 @@
   color: var(--mint);
 }
 
+.wayIcon {
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-bottom: var(--space-2xs);
+  fill: none;
+  stroke: var(--mint);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform var(--dur-slow) var(--ease-out-expo);
+}
+
+.way:hover .wayIcon {
+  transform: translate3d(0, -2px, 0) rotate(-6deg);
+}
+
 .wayValue {
-  font-size: clamp(1rem, 0.9rem + 0.45vw, 1.25rem);
+  font-size: var(--text-body);
   font-weight: var(--weight-bold);
-  line-height: 1.3;
+  line-height: 1.35;
 }
 
 .anchor {
@@ -60,8 +77,9 @@
   }
 }
 
+/* Email and the office address are the longest values, so their tiles get more room. */
 @media (min-width: 64rem) {
   .ways {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr) minmax(0, 0.85fr) minmax(0, 1.4fr);
   }
 }

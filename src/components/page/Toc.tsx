@@ -5,7 +5,7 @@ import styles from "./Toc.module.css";
 
 /**
  * "On this page" links for long pages. The section being read is highlighted as the visitor
- * scrolls. A row of chips on small screens, a sticky list beside the text on large ones.
+ * scrolls. An index on hairlines on small screens, a sticky list beside the text on large ones.
  */
 export function Toc({ items, label = "On this page" }: { items: { id: string; label: string }[]; label?: string }) {
   const [current, setCurrent] = useState(items[0]?.id);

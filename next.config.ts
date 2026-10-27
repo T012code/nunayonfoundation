@@ -36,6 +36,7 @@ const nextConfig: NextConfig = {
       { source: "/:path*", headers: securityHeaders },
       // Pre-sized photos never change name, so browsers and the CDN can keep them for a year.
       { source: "/placeholder/:file*", headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }] },
+      { source: "/flags/:file*", headers: [{ key: "Cache-Control", value: "public, max-age=2592000" }] },
       // *.vercel.app addresses are for testing: keep them out of search results.
       {
         source: "/:path*",

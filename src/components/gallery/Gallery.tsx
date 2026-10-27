@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { Picture } from "@/components/ui/Picture";
 import type { Album } from "@/content/pages";
 import { imageKey } from "@/content/images";
@@ -20,6 +20,26 @@ export function Gallery({ albums }: { albums: Album[] }) {
   const [open, setOpen] = useState<number | null>(null);
   const dialog = useRef<HTMLDialogElement>(null);
   const touchX = useRef<number | null>(null);
+  const tabsRef = useRef<HTMLDivElement>(null);
+  const barRef = useRef<HTMLSpanElement>(null);
+
+  // The underline slides to the chosen album (transform only) and the row scrolls it into view.
+  useLayoutEffect(() => {
+    const tabs = tabsRef.current;
+    const bar = barRef.current;
+    if (!tabs || !bar) return;
+    const place = () => {
+      const btn = tabs.querySelector<HTMLElement>('[aria-pressed="true"]');
+      if (!btn) return;
+      bar.style.transform = `translate3d(${btn.offsetLeft}px, 0, 0) scaleX(${btn.offsetWidth})`;
+      const target = btn.offsetLeft - (tabs.clientWidth - btn.offsetWidth) / 2;
+      tabs.scrollTo({ left: target, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    };
+    place();
+    const ro = new ResizeObserver(place);
+    ro.observe(tabs);
+    return () => ro.disconnect();
+  }, [filter]);
 
   const go = useCallback((dir: 1 | -1) => setOpen((i) => (i === null ? i : (i + dir + shown.length) % shown.length)), [shown.length]);
 
@@ -48,21 +68,26 @@ export function Gallery({ albums }: { albums: Album[] }) {
 
   return (
     <>
-      <div className={styles.filters} role="group" aria-label="Filter by album">
-        {[{ slug: "all", title: "All photos" }, ...albums].map((a) => (
-          <button
-            key={a.slug}
-            type="button"
-            className={styles.filter}
-            aria-pressed={filter === a.slug}
-            onClick={() => setFilter(a.slug)}
-          >
-            {a.title}
-            <span className={styles.count}>
-              {a.slug === "all" ? all.length : albums.find((x) => x.slug === a.slug)?.photos.length}
-            </span>
-          </button>
-        ))}
+      <div className={styles.filters}>
+        <div ref={tabsRef} className={styles.tabs} role="group" aria-label="Filter by album">
+          {[{ slug: "all", title: "All photos" }, ...albums].map((a) => (
+            <button
+              key={a.slug}
+              type="button"
+              className={styles.filter}
+              aria-pressed={filter === a.slug}
+              onClick={() => setFilter(a.slug)}
+            >
+              {a.title}
+              <span className={styles.count}>
+                <span className="visually-hidden">, </span>
+                {a.slug === "all" ? all.length : albums.find((x) => x.slug === a.slug)?.photos.length}
+                <span className="visually-hidden"> photos</span>
+              </span>
+            </button>
+          ))}
+          <span ref={barRef} className={styles.bar} aria-hidden="true" />
+        </div>
       </div>
 
       <p className="visually-hidden" aria-live="polite">

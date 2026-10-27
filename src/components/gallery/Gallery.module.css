@@ -1,58 +1,84 @@
+/* Album tabs: text on a hairline, with a sliding underline for the chosen album and a quiet
+   photo count. Scrolls sideways on small screens, fading at the edges. */
 .filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2xs);
   margin-bottom: var(--space-xl);
+  border-bottom: 1px solid var(--color-rule);
+}
+
+.tabs {
+  position: relative;
+  display: flex;
+  gap: clamp(1.25rem, 0.75rem + 2vw, 2.5rem);
+  overflow-x: auto;
+  scrollbar-width: none;
+  mask-image: linear-gradient(90deg, transparent 0, var(--color-ink) 1rem, var(--color-ink) calc(100% - 1.5rem), transparent 100%);
+}
+
+.tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .filter {
   display: inline-flex;
-  align-items: center;
-  gap: var(--space-2xs);
-  min-height: 2.75rem;
-  padding: 0 var(--space-3xs) 0 var(--space-sm);
-  border: 1.5px solid var(--color-rule);
-  border-radius: var(--radius-pill);
-  background: var(--color-surface);
-  font-size: var(--text-sm);
+  flex: none;
+  align-items: baseline;
+  gap: 0.35em;
+  padding: var(--space-sm) 0;
+  border: 0;
+  background: none;
+  color: var(--color-ink-muted);
+  font-size: var(--text-body);
   font-weight: var(--weight-semibold);
+  white-space: nowrap;
   cursor: pointer;
-  transition:
-    background-color var(--dur-base) var(--ease-out),
-    color var(--dur-base) var(--ease-out),
-    border-color var(--dur-base) var(--ease-out),
-    transform var(--dur-micro) var(--ease-out);
+  transition: color var(--dur-base) var(--ease-out);
+}
+
+.filter:first-child {
+  margin-left: 1rem;
+}
+
+.filter:last-of-type {
+  margin-right: 1.5rem;
 }
 
 .filter:hover {
-  border-color: var(--teal);
-}
-
-.filter:active {
-  transform: scale(0.97);
+  color: var(--color-ink);
 }
 
 .filter[aria-pressed="true"] {
-  border-color: var(--teal);
-  background: var(--teal);
-  color: var(--cream);
+  color: var(--color-ink);
+}
+
+.filter:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: -3px;
+  border-radius: var(--radius-sm);
 }
 
 .count {
-  display: inline-grid;
-  place-items: center;
-  min-width: 2rem;
-  height: 2rem;
-  padding: 0 var(--space-2xs);
-  border-radius: var(--radius-pill);
-  background: var(--sand);
-  color: var(--teal);
+  color: var(--color-ink-muted);
   font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
   font-variant-numeric: tabular-nums;
+  transform: translateY(-0.45em);
 }
 
 .filter[aria-pressed="true"] .count {
-  background: var(--mint);
+  color: var(--leaf-deep);
+}
+
+/* 1px wide, scaled to the chosen tab's width and moved under it. */
+.bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 1px;
+  height: 3px;
+  background: var(--leaf-deep);
+  transform-origin: 0 50%;
+  transition: transform 520ms var(--ease-out-expo);
+  pointer-events: none;
 }
 
 /* Masonry columns */

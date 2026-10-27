@@ -14,15 +14,22 @@ export const metadata: Metadata = {
   alternates: { canonical: "/contact" },
 };
 
+const ICONS = {
+  email: "M4 7l8 5.5L20 7M5.5 5h13A1.5 1.5 0 0 1 20 6.5v11a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5v-11A1.5 1.5 0 0 1 5.5 5z",
+  phone: "M6.5 4h3l1.5 4-2 1.5a10 10 0 0 0 5.5 5.5L16 13l4 1.5v3A1.5 1.5 0 0 1 18.5 19 14.5 14.5 0 0 1 5 5.5 1.5 1.5 0 0 1 6.5 4z",
+  chat: "M5 18.5 6 15a7.5 7.5 0 1 1 3 3zM9 10.5h6M9 13.5h4",
+  office: "M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11zM12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z",
+};
+
 export default async function ContactPage() {
   const site = await getSettings();
   const tel = site.phone.replace(/\s/g, "");
   const wa = `https://wa.me/${site.whatsapp.replace(/\D/g, "")}`;
   const ways = [
-    { label: "Email", value: site.email, href: `mailto:${site.email}` },
-    { label: "Phone", value: site.phone, href: `tel:${tel}` },
-    { label: "WhatsApp", value: "Chat with us", href: wa },
-    { label: "Office", value: site.address, href: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(site.address)}` },
+    { label: "Email", icon: ICONS.email, value: site.email, href: `mailto:${site.email}` },
+    { label: "Phone", icon: ICONS.phone, value: site.phone, href: `tel:${tel}` },
+    { label: "WhatsApp", icon: ICONS.chat, value: "Chat with us", href: wa },
+    { label: "Office", icon: ICONS.office, value: site.address, href: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(site.address)}` },
   ];
 
   return (
@@ -43,6 +50,9 @@ export default async function ContactPage() {
                   className={styles.way}
                   {...(w.href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                 >
+                  <svg viewBox="0 0 24 24" className={styles.wayIcon} aria-hidden="true">
+                    <path d={w.icon} />
+                  </svg>
                   <span className={styles.wayLabel}>{w.label}</span>
                   <span className={styles.wayValue}>
                     {w.label === "Email" ? (

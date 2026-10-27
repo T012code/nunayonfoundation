@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { contactTopics } from "@/content/pages";
 import { submitForm } from "@/app/actions/forms";
 import { BotGuard, FormError } from "./BotGuard";
+import { PhoneField } from "./PhoneField";
 import { SelectField, TextArea, TextField } from "./Field";
 import { useSiteForm } from "./useSiteForm";
 import styles from "./forms.module.css";
@@ -20,7 +21,7 @@ export function ContactForm() {
   const initial = FROM_LINK[params.get("topic") ?? ""] ?? "";
   const [topic, setTopic] = useState(initial);
   const partnership = topic === "Partnership";
-  const { errors, formError, pending, attempt, onSubmit, clear } = useSiteForm(
+  const { errors, formError, pending, attempt, onSubmit, clear, report } = useSiteForm(
     partnership ? "partner" : "contact",
     partnership ? sendPartner : sendContact,
   );
@@ -29,18 +30,10 @@ export function ContactForm() {
     <form className={styles.form} onSubmit={onSubmit} noValidate>
       <div className={styles.row}>
         <TextField name="name" label="Full name" required autoComplete="name" error={errors.name} onEdit={clear} />
-        <TextField name="email" label="Email" type="email" required autoComplete="email" error={errors.email} onEdit={clear} />
+        <TextField name="email" label="Email" type="email" required autoComplete="email" error={errors.email} onEdit={clear} onReport={report} />
       </div>
       <div className={styles.row}>
-        <TextField
-          name="phone"
-          label="Phone or WhatsApp"
-          type="tel"
-          autoComplete="tel"
-          pattern="[0-9+ ()-]{7,20}"
-          error={errors.phone}
-          onEdit={clear}
-        />
+        <PhoneField name="phone" label="Phone or WhatsApp" required error={errors.phone} onEdit={clear} onReport={report} />
         <SelectField
           name="topic"
           label="What is it about?"

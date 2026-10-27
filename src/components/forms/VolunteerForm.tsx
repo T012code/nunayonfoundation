@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/Button";
 import { volunteer } from "@/content/pages";
 import { submitForm } from "@/app/actions/forms";
 import { BotGuard, FormError } from "./BotGuard";
+import { PhoneField } from "./PhoneField";
 import { ChoiceGroup, SelectField, TextArea, TextField } from "./Field";
 import { useSiteForm } from "./useSiteForm";
 import styles from "./forms.module.css";
@@ -18,24 +19,15 @@ const STATES = [
 const send = submitForm.bind(null, "volunteer");
 
 export function VolunteerForm() {
-  const { errors, formError, pending, attempt, onSubmit, clear } = useSiteForm("volunteer", send);
+  const { errors, formError, pending, attempt, onSubmit, clear, report } = useSiteForm("volunteer", send);
   return (
     <form className={styles.form} onSubmit={onSubmit} noValidate>
       <div className={styles.row}>
         <TextField name="name" label="Full name" required autoComplete="name" error={errors.name} onEdit={clear} />
-        <TextField name="email" label="Email" type="email" required autoComplete="email" error={errors.email} onEdit={clear} />
+        <TextField name="email" label="Email" type="email" required autoComplete="email" error={errors.email} onEdit={clear} onReport={report} />
       </div>
       <div className={styles.row}>
-        <TextField
-          name="phone"
-          label="Phone or WhatsApp"
-          type="tel"
-          required
-          autoComplete="tel"
-          pattern="[0-9+ ()-]{7,20}"
-          error={errors.phone}
-          onEdit={clear}
-        />
+        <PhoneField name="phone" label="Phone or WhatsApp" required error={errors.phone} onEdit={clear} onReport={report} />
         <SelectField name="state" label="State you live in" options={STATES} required error={errors.state} onEdit={clear} />
       </div>
       <ChoiceGroup
@@ -51,6 +43,7 @@ export function VolunteerForm() {
         name="availability"
         legend="When are you usually free?"
         options={volunteer.availability}
+        compact
         required
         message="Choose when you're usually free."
         error={errors.availability}

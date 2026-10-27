@@ -5,11 +5,17 @@ import { headers } from "next/headers";
 import { getMailer, layout, button, escapeHtml } from "@/lib/mail";
 import { SITE_URL } from "@/lib/env";
 import { serviceClient } from "@/lib/supabase/server";
+import { domainAcceptsMail } from "@/lib/dns";
+import { normalisePhone } from "@/lib/phone";
 import { verifyTurnstile } from "@/lib/turnstile";
+import { emailProblem, normaliseEmail } from "@/lib/validate";
 
 export type FormResult = { ok: true } | { ok: false; error: string };
 
 type Kind = "contact" | "partner" | "volunteer" | "donation";
+
+// Forms where a phone number is required (donation notices only need an email).
+const NEEDS_PHONE: Kind[] = ["contact", "partner", "volunteer"];
 type FieldSpec = { name: string; label: string; required?: boolean; max?: number; multi?: boolean };
 
 // What each form sends, in the order the team should read it. Anything else is ignored.
@@ -48,11 +54,22 @@ const FORMS: Record<Kind, { subject: string; fields: FieldSpec[] }> = {
   },
 };
 
-const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const UNAVAILABLE =
   "Sorry, we couldn't send your form just now. Please try again in a few minutes, or email us directly.";
 
 const text = (fd: FormData, name: string, max = 200) => String(fd.get(name) ?? "").trim().slice(0, max);
+
+/** Format, provider typos, and a mail server for the domain. */
+async function checkEmail(raw: string): Promise<{ email: string } | { error: string }> {
+  const problem = emailProblem(raw);
+  if (problem) return { error: problem };
+  const email = normaliseEmail(raw);
+  const domain = email.slice(email.lastIndexOf("@") + 1);
+  if (!(await domainAcceptsMail(domain))) {
+    return { error: `${domain} can't receive email. Check the part after the @.` };
+  }
+  return { email };
+}
 
 async function passesBotChecks(fd: FormData) {
   // Real people never see or fill the honeypot field.
@@ -71,9 +88,14 @@ export async function submitForm(kind: Kind, fd: FormData): Promise<FormResult> 
   }
 
   const name = text(fd, "name", 120);
-  const email = text(fd, "email", 200).toLowerCase();
-  const phone = text(fd, "phone", 30);
-  if (!name || !EMAIL.test(email)) return { ok: false, error: "Please check your name and email address." };
+  if (!name) return { ok: false, error: "Please add your name." };
+  const emailCheck = await checkEmail(text(fd, "email", 254));
+  if ("error" in emailCheck) return { ok: false, error: emailCheck.error };
+  const email = emailCheck.email;
+  const rawPhone = text(fd, "phone", 30);
+  const phone = rawPhone ? normalisePhone(rawPhone) : null;
+  if (rawPhone && !phone) return { ok: false, error: "Please check your phone number and its country." };
+  if (!phone && NEEDS_PHONE.includes(kind)) return { ok: false, error: "Please add your phone number." };
 
   const fields: { label: string; value: string }[] = [];
   for (const f of spec.fields) {
@@ -91,7 +113,7 @@ export async function submitForm(kind: Kind, fd: FormData): Promise<FormResult> 
     console.warn("[forms] SUPABASE_SECRET_KEY is not set; submission not saved");
     return { ok: true };
   }
-  const { error } = await db.from("submissions").insert({ kind, name, email, phone, fields });
+  const { error } = await db.from("submissions").insert({ kind, name, email, phone: phone ?? "", fields });
   if (error) {
     console.error("[forms] insert failed", error);
     return { ok: false, error: UNAVAILABLE };
@@ -140,8 +162,9 @@ export async function submitForm(kind: Kind, fd: FormData): Promise<FormResult> 
  */
 export async function subscribe(fd: FormData): Promise<FormResult> {
   if (text(fd, "website")) return { ok: true };
-  const email = text(fd, "email", 200).toLowerCase();
-  if (!EMAIL.test(email)) return { ok: false, error: "Enter a valid email address, like name@example.com." };
+  const emailCheck = await checkEmail(text(fd, "email", 254));
+  if ("error" in emailCheck) return { ok: false, error: emailCheck.error };
+  const email = emailCheck.email.toLowerCase();
 
   const db = serviceClient();
   if (!db) {

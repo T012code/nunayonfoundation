@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { subscribe } from "@/app/actions/forms";
 import { Button } from "@/components/ui/Button";
+import { emailProblem } from "@/lib/validate";
 import styles from "./NewsletterForm.module.css";
 
 type Status = { kind: "idle" } | { kind: "sending" } | { kind: "error"; message: string } | { kind: "done" };
@@ -20,8 +21,9 @@ export function NewsletterForm() {
     e.preventDefault();
     const data = new FormData(e.currentTarget);
     const email = String(data.get("email") ?? "").trim();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setStatus({ kind: "error", message: "Enter a valid email address, like name@example.com." });
+    const problem = emailProblem(email);
+    if (problem) {
+      setStatus({ kind: "error", message: problem });
       return;
     }
     setStatus({ kind: "sending" });

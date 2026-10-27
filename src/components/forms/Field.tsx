@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { emailProblem } from "@/lib/validate";
 import styles from "./forms.module.css";
 
 type Common = {
@@ -8,6 +9,8 @@ type Common = {
   hint?: string;
   required?: boolean;
   onEdit?: (name: string) => void;
+  /** Shows a problem found when the visitor leaves the field (email typos, invalid numbers). */
+  onReport?: (name: string, message: string) => void;
   className?: string;
 };
 
@@ -73,7 +76,21 @@ export function TextField({
         data-label={c.label}
         aria-invalid={c.error ? true : undefined}
         aria-describedby={describedBy(c.name, c.error, c.hint)}
-        onInput={() => c.onEdit?.(c.name)}
+        spellCheck={type === "email" ? false : undefined}
+        onInput={(e) => {
+          c.onEdit?.(c.name);
+          // Email: format, a real ending and common provider typos, checked as they type so
+          // the form can't be sent with a broken address. Shown when they leave the field.
+          if (type === "email") {
+            const el = e.currentTarget;
+            el.setCustomValidity(el.value.trim() ? (emailProblem(el.value) ?? "") : "");
+          }
+        }}
+        onBlur={(e) => {
+          if (type !== "email" || !e.currentTarget.value.trim()) return;
+          const problem = emailProblem(e.currentTarget.value);
+          if (problem) c.onReport?.(c.name, problem);
+        }}
       />
     </Wrap>
   );
@@ -136,6 +153,8 @@ export function SelectField({
   );
 }
 
+export type Choice = string | { label: string; hint?: string };
+
 export function ChoiceGroup({
   name,
   legend,
@@ -145,15 +164,18 @@ export function ChoiceGroup({
   message,
   onEdit,
   type = "checkbox",
+  compact,
 }: {
   name: string;
   legend: string;
-  options: string[];
+  options: readonly Choice[];
   error?: string;
   required?: boolean;
   message?: string;
   onEdit?: (name: string) => void;
   type?: "checkbox" | "radio";
+  /** Narrower cards, for short labels. */
+  compact?: boolean;
 }) {
   return (
     <fieldset
@@ -168,13 +190,24 @@ export function ChoiceGroup({
         {legend}
         {required ? null : <span className={styles.optional}> (optional)</span>}
       </legend>
-      <div className={styles.chips}>
-        {options.map((o) => (
-          <label key={o} className={styles.chip}>
-            <input type={type} name={name} value={o} onChange={() => onEdit?.(name)} />
-            <span>{o}</span>
-          </label>
-        ))}
+      <div className={styles.options} data-compact={compact ? "" : undefined}>
+        {options.map((o) => {
+          const { label, hint } = typeof o === "string" ? { label: o, hint: undefined } : o;
+          return (
+            <label key={label} className={styles.option} data-type={type}>
+              <input type={type} name={name} value={label} onChange={() => onEdit?.(name)} />
+              <span className={styles.box} aria-hidden="true">
+                <svg viewBox="0 0 12 12">
+                  <path d="M2.5 6.5 5 9l4.5-6" />
+                </svg>
+              </span>
+              <span className={styles.optionText}>
+                <span className={styles.optionLabel}>{label}</span>
+                {hint ? <span className={styles.optionHint}>{hint}</span> : null}
+              </span>
+            </label>
+          );
+        })}
       </div>
       {error ? (
         <p id={`f-${name}-error`} className={styles.error} role="alert">

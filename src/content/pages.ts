@@ -48,8 +48,20 @@ export const volunteer = {
     { title: "Meet the team", body: "We'll call you, answer your questions and match you to an outreach." },
     { title: "Join an outreach", body: "Come along on the day with a short briefing. Most volunteers come back." },
   ],
-  interests: ["Teaching & mentoring", "Medical & health", "Outreach & logistics", "Media & storytelling", "Fundraising", "Anything that's needed"],
-  availability: ["Weekends", "Weekdays", "School holidays", "Once in a while"],
+  interests: [
+    { label: "Teaching & mentoring", hint: "Classes, reading sessions and mentoring young people" },
+    { label: "Medical & health", hint: "Doctors, nurses, pharmacists and health students" },
+    { label: "Outreach & logistics", hint: "Packing, driving, setting up and running the day" },
+    { label: "Media & storytelling", hint: "Photos, video and writing about our work" },
+    { label: "Fundraising", hint: "Events, campaigns and introductions to supporters" },
+    { label: "Anything that's needed", hint: "Happy to help wherever you need hands" },
+  ],
+  availability: [
+    { label: "Weekends", hint: "Saturdays and Sundays" },
+    { label: "Weekdays", hint: "Monday to Friday" },
+    { label: "School holidays", hint: "Easter, summer and Christmas" },
+    { label: "Once in a while", hint: "A few outreaches a year" },
+  ],
   faqs: [
     { q: "Do I need experience?", a: "No. We'll brief you before every outreach, and you'll work alongside people who have done it before. Medical roles need the relevant qualification." },
     { q: "How much time do I need to give?", a: "As much or as little as you like. Many volunteers join two or three outreaches a year." },

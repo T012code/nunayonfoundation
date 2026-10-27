@@ -30,7 +30,12 @@ export default async function ProgrammesPage() {
         <ul className={styles.jump} aria-label="Jump to a programme">
           {programmes.map((p) => (
             <li key={p.slug}>
-              <a href={`#${p.slug}`}>{p.title}</a>
+              <a href={`#${p.slug}`}>
+                {p.title}
+                <svg viewBox="0 0 16 16" aria-hidden="true">
+                  <path d="M8 3v10M4 9l4 4 4-4" />
+                </svg>
+              </a>
             </li>
           ))}
         </ul>

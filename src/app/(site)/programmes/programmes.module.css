@@ -1,33 +1,53 @@
+/* Jump links: an index on hairlines, two columns on wider screens. */
 .jump {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2xs);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
+  column-gap: var(--space-lg);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
+/* Links fill their row, so the hairlines line up across columns. */
+.jump li {
+  display: flex;
+}
+
 .jump a {
-  display: inline-flex;
+  flex: 1;
+  display: flex;
   align-items: center;
-  min-height: 2.5rem;
-  padding: 0 var(--space-sm);
-  border: 1px solid var(--color-rule);
-  border-radius: var(--radius-pill);
-  background: var(--color-surface);
-  font-size: var(--text-sm);
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding-block: var(--space-xs);
+  border-bottom: 1px solid var(--color-rule);
+  color: var(--color-ink);
   font-weight: var(--weight-semibold);
   text-decoration: none;
-  transition:
-    background-color var(--dur-micro) var(--ease-out),
-    color var(--dur-micro) var(--ease-out),
-    border-color var(--dur-micro) var(--ease-out);
+  transition: color var(--dur-micro) var(--ease-out), border-color var(--dur-micro) var(--ease-out);
+}
+
+.jump a svg {
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  color: var(--color-ink-muted);
+  transition: transform var(--dur-base) var(--ease-out-expo), color var(--dur-micro) var(--ease-out);
 }
 
 .jump a:hover {
-  border-color: var(--teal);
-  background: var(--teal);
-  color: var(--cream);
+  border-color: var(--leaf-deep);
+  color: var(--leaf-deep);
+}
+
+.jump a:hover svg {
+  color: var(--leaf-deep);
+  transform: translate3d(0, 3px, 0);
 }
 
 .list {

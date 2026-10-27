@@ -109,9 +109,9 @@ export default async function AboutPage() {
               <p>{site.address}</p>
               <p>Visits by appointment. Call or WhatsApp {site.phone}.</p>
             </Reveal>
-            <ul className={b.chips} aria-label="States we have held outreaches in">
+            <ul className={b.states} aria-label="States we have held outreaches in">
               {about.states.map((s, i) => (
-                <Reveal as="li" variant="pop" key={s} delay={i * 0.04}>
+                <Reveal as="li" variant="up" key={s} delay={i * 0.04}>
                   {s}
                 </Reveal>
               ))}

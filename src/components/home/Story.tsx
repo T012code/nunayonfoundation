@@ -1,3 +1,4 @@
+import { Logo } from "@/components/brand/Logo";
 import { Reveal } from "@/components/motion/Reveal";
 import { Words } from "@/components/motion/Words";
 import { ButtonLink } from "@/components/ui/Button";
@@ -30,7 +31,8 @@ export function Story({ eyebrow, title, values, chapters, image, quote, hideLink
             </h2>
             <ul className={styles.values} aria-label="Our values">
               {values.map((v, i) => (
-                <Reveal as="li" variant="pop" key={v} delay={0.35 + i * 0.08}>
+                <Reveal as="li" variant="up" key={v} delay={0.35 + i * 0.08}>
+                  <Logo variant="mark" className={styles.valueMark} aria-hidden="true" />
                   {v}
                 </Reveal>
               ))}

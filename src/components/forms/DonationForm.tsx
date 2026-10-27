@@ -11,12 +11,12 @@ import styles from "./forms.module.css";
 const send = submitForm.bind(null, "donation");
 
 export function DonationForm({ programmes }: { programmes: string[] }) {
-  const { errors, formError, pending, attempt, onSubmit, clear } = useSiteForm("donation", send);
+  const { errors, formError, pending, attempt, onSubmit, clear, report } = useSiteForm("donation", send);
   return (
     <form className={styles.form} onSubmit={onSubmit} noValidate>
       <div className={styles.row}>
         <TextField name="name" label="Name on the transfer" required autoComplete="name" error={errors.name} onEdit={clear} />
-        <TextField name="email" label="Email for your receipt" type="email" required autoComplete="email" error={errors.email} onEdit={clear} />
+        <TextField name="email" label="Email for your receipt" type="email" required autoComplete="email" error={errors.email} onEdit={clear} onReport={report} />
       </div>
       <div className={styles.row}>
         <TextField

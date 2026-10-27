@@ -48,14 +48,14 @@
   justify-items: start;
 }
 
+/* Programme label: small capitals in the leaf colour. */
 .tag {
-  display: inline-block;
-  padding: var(--space-3xs) var(--space-xs);
-  border-radius: var(--radius-pill);
-  background: var(--mint-pale);
-  color: var(--teal);
+  display: block;
+  color: var(--leaf-deep);
   font-size: var(--text-xs);
   font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
 }
 
 .featureTitle {

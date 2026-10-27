@@ -12,6 +12,7 @@ function messageFor(el: Field) {
   // Lower-case only the first letter, so names like WhatsApp keep their capitals.
   const raw = el.dataset.label ?? el.name;
   const label = raw.charAt(0).toLowerCase() + raw.slice(1);
+  if (el.validity.customError) return el.validationMessage;
   if (el.validity.valueMissing) return el instanceof HTMLSelectElement ? `Choose ${label}.` : `Enter your ${label}.`;
   if (el.validity.typeMismatch && el.type === "email") return "Enter a valid email address, like name@example.com.";
   if (el.validity.patternMismatch && el.type === "tel") return "Enter a phone number using digits, spaces and +.";
@@ -40,10 +41,12 @@ export function useSiteForm(form: ThankYouForm, send: (data: FormData) => Promis
 
     for (const el of Array.from(formEl.elements)) {
       if (!(el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement || el instanceof HTMLSelectElement)) continue;
-      if (!el.name || el.type === "checkbox") continue;
-      if (typeof el.value === "string" && el.type !== "select-one") el.value = el.value.trim();
+      // The phone field's visible input carries its name in data-name (the value is sent hidden).
+      const name = el.name || el.dataset.name;
+      if (!name || el.type === "checkbox" || el.type === "radio" || el.type === "hidden") continue;
+      if (el.type !== "select-one" && el.type !== "tel") el.value = el.value.trim();
       if (!el.checkValidity()) {
-        next[el.name] = messageFor(el);
+        next[name] = messageFor(el);
         first ??= el;
       }
     }
@@ -77,6 +80,10 @@ export function useSiteForm(form: ThankYouForm, send: (data: FormData) => Promis
     setAttempt((n) => n + 1);
   }
 
+  function report(name: string, message: string) {
+    setErrors((prev) => ({ ...prev, [name]: message }));
+  }
+
   function clear(name: string) {
     if (!errors[name]) return;
     setErrors((prev) => {
@@ -86,5 +93,5 @@ export function useSiteForm(form: ThankYouForm, send: (data: FormData) => Promis
     });
   }
 
-  return { errors, formError, pending, attempt, onSubmit, clear };
+  return { errors, formError, pending, attempt, onSubmit, clear, report };
 }
