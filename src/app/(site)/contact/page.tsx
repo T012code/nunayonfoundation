@@ -4,7 +4,7 @@ import { ContactForm } from "@/components/forms/ContactForm";
 import { Reveal } from "@/components/motion/Reveal";
 import { PageHero } from "@/components/page/PageHero";
 import { SectionHead } from "@/components/page/SectionHead";
-import { site } from "@/content/site";
+import { getSettings } from "@/lib/content";
 import b from "@/components/page/blocks.module.css";
 import styles from "./contact.module.css";
 
@@ -14,10 +14,10 @@ export const metadata: Metadata = {
   alternates: { canonical: "/contact" },
 };
 
-const tel = site.phone.replace(/\s/g, "");
-const wa = `https://wa.me/${site.whatsapp.replace(/\D/g, "")}`;
-
-export default function ContactPage() {
+export default async function ContactPage() {
+  const site = await getSettings();
+  const tel = site.phone.replace(/\s/g, "");
+  const wa = `https://wa.me/${site.whatsapp.replace(/\D/g, "")}`;
   const ways = [
     { label: "Email", value: site.email, href: `mailto:${site.email}` },
     { label: "Phone", value: site.phone, href: `tel:${tel}` },

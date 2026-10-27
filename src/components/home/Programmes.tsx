@@ -17,7 +17,7 @@ export function Programmes({ items }: { items: Programme[] }) {
               What we do
             </Reveal>
             <h2 id="programmes-title" className={styles.title} data-reveal="words">
-              <Words text="Six programmes, one aim: families who can stand on their own." />
+              <Words text="Every programme, one aim: families who can stand on their own." />
             </h2>
           </div>
           <Reveal as="p" delay={0.2} className={styles.intro}>
@@ -33,7 +33,7 @@ export function Programmes({ items }: { items: Programme[] }) {
                 <Reveal as="span" variant="unveil" delay={(i % 3) * 0.12} className={styles.media}>
                   <span className={styles.zoom}>
                     <Picture
-                      slug={p.image}
+                      image={p.image}
                       sizes="(min-width: 64rem) 30vw, (min-width: 40rem) 45vw, 92vw"
                       className={styles.photo}
                     />

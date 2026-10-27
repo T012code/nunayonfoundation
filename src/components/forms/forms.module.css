@@ -226,3 +226,42 @@
 .submit {
   justify-self: start;
 }
+
+/* Honeypot: kept out of sight and out of the tab order; only bots fill it in. */
+.trap {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.turnstile:empty {
+  display: none;
+}
+
+/* The server couldn't take the form: an outlined, tinted box (no side stripe). */
+.formError {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--color-error);
+  border-radius: var(--radius);
+  background: var(--error-wash);
+  color: var(--color-error);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+}
+
+.formError svg {
+  flex-shrink: 0;
+  width: 1.125rem;
+  height: 1.125rem;
+  margin-top: 0.1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { Picture } from "@/components/ui/Picture";
 import type { Album } from "@/content/pages";
+import { imageKey } from "@/content/images";
 import { lockScroll } from "@/lib/scroll";
 import styles from "./Gallery.module.css";
 
@@ -71,9 +72,9 @@ export function Gallery({ albums }: { albums: Album[] }) {
       {/* Re-keyed on filter change so the photos animate in again. */}
       <ul key={filter} className={styles.grid}>
         {shown.map((p, i) => (
-          <li key={`${p.image}-${i}`} className={styles.item} style={{ "--i": i } as CSSProperties}>
+          <li key={`${imageKey(p.image)}-${i}`} className={styles.item} style={{ "--i": i } as CSSProperties}>
             <button type="button" className={styles.thumb} onClick={() => setOpen(i)} aria-label={`Open photo: ${p.caption}`}>
-              <Picture slug={p.image} sizes="(min-width: 64rem) 30vw, (min-width: 40rem) 45vw, 92vw" className={styles.photo} alt="" />
+              <Picture image={p.image} sizes="(min-width: 64rem) 30vw, (min-width: 40rem) 45vw, 92vw" className={styles.photo} alt="" />
               <span className={styles.caption} aria-hidden="true">
                 <span className={styles.album}>{p.album}</span>
                 {p.caption}
@@ -102,7 +103,7 @@ export function Gallery({ albums }: { albums: Album[] }) {
       >
         {current ? (
           <figure key={open} className={styles.figure}>
-            <Picture slug={current.image} sizes="92vw" className={styles.full} alt={current.caption} priority />
+            <Picture image={current.image} sizes="92vw" className={styles.full} alt={current.caption} priority />
             <figcaption className={styles.figcaption}>
               <span>
                 <span className={styles.album}>{current.album}</span>

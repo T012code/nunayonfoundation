@@ -1,7 +1,7 @@
 // Placeholder content for the inner pages. Like site.ts, all of this moves into the database
 // with the admin build; names, figures and details are stand-ins.
 
-import type { ImageSlug } from "./images";
+import type { ImageRef, ImageSlug } from "./images";
 
 export const about = {
   hero: {
@@ -78,7 +78,8 @@ export const donate = {
   ],
 };
 
-export type Album = { slug: string; title: string; photos: { image: ImageSlug; caption: string }[] };
+export type Album = { slug: string; title: string; photos: { image: ImageRef; caption: string }[] };
+export type Person = { name: string; role: string; bio?: string; image?: ImageRef | null };
 
 export const albums: Album[] = [
   {

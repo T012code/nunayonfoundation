@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Words } from "@/components/motion/Words";
 import { Picture } from "@/components/ui/Picture";
-import type { ImageSlug } from "@/content/images";
+import type { ImageRef } from "@/content/images";
 import styles from "./PageHero.module.css";
 
 type Crumb = { href: string; label: string };
@@ -22,7 +22,7 @@ export function PageHero({
   eyebrow: string;
   title: string;
   lead?: string;
-  image?: ImageSlug;
+  image?: ImageRef;
   crumbs?: Crumb[];
   children?: React.ReactNode;
 }) {
@@ -51,7 +51,7 @@ export function PageHero({
         </div>
         {image ? (
           <div className={styles.media}>
-            <Picture slug={image} sizes="(min-width: 64rem) 45vw, 92vw" priority className={styles.photo} />
+            <Picture image={image} sizes="(min-width: 64rem) 45vw, 92vw" priority className={styles.photo} />
             <span className={styles.cover} aria-hidden="true" />
           </div>
         ) : null}

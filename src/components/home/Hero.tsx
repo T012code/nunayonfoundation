@@ -6,7 +6,7 @@ import { Words } from "@/components/motion/Words";
 import { ButtonLink } from "@/components/ui/Button";
 import { onLayout, onScroll } from "@/lib/scroll";
 import { Picture } from "@/components/ui/Picture";
-import type { ImageSlug } from "@/content/images";
+import { imageKey, type ImageRef } from "@/content/images";
 import styles from "./Hero.module.css";
 
 const SLIDE_MS = 6500;
@@ -19,7 +19,7 @@ const easeInOut = (t: number) => (1 - Math.cos(Math.PI * t)) / 2;
 // Share of the hero's scroll spent opening the photo; the rest holds it full screen.
 const OPEN = 0.72;
 
-type Props = { title: string; lead: string; slides: ImageSlug[] };
+type Props = { title: string; lead: string; slides: ImageRef[] };
 
 /**
  * Home hero. On desktop the photo slider starts in a paper frame beside the headline and
@@ -214,8 +214,8 @@ export function Hero({ title, lead, slides }: Props) {
         >
           <div ref={innerRef} className={styles.inner}>
             {slides.map((slug, i) => (
-              <div key={slug} className={styles.slide} data-active={i === active || undefined} aria-hidden={i !== active}>
-                <Picture slug={slug} sizes="100vw" priority={i === 0} className={styles.photo} />
+              <div key={imageKey(slug)} className={styles.slide} data-active={i === active || undefined} aria-hidden={i !== active}>
+                <Picture image={slug} sizes="100vw" priority={i === 0} className={styles.photo} />
               </div>
             ))}
           </div>

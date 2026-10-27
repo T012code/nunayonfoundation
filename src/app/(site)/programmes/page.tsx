@@ -7,23 +7,24 @@ import { PageHero } from "@/components/page/PageHero";
 import { Arrow } from "@/components/ui/Arrow";
 import { Check } from "@/components/ui/Check";
 import { Picture } from "@/components/ui/Picture";
-import { programmes } from "@/content/site";
+import { getProgrammes } from "@/lib/content";
 import b from "@/components/page/blocks.module.css";
 import styles from "./programmes.module.css";
 
 export const metadata: Metadata = {
   title: "Programmes",
   description:
-    "Education support, women's livelihoods, youth skills, community health, food relief and clean water: the six programmes of Nunayon Foundation.",
+    "Education support, women's livelihoods, youth skills, community health, food relief and clean water: the programmes of Nunayon Foundation.",
   alternates: { canonical: "/programmes" },
 };
 
-export default function ProgrammesPage() {
+export default async function ProgrammesPage() {
+  const programmes = await getProgrammes();
   return (
     <>
       <PageHero
         eyebrow="Programmes"
-        title="Six programmes, one aim: families who can stand on their own."
+        title="Every programme, one aim: families who can stand on their own."
         lead="Every outreach is planned with local leaders and followed up after the day. Choose a programme to see what it covers and how it works."
       >
         <ul className={styles.jump} aria-label="Jump to a programme">
@@ -41,7 +42,7 @@ export default function ProgrammesPage() {
             <div className={`wrap ${styles.rowInner}`} data-flip={i % 2 ? "" : undefined}>
               <Reveal variant="unveil" className={styles.media}>
                 <div className={styles.parallax} data-parallax="0.1">
-                  <Picture slug={p.image} sizes="(min-width: 64rem) 46vw, 92vw" className={styles.photo} />
+                  <Picture image={p.image} sizes="(min-width: 64rem) 46vw, 92vw" className={styles.photo} />
                 </div>
               </Reveal>
               <div className={styles.copy}>

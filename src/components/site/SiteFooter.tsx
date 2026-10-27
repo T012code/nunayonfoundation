@@ -3,7 +3,7 @@ import { Logo } from "@/components/brand/Logo";
 import { LeafField, type Leaf } from "@/components/motion/LeafField";
 import { Reveal } from "@/components/motion/Reveal";
 import { Words } from "@/components/motion/Words";
-import { site } from "@/content/site";
+import { getSettings } from "@/lib/content";
 import { BackToTop } from "./BackToTop";
 import { NewsletterForm } from "./NewsletterForm";
 import styles from "./SiteFooter.module.css";
@@ -36,7 +36,8 @@ const LEAVES: Leaf[] = [
   { top: "12%", left: "34%", size: "clamp(3rem, 4vw, 4rem)", speed: 0.8, rotate: 90, angle: -45, opacity: 0.14, sway: 11 },
 ];
 
-export function SiteFooter({ year }: { year: number }) {
+export async function SiteFooter({ year }: { year: number }) {
+  const site = await getSettings();
   return (
     <footer className={styles.footer}>
       <LeafField leaves={LEAVES} />

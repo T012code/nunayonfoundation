@@ -2,7 +2,7 @@
 // becomes editable in the admin; figures, names and contact details are stand-ins until the
 // foundation supplies the real ones.
 
-import type { ImageSlug } from "./images";
+import type { ImageRef, ImageSlug } from "./images";
 
 export const site = {
   name: "Nunayon Foundation",
@@ -33,7 +33,7 @@ export const nav = [
 export const hero = {
   title: "Helping families across Nigeria grow stronger, together.",
   lead: "We put children in school, help mothers start and grow small businesses, and bring care and clean water to communities that need it.",
-  slides: ["children-waving", "classroom-smiles", "health-check", "volunteer-children", "village-group"] satisfies ImageSlug[],
+  slides: ["children-waving", "classroom-smiles", "health-check", "volunteer-children", "village-group"] as ImageRef[],
 };
 
 // Placeholder figures until the foundation supplies its own.
@@ -51,13 +51,13 @@ export type Programme = {
   slug: string;
   title: string;
   summary: string;
-  image: ImageSlug;
+  image: ImageRef;
   /** Longer introduction for the programme page. */
   intro: string;
   covers: string[];
   steps: { title: string; body: string }[];
   stat: { value: string; label: string };
-  photos: ImageSlug[];
+  photos: ImageRef[];
 };
 
 export const programmes: Programme[] = [
@@ -217,10 +217,12 @@ export type Article = {
   slug: string;
   title: string;
   excerpt: string;
-  image: ImageSlug;
+  image: ImageRef;
   programme: string;
   body: string[];
-  photos?: ImageSlug[];
+  photos?: ImageRef[];
+  /** ISO date it was published. */
+  date?: string;
 };
 
 export const articles: Article[] = [
@@ -306,6 +308,10 @@ export const articles: Article[] = [
 ];
 
 // Placeholder bank details; real ones come from the admin.
+export type Social = { label: string; href: string };
+export type BankAccount = { currency: string; bank: string; name: string; number: string };
+export type Stat = { value: number; suffix: string; label: string };
+
 export const bank = {
   accounts: [
     { currency: "NGN", bank: "Placeholder Bank PLC", name: "Nunayon Foundation", number: "0123456789" },

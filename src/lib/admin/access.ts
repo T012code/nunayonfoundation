@@ -1,0 +1,92 @@
+import "server-only";
+import { redirect } from "next/navigation";
+import { cache } from "react";
+import { createClient } from "@/lib/supabase/server";
+
+export const PERMISSIONS = ["news", "gallery", "programmes", "people", "inbox", "newsletter", "settings", "activity"] as const;
+export type Permission = (typeof PERMISSIONS)[number];
+export type Role = "super_admin" | "admin" | "editor" | "communications";
+
+export const PERMISSION_LABELS: Record<Permission, { label: string; help: string }> = {
+  news: { label: "News", help: "Write, edit and publish stories" },
+  gallery: { label: "Gallery", help: "Albums and photo uploads" },
+  programmes: { label: "Programmes", help: "Programme pages" },
+  people: { label: "People", help: "Founder, trustees and team" },
+  inbox: { label: "Inbox", help: "Messages, volunteers and donation notices" },
+  newsletter: { label: "Newsletter", help: "Subscribers and sending newsletters" },
+  settings: { label: "Site settings", help: "Contact details, bank accounts, figures and home page" },
+  activity: { label: "Activity log", help: "See who changed what" },
+};
+
+export const ROLE_LABELS: Record<Role, string> = {
+  super_admin: "Super admin",
+  admin: "Admin",
+  editor: "Editor",
+  communications: "Communications",
+};
+
+// What each role starts with; the super admin can adjust any person's permissions.
+export const ROLE_PRESETS: Record<Exclude<Role, "super_admin">, Permission[]> = {
+  admin: ["news", "gallery", "programmes", "people", "inbox", "newsletter", "settings", "activity"],
+  editor: ["news", "gallery", "programmes", "people"],
+  communications: ["inbox", "newsletter", "news"],
+};
+
+export type Access = {
+  id: string;
+  email: string;
+  name: string;
+  role: Role;
+  permissions: Permission[];
+  mfa_required: boolean;
+  aal: "aal1" | "aal2";
+};
+
+type State =
+  | { state: "signed-out" }
+  | { state: "no-access"; email: string }
+  | { state: "needs-mfa"; access: Access; enrolled: boolean }
+  | { state: "ok"; access: Access };
+
+/**
+ * Who is signed in and what they may do, checked against the database once per request.
+ * MFA is asked for when the account requires it, or when the person has set it up anyway.
+ */
+export const getAccess = cache(async (): Promise<State> => {
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+  if (!data?.claims) return { state: "signed-out" };
+  const { data: row } = await supabase.rpc("my_access");
+  const access = row as Access | null;
+  if (!access) return { state: "no-access", email: String(data.claims.email ?? "") };
+  const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+  const enrolled = aal?.nextLevel === "aal2";
+  if (aal?.currentLevel !== "aal2" && (access.mfa_required || enrolled)) {
+    return { state: "needs-mfa", access, enrolled };
+  }
+  return { state: "ok", access };
+});
+
+export const can = (a: Access, perm: Permission) => a.role === "super_admin" || a.permissions.includes(perm);
+
+/** For admin pages: sends people to sign in, verify MFA, or back to the dashboard as needed. */
+export async function requirePage(perm?: Permission | "super") {
+  const s = await getAccess();
+  if (s.state === "signed-out") redirect("/admin/login");
+  if (s.state === "no-access") redirect("/admin/login?error=no-access");
+  if (s.state === "needs-mfa") redirect("/admin/mfa");
+  if (perm === "super" ? s.access.role !== "super_admin" : perm && !can(s.access, perm)) redirect("/admin?denied=1");
+  return { access: s.access, supabase: await createClient() };
+}
+
+export class ActionError extends Error {}
+
+/** For admin server actions: the same checks, as an error the form can show. */
+export async function requireAction(perm?: Permission | "super") {
+  const s = await getAccess();
+  if (s.state !== "ok") throw new ActionError("Your session has ended. Sign in again to continue.");
+  if (perm === "super" ? s.access.role !== "super_admin" : perm && !can(s.access, perm)) {
+    throw new ActionError("You don't have permission to do that.");
+  }
+  return { access: s.access, supabase: await createClient() };
+}

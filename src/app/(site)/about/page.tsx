@@ -6,7 +6,9 @@ import { CtaBand } from "@/components/page/CtaBand";
 import { PageHero } from "@/components/page/PageHero";
 import { SectionHead } from "@/components/page/SectionHead";
 import { about } from "@/content/pages";
-import { site, story } from "@/content/site";
+import { story } from "@/content/site";
+import { Picture } from "@/components/ui/Picture";
+import { getPeople, getSettings } from "@/lib/content";
 import b from "@/components/page/blocks.module.css";
 
 export const metadata: Metadata = {
@@ -22,7 +24,8 @@ const initials = (name: string) =>
     .slice(0, 2)
     .join("");
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const [site, people] = await Promise.all([getSettings(), getPeople()]);
   return (
     <>
       <PageHero {...about.hero} />
@@ -78,11 +81,11 @@ export default function AboutPage() {
             lead="A small team in Lagos, a board of trustees who hold us to account, and hundreds of volunteers across the country."
           />
           <ul className={b.grid3}>
-            {about.people.map((p, i) => (
+            {people.map((p, i) => (
               <Reveal as="li" key={i} variant="pop" delay={(i % 3) * 0.08}>
                 <div className={b.person}>
                   <span className={b.avatar} aria-hidden="true">
-                    {initials(p.name)}
+                    {p.image ? <Picture image={p.image} sizes="(min-width: 64rem) 25vw, 46vw" className={b.avatarPhoto} alt="" /> : initials(p.name)}
                   </span>
                   <span className={b.personName}>{p.name}</span>
                   <span className={b.personRole}>{p.role}</span>

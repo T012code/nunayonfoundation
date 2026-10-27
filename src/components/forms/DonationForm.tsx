@@ -1,14 +1,17 @@
 "use client";
 
 import { Button } from "@/components/ui/Button";
-import { programmes } from "@/content/site";
+import { submitForm } from "@/app/actions/forms";
+import { BotGuard, FormError } from "./BotGuard";
 import { SelectField, TextArea, TextField } from "./Field";
 import { useSiteForm } from "./useSiteForm";
 import styles from "./forms.module.css";
 
 /** "I've made a donation": lets the team match the transfer, thank the donor and send a receipt. */
-export function DonationForm() {
-  const { errors, pending, onSubmit, clear } = useSiteForm("donation");
+const send = submitForm.bind(null, "donation");
+
+export function DonationForm({ programmes }: { programmes: string[] }) {
+  const { errors, formError, pending, attempt, onSubmit, clear } = useSiteForm("donation", send);
   return (
     <form className={styles.form} onSubmit={onSubmit} noValidate>
       <div className={styles.row}>
@@ -30,12 +33,14 @@ export function DonationForm() {
       <SelectField
         name="programme"
         label="Where should it go?"
-        options={["Wherever it's needed most", ...programmes.map((p) => p.title)]}
+        options={["Wherever it's needed most", ...programmes]}
         defaultValue="Wherever it's needed most"
         error={errors.programme}
         onEdit={clear}
       />
       <TextArea name="note" label="A note to the team" rows={3} error={errors.note} onEdit={clear} />
+      <BotGuard resetKey={attempt} />
+      <FormError message={formError} />
       <Button type="submit" variant="primary" arrow loading={pending} className={styles.submit}>
         {pending ? "Sending" : "Tell us you've given"}
       </Button>

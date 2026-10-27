@@ -6,7 +6,7 @@ import { Faq } from "@/components/page/Faq";
 import { PageHero } from "@/components/page/PageHero";
 import { SectionHead } from "@/components/page/SectionHead";
 import { donate } from "@/content/pages";
-import { bank } from "@/content/site";
+import { getProgrammes, getSettings } from "@/lib/content";
 import b from "@/components/page/blocks.module.css";
 import styles from "./donate.module.css";
 
@@ -16,12 +16,13 @@ export const metadata: Metadata = {
   alternates: { canonical: "/donate" },
 };
 
-export default function DonatePage() {
+export default async function DonatePage() {
+  const [settings, programmes] = await Promise.all([getSettings(), getProgrammes()]);
   return (
     <>
       <PageHero {...donate.hero} />
 
-      <DonateBand accounts={bank.accounts} />
+      <DonateBand accounts={settings.bankAccounts} />
 
       <section className={b.section} aria-labelledby="uses-title">
         <div className="wrap">
@@ -53,7 +54,7 @@ export default function DonatePage() {
             </Reveal>
           </div>
           <Reveal className={b.formCard}>
-            <DonationForm />
+            <DonationForm programmes={programmes.map((p) => p.title)} />
           </Reveal>
         </div>
       </section>

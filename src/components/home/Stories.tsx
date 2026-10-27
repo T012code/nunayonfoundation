@@ -32,7 +32,7 @@ export function Stories({ items }: { items: Article[] }) {
             <Link href={`/news/${lead.slug}`} className={styles.card}>
               <Reveal as="span" variant="unveil" className={styles.media}>
                 <span className={styles.zoom}>
-                  <Picture slug={lead.image} sizes="(min-width: 64rem) 55vw, 92vw" className={styles.photo} />
+                  <Picture image={lead.image} sizes="(min-width: 64rem) 55vw, 92vw" className={styles.photo} />
                 </span>
               </Reveal>
               <Reveal as="span" delay={0.2} className={styles.leadText}>
@@ -47,7 +47,7 @@ export function Stories({ items }: { items: Article[] }) {
                 <Link href={`/news/${a.slug}`} className={`${styles.card} ${styles.row}`}>
                   <span className={styles.thumb}>
                     <span className={styles.zoom}>
-                      <Picture slug={a.image} sizes="(min-width: 64rem) 16vw, 36vw" className={styles.photo} />
+                      <Picture image={a.image} sizes="(min-width: 64rem) 16vw, 36vw" className={styles.photo} />
                     </span>
                   </span>
                   <span className={styles.rowText}>

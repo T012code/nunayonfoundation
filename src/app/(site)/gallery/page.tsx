@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Gallery } from "@/components/gallery/Gallery";
 import { CtaBand } from "@/components/page/CtaBand";
 import { PageHero } from "@/components/page/PageHero";
-import { albums } from "@/content/pages";
+import { getAlbums } from "@/lib/content";
 import b from "@/components/page/blocks.module.css";
 
 export const metadata: Metadata = {
@@ -11,7 +11,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/gallery" },
 };
 
-export default function GalleryPage() {
+export default async function GalleryPage() {
+  const albums = await getAlbums();
   return (
     <>
       <PageHero

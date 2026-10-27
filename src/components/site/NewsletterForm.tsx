@@ -1,32 +1,47 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { subscribe } from "@/app/actions/forms";
 import { Button } from "@/components/ui/Button";
 import styles from "./NewsletterForm.module.css";
 
-type Status = { kind: "idle" } | { kind: "error"; message: string } | { kind: "done" };
+type Status = { kind: "idle" } | { kind: "sending" } | { kind: "error"; message: string } | { kind: "done" };
 
 /**
- * Newsletter sign-up. Preview build: validates and confirms on screen only. The admin build
- * connects it to the subscriber list with a confirmation email (double opt-in).
+ * Newsletter sign-up with double opt-in: the address is saved as pending and we email a
+ * confirmation link. Nobody is added to the list until they click it.
  */
 export function NewsletterForm() {
+  const router = useRouter();
   const [status, setStatus] = useState<Status>({ kind: "idle" });
 
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const email = String(new FormData(e.currentTarget).get("email") ?? "").trim();
+    const data = new FormData(e.currentTarget);
+    const email = String(data.get("email") ?? "").trim();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       setStatus({ kind: "error", message: "Enter a valid email address, like name@example.com." });
       return;
     }
-    setStatus({ kind: "done" });
+    setStatus({ kind: "sending" });
+    try {
+      const result = await subscribe(data);
+      if (result.ok) {
+        setStatus({ kind: "done" });
+        router.push("/thank-you/newsletter");
+      } else {
+        setStatus({ kind: "error", message: result.error });
+      }
+    } catch {
+      setStatus({ kind: "error", message: "Sorry, that didn't go through. Please try again." });
+    }
   }
 
   if (status.kind === "done") {
     return (
       <p className={styles.done} role="status">
-        Thank you. Newsletter sign-ups open when the site launches, and we&apos;ll email you to confirm.
+        Almost there. Check your inbox and click the link we sent to confirm your subscription.
       </p>
     );
   }
@@ -48,7 +63,8 @@ export function NewsletterForm() {
           aria-describedby={status.kind === "error" ? "newsletter-error" : undefined}
           onChange={() => status.kind === "error" && setStatus({ kind: "idle" })}
         />
-        <Button type="submit" variant="cta" className={styles.submit}>
+        <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" hidden />
+        <Button type="submit" variant="cta" className={styles.submit} loading={status.kind === "sending"}>
           Subscribe
         </Button>
       </div>

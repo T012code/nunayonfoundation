@@ -1,12 +1,13 @@
 import type { MetadataRoute } from "next";
-import { articles, programmes } from "@/content/site";
+import { shareImage, type ImageRef } from "@/content/images";
+import { getArticles, getProgrammes } from "@/lib/content";
 import { SITE_URL } from "@/lib/env";
 
 const abs = (path: string) => `${SITE_URL}${path}`;
-const img = (slug: string) => abs(`/placeholder/${slug}-1600.webp`);
+const img = (ref: ImageRef) => shareImage(ref, SITE_URL);
 
-// Content pages will be listed from the database once the admin build is in.
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const [programmes, articles] = await Promise.all([getProgrammes(), getArticles()]);
   return [
     { url: abs("/"), changeFrequency: "weekly", priority: 1 },
     { url: abs("/about"), changeFrequency: "monthly", priority: 0.8 },
@@ -21,6 +22,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: abs("/news"), changeFrequency: "weekly", priority: 0.8 },
     ...articles.map((a) => ({
       url: abs(`/news/${a.slug}`),
+      lastModified: a.date,
       changeFrequency: "yearly" as const,
       priority: 0.6,
       images: [img(a.image)],

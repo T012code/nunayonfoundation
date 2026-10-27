@@ -2,7 +2,7 @@ import { Reveal } from "@/components/motion/Reveal";
 import { Words } from "@/components/motion/Words";
 import { ButtonLink } from "@/components/ui/Button";
 import { Picture } from "@/components/ui/Picture";
-import type { ImageSlug } from "@/content/images";
+import type { ImageRef } from "@/content/images";
 import styles from "./Story.module.css";
 
 type Props = {
@@ -10,7 +10,7 @@ type Props = {
   title: string;
   values: string[];
   chapters: { title: string; body: string }[];
-  image: ImageSlug;
+  image: ImageRef;
   quote: { text: string; name: string; role: string };
   /** Hide the "About us" link (on the About page itself). */
   hideLink?: boolean;
@@ -48,7 +48,7 @@ export function Story({ eyebrow, title, values, chapters, image, quote, hideLink
         <div className={styles.main}>
           <Reveal variant="unveil" className={styles.photoWrap}>
             <div className={styles.parallax} data-parallax="0.12">
-              <Picture slug={image} sizes="(min-width: 64rem) 50vw, 92vw" className={styles.photo} />
+              <Picture image={image} sizes="(min-width: 64rem) 50vw, 92vw" className={styles.photo} />
             </div>
           </Reveal>
 

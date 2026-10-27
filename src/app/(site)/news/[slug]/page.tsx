@@ -6,31 +6,34 @@ import { Words } from "@/components/motion/Words";
 import { CtaBand } from "@/components/page/CtaBand";
 import { SectionHead } from "@/components/page/SectionHead";
 import { Picture } from "@/components/ui/Picture";
-import { articles, programmes } from "@/content/site";
+import { imageKey, shareImage } from "@/content/images";
+import { getArticles, getProgrammes } from "@/lib/content";
 import { SITE_URL } from "@/lib/env";
 import { ShareLinks } from "./ShareLinks";
 import styles from "./article.module.css";
 
-export function generateStaticParams() {
-  return articles.map((a) => ({ slug: a.slug }));
+export async function generateStaticParams() {
+  return (await getArticles()).map((a) => ({ slug: a.slug }));
 }
 
-export const dynamicParams = false;
+// Stories published after the last build are rendered on first visit, then kept.
+export const dynamicParams = true;
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const a = articles.find((x) => x.slug === slug);
+  const a = (await getArticles()).find((x) => x.slug === slug);
   if (!a) return {};
   return {
     title: a.title,
     description: a.excerpt,
     alternates: { canonical: `/news/${a.slug}` },
-    openGraph: { type: "article", images: [{ url: `/placeholder/${a.image}-1600.webp`, width: 1600, alt: a.title }] },
+    openGraph: { type: "article", publishedTime: a.date, images: [{ url: shareImage(a.image, SITE_URL), alt: a.title }] },
   };
 }
 
 export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  const [articles, programmes] = await Promise.all([getArticles(), getProgrammes()]);
   const a = articles.find((x) => x.slug === slug);
   if (!a) notFound();
   const programme = programmes.find((p) => p.slug === a.programme);
@@ -58,7 +61,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
 
         <div className={`wrap ${styles.heroWrap}`}>
           <div className={styles.hero}>
-            <Picture slug={a.image} sizes="(min-width: 80rem) 76rem, 96vw" priority className={styles.heroPhoto} />
+            <Picture image={a.image} sizes="(min-width: 80rem) 76rem, 96vw" priority className={styles.heroPhoto} />
             <span className={styles.cover} aria-hidden="true" />
           </div>
         </div>
@@ -75,8 +78,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           {a.photos?.length ? (
             <div className={styles.photos}>
               {a.photos.map((p, i) => (
-                <Reveal key={p} variant="unveil" delay={i * 0.12} className={styles.inline}>
-                  <Picture slug={p} sizes="(min-width: 48rem) 24rem, 46vw" className={styles.inlinePhoto} />
+                <Reveal key={imageKey(p)} variant="unveil" delay={i * 0.12} className={styles.inline}>
+                  <Picture image={p} sizes="(min-width: 48rem) 24rem, 46vw" className={styles.inlinePhoto} />
                 </Reveal>
               ))}
             </div>
@@ -93,7 +96,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
               <Reveal as="li" key={m.slug} delay={i * 0.1}>
                 <Link href={`/news/${m.slug}`} className={styles.moreCard}>
                   <span className={styles.moreMedia}>
-                    <Picture slug={m.image} sizes="(min-width: 64rem) 30vw, 92vw" className={styles.inlinePhoto} />
+                    <Picture image={m.image} sizes="(min-width: 64rem) 30vw, 92vw" className={styles.inlinePhoto} />
                   </span>
                   <span className={styles.moreTitle}>{m.title}</span>
                 </Link>

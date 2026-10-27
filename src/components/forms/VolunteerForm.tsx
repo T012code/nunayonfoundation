@@ -2,6 +2,8 @@
 
 import { Button } from "@/components/ui/Button";
 import { volunteer } from "@/content/pages";
+import { submitForm } from "@/app/actions/forms";
+import { BotGuard, FormError } from "./BotGuard";
 import { ChoiceGroup, SelectField, TextArea, TextField } from "./Field";
 import { useSiteForm } from "./useSiteForm";
 import styles from "./forms.module.css";
@@ -13,8 +15,10 @@ const STATES = [
   "Rivers", "Sokoto", "Taraba", "Yobe", "Zamfara", "Outside Nigeria",
 ];
 
+const send = submitForm.bind(null, "volunteer");
+
 export function VolunteerForm() {
-  const { errors, pending, onSubmit, clear } = useSiteForm("volunteer");
+  const { errors, formError, pending, attempt, onSubmit, clear } = useSiteForm("volunteer", send);
   return (
     <form className={styles.form} onSubmit={onSubmit} noValidate>
       <div className={styles.row}>
@@ -60,6 +64,8 @@ export function VolunteerForm() {
         error={errors.about}
         onEdit={clear}
       />
+      <BotGuard resetKey={attempt} />
+      <FormError message={formError} />
       <Button type="submit" variant="primary" arrow loading={pending} className={styles.submit}>
         {pending ? "Sending" : "Sign me up"}
       </Button>

@@ -10,18 +10,25 @@
     "images:placeholder": "node scripts/placeholder-images.mjs"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.118.0",
+    "@vercel/analytics": "^2.0.1",
     "lenis": "^1.3.26",
     "motion": "^14.1.0",
     "next": "^16.4.3",
+    "nodemailer": "^10.2.1",
     "react": "19.3.0",
     "react-dom": "19.3.0"
   },
   "devDependencies": {
     "@types/node": "^20",
+    "@types/nodemailer": "^8.0.2",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "^16.4.3",
+    "otpauth": "^9.5.2",
+    "server-only": "^0.0.1",
     "sharp": "^0.35.5",
     "typescript": "^5"
   }

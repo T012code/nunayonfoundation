@@ -6,7 +6,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProp
 import { Logo } from "@/components/brand/Logo";
 import { MotionRoot } from "@/components/motion/MotionRoot";
 import { jumpTo, lockScroll } from "@/lib/scroll";
-import { nav, site } from "@/content/site";
+import { nav } from "@/content/site";
 import { SiteHeader } from "./SiteHeader";
 import styles from "./SiteShell.module.css";
 
@@ -14,7 +14,9 @@ import styles from "./SiteShell.module.css";
  * Page frame with the drawer menu used below desktop widths: the menu sits behind the page,
  * and opening it slides and shrinks the whole page to the left as one surface.
  */
-export function SiteShell({ children, footer }: { children: ReactNode; footer: ReactNode }) {
+type Contact = { email: string; phone: string; whatsapp: string };
+
+export function SiteShell({ children, footer, contact: site }: { children: ReactNode; footer: ReactNode; contact: Contact }) {
   // `frozen` pins the page at its scroll position while it slides; `open` drives the slide.
   const [frozen, setFrozen] = useState<{ y: number; path: string } | null>(null);
   const [open, setOpen] = useState(false);

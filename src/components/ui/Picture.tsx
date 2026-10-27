@@ -1,8 +1,8 @@
 import type { CSSProperties } from "react";
-import { image, type ImageSlug } from "@/content/images";
+import { image as resolve, type ImageRef } from "@/content/images";
 
 type Props = {
-  slug: ImageSlug;
+  image: ImageRef;
   /** The `sizes` attribute: how wide the image renders, so the browser picks the right file. */
   sizes: string;
   className?: string;
@@ -15,8 +15,8 @@ type Props = {
  * Responsive photo from pre-made WebP sizes. No server resizing: uploads are compressed into
  * these widths once, so serving them costs nothing extra. A blurred preview shows while loading.
  */
-export function Picture({ slug, sizes, className, style, priority, alt }: Props) {
-  const img = image(slug);
+export function Picture({ image, sizes, className, style, priority, alt }: Props) {
+  const img = resolve(image);
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img

@@ -9,25 +9,28 @@ import { SectionHead } from "@/components/page/SectionHead";
 import { Arrow } from "@/components/ui/Arrow";
 import { Check } from "@/components/ui/Check";
 import { Picture } from "@/components/ui/Picture";
-import { articles, programmes } from "@/content/site";
+import { imageKey, shareImage } from "@/content/images";
+import { getArticles, getProgrammes } from "@/lib/content";
+import { SITE_URL } from "@/lib/env";
 import b from "@/components/page/blocks.module.css";
 import styles from "./programme.module.css";
 
-export function generateStaticParams() {
-  return programmes.map((p) => ({ slug: p.slug }));
+export async function generateStaticParams() {
+  return (await getProgrammes()).map((p) => ({ slug: p.slug }));
 }
 
-export const dynamicParams = false;
+// Programmes added after the last build are rendered on first visit, then kept.
+export const dynamicParams = true;
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const p = programmes.find((x) => x.slug === slug);
+  const p = (await getProgrammes()).find((x) => x.slug === slug);
   if (!p) return {};
   return {
     title: p.title,
     description: p.summary,
     alternates: { canonical: `/programmes/${p.slug}` },
-    openGraph: { images: [{ url: `/placeholder/${p.image}-1600.webp`, width: 1600, alt: p.title }] },
+    openGraph: { images: [{ url: shareImage(p.image, SITE_URL), alt: p.title }] },
   };
 }
 
@@ -39,6 +42,7 @@ function parseStat(value: string) {
 
 export default async function ProgrammePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  const [programmes, articles] = await Promise.all([getProgrammes(), getArticles()]);
   const p = programmes.find((x) => x.slug === slug);
   if (!p) notFound();
   const stories = articles.filter((a) => a.programme === p.slug);
@@ -108,8 +112,8 @@ export default async function ProgrammePage({ params }: { params: Promise<{ slug
           />
           <ul className={styles.photos}>
             {p.photos.map((slug, i) => (
-              <Reveal as="li" key={slug} variant="unveil" delay={(i % 3) * 0.1} className={styles.photoItem}>
-                <Picture slug={slug} sizes="(min-width: 64rem) 30vw, 46vw" className={styles.photo} />
+              <Reveal as="li" key={imageKey(slug)} variant="unveil" delay={(i % 3) * 0.1} className={styles.photoItem}>
+                <Picture image={slug} sizes="(min-width: 64rem) 30vw, 46vw" className={styles.photo} />
               </Reveal>
             ))}
           </ul>
@@ -125,7 +129,7 @@ export default async function ProgrammePage({ params }: { params: Promise<{ slug
                 <Reveal as="li" key={a.slug} delay={i * 0.1}>
                   <Link href={`/news/${a.slug}`} className={styles.story}>
                     <span className={styles.storyMedia}>
-                      <Picture slug={a.image} sizes="(min-width: 40rem) 22vw, 36vw" className={styles.photo} />
+                      <Picture image={a.image} sizes="(min-width: 40rem) 22vw, 36vw" className={styles.photo} />
                     </span>
                     <span>
                       <span className={styles.storyTitle}>{a.title}</span>

@@ -6,19 +6,21 @@ import { Programmes } from "@/components/home/Programmes";
 import { Stories } from "@/components/home/Stories";
 import { Story } from "@/components/home/Story";
 import { Ways } from "@/components/home/Ways";
-import { articles, bank, hero, impact, programmes, story, ways } from "@/content/site";
+import { impact, story, ways } from "@/content/site";
+import { getArticles, getProgrammes, getSettings } from "@/lib/content";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const [settings, programmes, articles] = await Promise.all([getSettings(), getProgrammes(), getArticles()]);
   return (
     <>
-      <Hero {...hero} />
-      <Impact {...impact} />
+      <Hero {...settings.hero} />
+      <Impact title={impact.title} stats={settings.impact} />
       <Programmes items={programmes} />
       <Story {...story} />
       <Ways {...ways} />
-      <Stories items={articles} />
+      {articles.length ? <Stories items={articles} /> : null}
       <Partners />
-      <DonateBand accounts={bank.accounts} />
+      <DonateBand accounts={settings.bankAccounts} />
     </>
   );
 }

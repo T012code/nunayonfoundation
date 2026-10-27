@@ -3,10 +3,10 @@ import { Reveal } from "@/components/motion/Reveal";
 import { Words } from "@/components/motion/Words";
 import { Arrow } from "@/components/ui/Arrow";
 import { Picture } from "@/components/ui/Picture";
-import type { ImageSlug } from "@/content/images";
+import type { ImageRef } from "@/content/images";
 import styles from "./Ways.module.css";
 
-type Item = { title: string; body: string; href: string; cta: string; image: ImageSlug };
+type Item = { title: string; body: string; href: string; cta: string; image: ImageRef };
 
 export function Ways({ eyebrow, title, items }: { eyebrow: string; title: string; items: Item[] }) {
   return (
@@ -25,7 +25,7 @@ export function Ways({ eyebrow, title, items }: { eyebrow: string; title: string
             <Reveal as="li" key={item.title} delay={i * 0.12}>
               <Link href={item.href} className={styles.card}>
                 <span className={styles.photoWrap} data-parallax="0.1">
-                  <Picture slug={item.image} sizes="(min-width: 56rem) 30vw, 92vw" className={styles.photo} alt="" />
+                  <Picture image={item.image} sizes="(min-width: 56rem) 30vw, 92vw" className={styles.photo} alt="" />
                 </span>
                 <span className={styles.shade} aria-hidden="true" />
                 <span className={styles.body}>

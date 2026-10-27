@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
+import type { FormResult } from "@/app/actions/forms";
 
 export type ThankYouForm = "contact" | "volunteer" | "partner" | "donation" | "newsletter";
 
@@ -20,18 +21,18 @@ function messageFor(el: Field) {
 
 /**
  * Validation and submission for the site's forms. Errors show beside each field and focus
- * moves to the first one.
- *
- * Preview build: a valid form goes straight to its thank-you page and nothing is saved.
- * The admin build replaces `send` with a server action that stores the submission, checks
- * Turnstile and emails the team.
+ * moves to the first one. A valid form goes to the server (`send`), which checks it for
+ * spam, saves it to the admin inbox and emails the team; then the visitor sees the form's
+ * thank-you page.
  */
-export function useSiteForm(form: ThankYouForm) {
+export function useSiteForm(form: ThankYouForm, send: (data: FormData) => Promise<FormResult>) {
   const router = useRouter();
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [formError, setFormError] = useState<string>();
   const [pending, setPending] = useState(false);
+  const [attempt, setAttempt] = useState(0);
 
-  function onSubmit(e: FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const formEl = e.currentTarget;
     const next: Record<string, string> = {};
@@ -61,7 +62,19 @@ export function useSiteForm(form: ThankYouForm) {
       return;
     }
     setPending(true);
-    router.push(`/thank-you/${form}`);
+    setFormError(undefined);
+    try {
+      const result = await send(new FormData(formEl));
+      if (result.ok) {
+        router.push(`/thank-you/${form}`);
+        return;
+      }
+      setFormError(result.error);
+    } catch {
+      setFormError("Sorry, something went wrong sending your form. Please check your connection and try again.");
+    }
+    setPending(false);
+    setAttempt((n) => n + 1);
   }
 
   function clear(name: string) {
@@ -73,5 +86,5 @@ export function useSiteForm(form: ThankYouForm) {
     });
   }
 
-  return { errors, pending, onSubmit, clear };
+  return { errors, formError, pending, attempt, onSubmit, clear };
 }

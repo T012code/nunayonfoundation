@@ -38,7 +38,7 @@ export default function VolunteerPage() {
               <Reveal as="li" key={r.title} delay={i * 0.08}>
                 <div className={styles.role}>
                   <Reveal as="span" variant="unveil" delay={i * 0.08} className={styles.roleMedia}>
-                    <Picture slug={r.image} sizes="(min-width: 64rem) 22vw, (min-width: 40rem) 45vw, 92vw" className={styles.photo} />
+                    <Picture image={r.image} sizes="(min-width: 64rem) 22vw, (min-width: 40rem) 45vw, 92vw" className={styles.photo} />
                   </Reveal>
                   <h3 className={b.cardTitle}>{r.title}</h3>
                   <p className={b.cardBody}>{r.body}</p>
