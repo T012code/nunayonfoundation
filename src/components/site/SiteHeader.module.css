@@ -187,3 +187,20 @@
     height: 2.9rem;
   }
 }
+
+/* Touch screens: a 44 × 44 tap area around this small link, without moving anything. */
+@media (pointer: coarse) {
+  .brand {
+    position: relative;
+  }
+
+  .brand::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: max(100%, 44px);
+    height: max(100%, 44px);
+    transform: translate(-50%, -50%);
+  }
+}

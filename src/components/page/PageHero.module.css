@@ -128,3 +128,25 @@
     gap: var(--space-3xl);
   }
 }
+
+/* Touch screens: a 44 × 44 tap area around this small link, without moving anything. */
+@media (pointer: coarse) {
+  /* If the trail wraps, its rows sit far enough apart that the tap areas don't overlap. */
+  .crumbs ol {
+    row-gap: 1.5rem;
+  }
+
+  .crumbs a {
+    position: relative;
+  }
+
+  .crumbs a::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: max(100%, 44px);
+    height: max(100%, 44px);
+    transform: translate(-50%, -50%);
+  }
+}

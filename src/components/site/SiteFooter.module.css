@@ -318,3 +318,36 @@
     grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
   }
 }
+
+/* Touch screens: a 44 × 44 tap area around this small link, without moving anything. */
+@media (pointer: coarse) {
+  .socials a,
+  .bottom ul a {
+    position: relative;
+  }
+
+  .socials a::before,
+  .bottom ul a::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: max(100%, 44px);
+    height: max(100%, 44px);
+    transform: translate(-50%, -50%);
+  }
+}
+
+/* Touch screens: each footer link is a full 44px row (the list spacing moves into the row). */
+@media (pointer: coarse) {
+  .links ul {
+    gap: 0;
+  }
+
+  .links ul a {
+    display: inline-flex;
+    align-items: center;
+    min-width: 44px;
+    min-height: 44px;
+  }
+}

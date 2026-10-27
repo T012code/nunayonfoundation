@@ -59,3 +59,10 @@
     padding-block: var(--space-xs);
   }
 }
+
+/* Touch screens: rows at least 44px tall. */
+@media (pointer: coarse) {
+  .link {
+    padding-block: calc(var(--space-2xs) + 1px);
+  }
+}

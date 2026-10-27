@@ -227,6 +227,14 @@
   }
 }
 
+/* Touch screens: 44px buttons. */
+@media (pointer: coarse) {
+  .step {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+}
+
 .step svg {
   width: 1rem;
   height: 1rem;
