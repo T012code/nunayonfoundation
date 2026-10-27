@@ -1,38 +1,41 @@
 "use server";
 
-import { serviceClient } from "@/lib/supabase/server";
+import { publicClient } from "@/lib/supabase/server";
+
+// The links in newsletter emails. Each goes through a small database function that needs the
+// subscriber's secret token, so they work from the public site without the server key.
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-/** Confirms a pending subscription from the emailed link. */
+async function call(fn: "newsletter_confirm" | "newsletter_unsubscribe" | "newsletter_resubscribe", token: string) {
+  if (!UUID.test(token)) return false;
+  const { data, error } = await publicClient().rpc(fn, { p_token: token });
+  return !error && data === true;
+}
+
+/** Who a link belongs to (address partly hidden) and whether they're on the list. */
+export async function lookupSubscriber(token: string) {
+  if (!UUID.test(token)) return null;
+  const { data, error } = await publicClient().rpc("newsletter_lookup", { p_token: token });
+  if (error || !data) return null;
+  return data as { email: string; status: "pending" | "confirmed" | "unsubscribed" };
+}
+
+/** Confirms a subscription from the emailed link (already confirmed counts as success). */
 export async function confirmSubscription(token: string) {
-  const db = serviceClient();
-  if (!db || !UUID.test(token)) return false;
-  const { data } = await db
-    .from("subscribers")
-    .update({ status: "confirmed", confirmed_at: new Date().toISOString(), unsubscribed_at: null })
-    .eq("token", token)
-    .neq("status", "confirmed")
-    .select("id");
-  if (data?.length) return true;
-  // Already confirmed counts as success.
-  const { data: row } = await db.from("subscribers").select("status").eq("token", token).maybeSingle<{ status: string }>();
-  return row?.status === "confirmed";
+  return call("newsletter_confirm", token);
 }
 
 /** Takes an address off the list. Used by the unsubscribe page and the one-click header. */
 export async function unsubscribe(token: string) {
-  const db = serviceClient();
-  if (!db || !UUID.test(token)) return false;
-  // Success only when the link matched someone on the list (already unsubscribed counts).
-  const { data, error } = await db
-    .from("subscribers")
-    .update({ status: "unsubscribed", unsubscribed_at: new Date().toISOString() })
-    .eq("token", token)
-    .select("id");
-  return !error && !!data?.length;
+  return call("newsletter_unsubscribe", token);
 }
 
 export async function unsubscribeAction(fd: FormData) {
   return unsubscribe(String(fd.get("token") ?? ""));
+}
+
+/** Puts someone who unsubscribed back on the list, from the same link. */
+export async function resubscribeAction(fd: FormData) {
+  return call("newsletter_resubscribe", String(fd.get("token") ?? ""));
 }
