@@ -11,7 +11,7 @@ export type SiteStatusValues = { site_mode: SiteMode; mode_title: string; mode_m
 
 const MODES: { value: SiteMode; label: string; text: string }[] = [
   { value: "live", label: "Live", text: "Everyone sees the full website." },
-  { value: "maintenance", label: "Maintenance", text: "A “back shortly” page, with ways to contact you." },
+  { value: "maintenance", label: "Maintenance", text: "A short “back shortly” page with your email address." },
   { value: "coming_soon", label: "Coming soon", text: "A launch page with newsletter sign-up." },
 ];
 
