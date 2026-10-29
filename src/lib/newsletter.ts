@@ -85,6 +85,7 @@ export async function sendBatch(db: SupabaseClient, id: string, { limit = 20, de
         const { html, text, unsubscribe } = renderCampaign(c, head, sub.token);
         try {
           await mailer.send({
+            kind: "newsletter",
             to: sub.email,
             subject: c.subject,
             html,

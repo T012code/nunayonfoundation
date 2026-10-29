@@ -36,10 +36,20 @@ export async function saveSettings(_: unknown, fd: FormData): Promise<ActionResu
       if (problems.length) throw new ActionError(`Bank account ${i + 1} (${a.currency}): ${problems.join(", ")}.`);
     });
 
+    const days = (field: string, label: string) => {
+      const n = Math.floor(Number(str(fd, field, 6)));
+      if (!(n >= 1 && n <= 3650)) throw new ActionError(`${label}: choose between 1 and 3650 days.`);
+      return n;
+    };
+    const activityDays = days("activity_log_days", "Activity log");
+    const emailDays = days("email_log_days", "Sent emails");
+
     check(
       await supabase
         .from("site_settings")
         .update({
+          activity_log_days: activityDays,
+          email_log_days: emailDays,
           email,
           phone: str(fd, "phone", 40),
           whatsapp: str(fd, "whatsapp", 40),

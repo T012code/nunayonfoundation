@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Empty, formatTime, PageHead, adminStyles as s } from "@/components/admin/ui";
+import { Pager } from "@/components/admin/Pager";
 import { requirePage } from "@/lib/admin/access";
 
 export const metadata: Metadata = { title: "Activity log" };
@@ -17,6 +18,7 @@ const ENTITY: Record<string, string> = {
   site_settings: "site settings",
   page_content: "page text",
   mail_settings: "email set-up",
+  email_templates: "email wording",
   admins: "team member",
   submissions: "inbox item",
   subscribers: "subscriber",
@@ -37,7 +39,7 @@ const TYPES: { value: string; label: string }[] = [
   { value: "submissions", label: "Inbox" },
   { value: "subscribers,campaigns", label: "Newsletter" },
   { value: "admins", label: "Team" },
-  { value: "mail_settings", label: "Email set-up" },
+  { value: "mail_settings,email_templates", label: "Email set-up and wording" },
 ];
 
 const PAGE = 20;
@@ -64,10 +66,12 @@ export default async function ActivityAdmin({ searchParams }: { searchParams: Pr
   const pages = Math.max(1, Math.ceil(total / PAGE));
 
   // People to filter by: the team (as far as this person may see it) plus anyone in the log.
-  const [{ data: team }, { data: actors }] = await Promise.all([
+  const [{ data: team }, { data: actors }, { data: settings }] = await Promise.all([
     supabase.from("admins").select("email, name").order("name"),
     supabase.from("activity_log").select("actor_email").not("actor_email", "is", null).order("created_at", { ascending: false }).limit(500),
+    supabase.from("site_settings").select("activity_log_days").maybeSingle<{ activity_log_days: number }>(),
   ]);
+  const days = settings?.activity_log_days ?? 14;
   const people = new Map<string, string>();
   for (const m of (team ?? []) as { email: string; name: string }[]) people.set(m.email, m.name || m.email);
   for (const a of (actors ?? []) as { actor_email: string }[]) if (!people.has(a.actor_email)) people.set(a.actor_email, a.actor_email);
@@ -86,7 +90,7 @@ export default async function ActivityAdmin({ searchParams }: { searchParams: Pr
 
   return (
     <div className={s.page}>
-      <PageHead title="Activity log" lead="Every sign-in and change made in the admin, newest first. Entries older than 14 days are cleared automatically." />
+      <PageHead title="Activity log" lead={`Every sign-in and change made in the admin, newest first. Entries older than ${days} days are cleared automatically (change this in Settings).`} />
 
       <form className={s.toolbar} action="/admin/activity" role="search" aria-label="Filter the activity log">
         <label className={s.field}>
@@ -166,51 +170,5 @@ export default async function ActivityAdmin({ searchParams }: { searchParams: Pr
 
       {pages > 1 ? <Pager page={page} pages={pages} href={href} /> : null}
     </div>
-  );
-}
-
-/** Previous / next plus page numbers (first, last and the pages around this one). */
-function Pager({ page, pages, href }: { page: number; pages: number; href: (p: number) => string }) {
-  const nums: (number | "gap")[] = [];
-  for (let p = 1; p <= pages; p++) {
-    if (p === 1 || p === pages || Math.abs(p - page) <= 1) nums.push(p);
-    else if (nums[nums.length - 1] !== "gap") nums.push("gap");
-  }
-  return (
-    <nav className={s.pager} aria-label="Pages">
-      {page > 1 ? (
-        <Link href={href(page - 1)} className={s.pagerStep} rel="prev">
-          ← Newer
-        </Link>
-      ) : (
-        <span className={s.pagerStep} aria-disabled="true">
-          ← Newer
-        </span>
-      )}
-      <ol>
-        {nums.map((n, i) =>
-          n === "gap" ? (
-            <li key={`gap${i}`} aria-hidden="true">
-              …
-            </li>
-          ) : (
-            <li key={n}>
-              <Link href={href(n)} aria-current={n === page ? "page" : undefined} aria-label={`Page ${n}`}>
-                {n}
-              </Link>
-            </li>
-          ),
-        )}
-      </ol>
-      {page < pages ? (
-        <Link href={href(page + 1)} className={s.pagerStep} rel="next">
-          Older →
-        </Link>
-      ) : (
-        <span className={s.pagerStep} aria-disabled="true">
-          Older →
-        </span>
-      )}
-    </nav>
   );
 }

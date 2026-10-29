@@ -2,7 +2,7 @@
 
 import { after } from "next/server";
 import { headers } from "next/headers";
-import { addressList, button, detailRows, escapeHtml, getMailer, layout } from "@/lib/mail";
+import { addressList, sendTemplate } from "@/lib/mail";
 import { SITE_URL } from "@/lib/env";
 import { serviceClient } from "@/lib/supabase/server";
 import { domainAcceptsMail } from "@/lib/dns";
@@ -53,6 +53,9 @@ const FORMS: Record<Kind, { subject: string; fields: FieldSpec[] }> = {
     ],
   },
 };
+
+// Where the button in each thank-you email goes.
+const REPLY_LINKS: Record<Kind, string> = { contact: "/", volunteer: "/programmes", partner: "/", donation: "/donate" };
 
 const UNAVAILABLE =
   "Sorry, we couldn't send your form just now. Please try again in a few minutes, or email us directly.";
@@ -119,34 +122,23 @@ export async function submitForm(kind: Kind, fd: FormData): Promise<FormResult> 
     return { ok: false, error: UNAVAILABLE };
   }
 
-  // Email the team after the visitor has their answer, so a slow mail server never delays it.
+  // Emails go out after the visitor has their answer, so a slow mail server never delays it:
+  // an alert to the team, and a thank-you to the visitor with a copy of what they sent.
   after(async () => {
+    const details = [{ label: "Name", value: name }, { label: "Email", value: email }, ...(phone ? [{ label: "Phone", value: phone }] : []), ...fields];
     try {
-      const [mailer, { data: settings }] = await Promise.all([
-        getMailer(),
-        db.from("site_settings").select("notify_email").maybeSingle<{ notify_email: string }>(),
-      ]);
+      const { data: settings } = await db.from("site_settings").select("notify_email").maybeSingle<{ notify_email: string }>();
       const to = addressList(settings?.notify_email ?? "");
-      if (!mailer || !to.length) return;
-      const rows = [{ label: "Name", value: name }, { label: "Email", value: email }, ...(phone ? [{ label: "Phone", value: phone }] : []), ...fields];
-      await mailer.send({
-        to: to.join(", "),
-        replyTo: email,
-        subject: `${spec.subject} from ${name}`,
-        text: rows.map((r) => `${r.label}: ${r.value}`).join("\n\n") + `\n\nOpen the inbox: ${SITE_URL}/admin/inbox`,
-        html: layout({
-          kicker: "Website inbox",
-          preheader: `${spec.subject} from ${name}`,
-          body:
-            `<h1 style="margin:0 0 20px;font-size:22px;">${escapeHtml(spec.subject)}</h1>` +
-            detailRows(rows) +
-            button(`${SITE_URL}/admin/inbox`, "Open the inbox") +
-            `<p style="margin:12px 0 0;font-size:13px;color:#5b6b6c;">Reply to this email to answer ${escapeHtml(name)} directly.</p>`,
-        }),
-      });
-      mailer.close();
+      if (to.length) {
+        await sendTemplate("form_alert", to.join(", "), { form: spec.subject, name }, { link: `${SITE_URL}/admin/inbox`, details, replyTo: email });
+      }
     } catch (err) {
       console.error("[forms] alert email failed", err);
+    }
+    try {
+      await sendTemplate(`reply_${kind}`, email, { name: name.split(" ")[0] || name }, { link: `${SITE_URL}${REPLY_LINKS[kind]}`, details: fields });
+    } catch (err) {
+      console.error("[forms] reply email failed", err);
     }
   });
 
@@ -197,22 +189,5 @@ export async function subscribe(fd: FormData): Promise<FormResult> {
 }
 
 async function sendConfirmation(email: string, token: string) {
-  const mailer = await getMailer();
-  if (!mailer) return;
-  const url = `${SITE_URL}/newsletter/confirm?token=${token}`;
-  await mailer.send({
-    to: email,
-    subject: "Please confirm your subscription",
-    text: `Thank you for signing up to news from Nunayon Foundation.\n\nConfirm your subscription: ${url}\n\nIf you didn't sign up, ignore this email and you won't hear from us.`,
-    html: layout({
-      kicker: "Newsletter",
-      preheader: "One click to confirm, and you'll get our stories from the field.",
-      body:
-        `<h1 style="margin:0 0 16px;font-size:22px;">Confirm your subscription</h1>` +
-        `<p style="margin:0 0 16px;">Thank you for signing up to news from Nunayon Foundation. We write a few times a year about our outreaches and the families we meet.</p>` +
-        button(url, "Yes, subscribe me") +
-        `<p style="margin:16px 0 0;font-size:13px;color:#5b6b6c;">If you didn't sign up, ignore this email and you won't hear from us.</p>`,
-    }),
-  });
-  mailer.close();
+  await sendTemplate("newsletter_confirm", email, {}, { link: `${SITE_URL}/newsletter/confirm?token=${token}` });
 }

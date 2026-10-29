@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useActionState, useDeferredValue, useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { TestSend } from "@/components/admin/TestSend";
 import { continueSending, deleteCampaign, saveCampaign, schedule, sendNow, sendTest } from "@/app/actions/admin/newsletter";
 import { SaveBar, TextInput } from "@/components/admin/fields";
 import { formatTime } from "@/components/admin/ui";
@@ -15,12 +16,15 @@ export function CampaignForm({
   subscribers,
   justSaved,
   head,
+  me,
 }: {
   campaign: Campaign | null;
   subscribers: number;
   justSaved?: boolean;
   /** Contact details for the letterhead footer. */
   head: Letterhead;
+  /** Your address, filled in for test sends. */
+  me: string;
 }) {
   const router = useRouter();
   const id = campaign?.id ?? null;
@@ -140,13 +144,11 @@ export function CampaignForm({
         <section className={styles.card}>
           <h2 className={styles.cardTitle}>Send</h2>
           <p className={styles.cardLead}>
-            Goes to {subscribers} confirmed subscriber{subscribers === 1 ? "" : "s"}. Save any changes first, then send yourself a test.
+            Goes to {subscribers} confirmed subscriber{subscribers === 1 ? "" : "s"}. Save any changes first, then send a test to yourself or anyone checking it.
           </p>
           <div className={styles.fields}>
+            <TestSend defaultTo={me} send={(to) => sendTest(id, to)} />
             <div className={styles.actions}>
-              <button type="button" className={styles.secondaryButton} disabled={busy} onClick={() => start(async () => report(await sendTest(id)))}>
-                Send me a test
-              </button>
               {confirmSend ? (
                 <>
                   <button

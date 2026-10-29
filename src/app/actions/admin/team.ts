@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { ActionError, PERMISSIONS, requireAction, type Permission, type Role } from "@/lib/admin/access";
 import { required, str } from "@/lib/admin/form";
 import { check, run, type ActionResult } from "@/lib/admin/result";
-import { button, getMailer, layout } from "@/lib/mail";
+import { sendTemplate } from "@/lib/mail";
 import { SITE_URL } from "@/lib/env";
 import { serviceClient } from "@/lib/supabase/server";
 import { emailProblem } from "@/lib/validate";
@@ -43,25 +43,11 @@ async function setupLink(email: string) {
   return `${SITE_URL}/admin/auth/confirm?token_hash=${data.properties.hashed_token}&type=recovery&next=/admin/set-password`;
 }
 
-async function emailLink(email: string, name: string, link: string, invitedBy: string, isInvite: boolean) {
-  const mailer = await getMailer();
-  if (!mailer) return false;
+async function emailLink(email: string, name: string, link: string, by: string, isInvite: boolean) {
   const first = name.split(" ")[0] || "there";
-  await mailer.send({
-    to: email,
-    subject: isInvite ? "You're invited to the Nunayon Foundation admin" : "Set your Nunayon Foundation admin password",
-    text: `Hello ${first},\n\n${isInvite ? `${invitedBy} has added you to the Nunayon Foundation website admin.` : "Here is a link to set a new password for the admin."}\n\nChoose your password: ${link}\n\nThe link works once and expires in 24 hours.`,
-    html: layout({
-      preheader: isInvite ? "Choose a password to start." : "Choose a new password.",
-      body:
-        `<h1 style="margin:0 0 16px;font-size:22px;">${isInvite ? "You're invited" : "Set your password"}</h1>` +
-        `<p style="margin:0 0 16px;">Hello ${first}, ${isInvite ? `${invitedBy} has added you to the Nunayon Foundation website admin.` : "here is a link to set a new password for the admin."}</p>` +
-        button(link, "Choose your password") +
-        `<p style="margin:16px 0 0;font-size:13px;color:#5b6b6c;">The link works once and expires in 24 hours.</p>`,
-    }),
-  });
-  mailer.close();
-  return true;
+  return isInvite
+    ? sendTemplate("invite", email, { name: first, invited_by: by || "The team" }, { link })
+    : sendTemplate("password_link", email, { name: first, sent_by: by || "The team" }, { link });
 }
 
 export type InviteResult = ActionResult & { link?: string };

@@ -46,7 +46,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
       label: "Site",
       items: [
         ...show(has("settings"), { href: "/admin/settings", label: "Site settings", icon: "settings" }),
-        ...show(manager, { href: "/admin/email", label: "Email set-up", icon: "mail" }),
+        ...show(manager, { href: "/admin/email", label: "Email", icon: "mail" }),
         ...show(manager, { href: "/admin/team", label: "Team & permissions", icon: "team" }),
         ...show(has("activity"), { href: "/admin/activity", label: "Activity log", icon: "activity" }),
       ],

@@ -1,8 +1,9 @@
 "use client";
 
-import { useActionState, useState, useTransition, type ReactNode } from "react";
+import { useActionState, useState, type ReactNode } from "react";
 import { saveMailSettings, sendTestEmail } from "@/app/actions/admin/email";
 import { Icon } from "@/components/admin/Icon";
+import { TestSend } from "@/components/admin/TestSend";
 import { SaveBar, TextInput } from "@/components/admin/fields";
 import type { MailSettings } from "@/lib/mail";
 import styles from "@/components/admin/admin.module.css";
@@ -123,11 +124,9 @@ function initialGuide(v: MailSettings) {
   return Object.entries(GUIDES).find(([, g]) => g.match?.(v.host))?.[0] ?? "other";
 }
 
-export function EmailForm({ values }: { values: MailSettings }) {
+export function EmailForm({ values, me }: { values: MailSettings; me: string }) {
   const [state, action, pending] = useActionState(saveMailSettings, null);
   const [key, setKey] = useState(() => initialGuide(values));
-  const [testing, start] = useTransition();
-  const [test, setTest] = useState<{ ok: boolean; text: string } | null>(null);
   const guide = GUIDES[key];
   const custom = key === "other";
   const connected = values.has_password && !!values.username;
@@ -236,29 +235,11 @@ export function EmailForm({ values }: { values: MailSettings }) {
         <h2 className={styles.cardTitle}>
           <span className={styles.stepNum}>4</span> Save and check it works
         </h2>
-        <p className={styles.cardLead}>Save, then send a test email to yourself. If it arrives, form alerts and newsletters will too.</p>
+        <p className={styles.cardLead}>Save, then send a test email to yourself or any address. If it arrives, form alerts and newsletters will too.</p>
+        <TestSend defaultTo={me} send={(to) => sendTestEmail(to)} label="Send a test email" />
       </section>
 
-      <SaveBar pending={pending} state={state}>
-        <button
-          type="button"
-          className={styles.secondaryButton}
-          disabled={testing}
-          onClick={() =>
-            start(async () => {
-              const r = await sendTestEmail();
-              setTest({ ok: r.ok, text: r.ok ? (r.message ?? "Sent") : r.error });
-            })
-          }
-        >
-          {testing ? "Sending…" : "Send a test email"}
-        </button>
-        {test ? (
-          <span className={styles.status} data-tone={test.ok ? "ok" : "error"} role="status">
-            {test.text}
-          </span>
-        ) : null}
-      </SaveBar>
+      <SaveBar pending={pending} state={state} />
     </form>
   );
 }

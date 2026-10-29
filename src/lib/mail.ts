@@ -1,10 +1,21 @@
 import "server-only";
 import nodemailer from "nodemailer";
+import {
+  button,
+  detailRows,
+  escapeHtml,
+  layout as frame,
+  mergeTemplate,
+  renderEmail,
+  type RenderExtras,
+  type TemplateFields,
+  type TemplateKey,
+} from "@/lib/email-templates";
 import { SITE_URL } from "@/lib/env";
 import { serviceClient } from "@/lib/supabase/server";
 
 // Outgoing email through the foundation's own mailbox (Gmail, Microsoft 365 or Zoho), set up
-// by the super admin in Settings → Email. The password is kept in Supabase Vault.
+// by a manager in Admin → Email. The password is kept in Supabase Vault.
 
 export const SMTP_PRESETS = {
   gmail: { host: "smtp.gmail.com", port: 465, secure: true, label: "Gmail / Google Workspace" },
@@ -25,7 +36,7 @@ export type MailSettings = {
   has_password: boolean;
 };
 
-type Mailer = { send: (msg: Message) => Promise<void>; from: string; close: () => void };
+export type Mailer = { send: (msg: Message) => Promise<void>; from: string; close: () => void };
 export type Message = {
   to: string;
   subject: string;
@@ -33,6 +44,8 @@ export type Message = {
   text: string;
   replyTo?: string;
   headers?: Record<string, string>;
+  /** What the email is, for the email log. Newsletter broadcasts ("newsletter") aren't logged here. */
+  kind?: string;
 };
 
 /** A connected mailer, or null when email isn't set up yet (or the server key is missing). */
@@ -59,84 +72,30 @@ export async function getMailer(opts: { pool?: boolean } = {}): Promise<Mailer |
     from,
     close: () => transport.close(),
     async send(msg) {
-      await transport.sendMail({
-        from,
-        to: msg.to,
-        subject: msg.subject,
-        html: msg.html,
-        text: msg.text,
-        replyTo: msg.replyTo ?? (s.reply_to || undefined),
-        headers: msg.headers,
-      });
+      const log = msg.kind !== "newsletter";
+      const entry = { kind: msg.kind ?? "other", to: msg.to, subject: msg.subject, html: msg.html, text: msg.text, replyTo: msg.replyTo };
+      try {
+        await transport.sendMail({
+          from,
+          to: msg.to,
+          subject: msg.subject,
+          html: msg.html,
+          text: msg.text,
+          replyTo: msg.replyTo ?? (s.reply_to || undefined),
+          headers: msg.headers,
+        });
+      } catch (err) {
+        if (log) await logEmail({ ...entry, error: err instanceof Error ? err.message : String(err) });
+        throw err;
+      }
+      if (log) await logEmail(entry);
     },
   };
 }
 
-const esc = (s: string) =>
-  s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-
-/**
- * The branded email frame, matching the newsletter letterhead: a teal band with the logo and
- * a leaf-green line, the message on white, and a short footer. Email clients don't support
- * modern CSS colour functions, so the brand colours are plain hex values here.
- */
-export function layout({
-  preheader = "",
-  body,
-  footer,
-  kicker = "",
-}: {
-  preheader?: string;
-  body: string;
-  footer?: string;
-  /** Small line under the logo, e.g. "Website inbox". */
-  kicker?: string;
-}) {
-  return `<!doctype html>
-<html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"></head>
-<body style="margin:0;padding:0;background:#f7f1e6;font-family:Montserrat,Segoe UI,Helvetica,Arial,sans-serif;color:#0f2f33;">
-<span style="display:none!important;opacity:0;color:transparent;height:0;width:0;overflow:hidden">${esc(preheader)}</span>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f7f1e6;padding:28px 12px;">
-<tr><td align="center">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background:#ffffff;border-radius:18px;overflow:hidden;">
-<tr><td style="background:#00393e;padding:24px 28px 20px;">
-<a href="${SITE_URL}" style="text-decoration:none;"><img src="${SITE_URL}/email/logo-stacked-reversed.png" width="150" height="50" alt="Nunayon Foundation" style="display:block;width:150px;height:auto;border:0;color:#ffffff;font-size:20px;font-weight:800;"></a>
-${kicker ? `<p style="margin:12px 0 0;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:#8fd3a8;font-weight:600;">${esc(kicker)}</p>` : ""}
-</td></tr>
-<tr><td style="height:4px;line-height:4px;font-size:0;background:#2f8a57;">&nbsp;</td></tr>
-<tr><td style="padding:32px 28px 28px;font-size:16px;line-height:1.65;">
-${body}
-</td></tr>
-<tr><td style="padding:0 28px 26px;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid #e6ddcc;"><tr><td style="padding-top:18px;font-size:12px;line-height:1.6;color:#5b6b6c;">
-${footer ?? `Nunayon Foundation · <a href="${SITE_URL}" style="color:#5b6b6c;">${SITE_URL.replace(/^https?:\/\//, "")}</a>`}
-</td></tr></table>
-</td></tr>
-</table>
-</td></tr>
-</table>
-</body>
-</html>`;
-}
-
-/** A submission's details as label / value rows, for alerts and forwards. */
-export function detailRows(rows: { label: string; value: string }[]) {
-  return rows
-    .map(
-      (r) =>
-        `<p style="margin:0 0 4px;font-size:13px;color:#5b6b6c;">${esc(r.label)}</p><p style="margin:0 0 16px;white-space:pre-wrap;">${esc(r.value)}</p>`,
-    )
-    .join("");
-}
-
-/** Comma- or line-separated addresses into a clean list. */
-export function addressList(value: string) {
-  return [...new Set(value.split(/[\s,;]+/).map((a) => a.trim().toLowerCase()).filter((a) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(a)))];
-}
-
-export function button(href: string, label: string) {
-  return `<p style="margin:28px 0 8px;"><a href="${esc(href)}" style="display:inline-block;background:#00393e;color:#ffffff;text-decoration:none;font-weight:700;padding:14px 24px;border-radius:999px;">${esc(label)}</a></p>`;
+/** The branded frame with this site's address filled in. */
+export function layout(opts: Omit<Parameters<typeof frame>[0], "siteUrl">) {
+  return frame({ siteUrl: SITE_URL, ...opts });
 }
 
 /** Plain text to email-safe HTML paragraphs (blank lines separate paragraphs). */
@@ -145,8 +104,66 @@ export function paragraphs(text: string) {
     .split(/\n\s*\n/)
     .map((p) => p.trim())
     .filter(Boolean)
-    .map((p) => `<p style="margin:0 0 16px;">${esc(p).replace(/\n/g, "<br>")}</p>`)
+    .map((p) => `<p style="margin:0 0 16px;">${escapeHtml(p).replace(/\n/g, "<br>")}</p>`)
     .join("\n");
 }
 
-export { esc as escapeHtml };
+/** Comma- or line-separated addresses into a clean list. */
+export function addressList(value: string) {
+  return [...new Set(value.split(/[\s,;]+/).map((a) => a.trim().toLowerCase()).filter((a) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(a)))];
+}
+
+export { button, detailRows, escapeHtml };
+
+/** One email's saved wording, with the built-in text wherever nothing is saved. */
+export async function getTemplate(key: TemplateKey) {
+  const db = serviceClient();
+  const { data } = db
+    ? await db.from("email_templates").select("*").eq("key", key).maybeSingle<TemplateFields & { enabled: boolean }>()
+    : { data: null };
+  return { ...mergeTemplate(key, data), enabled: data?.enabled ?? true };
+}
+
+/**
+ * Sends one of the site's emails (Admin → Email → Templates) with its current wording.
+ * Returns false when email isn't set up yet. Throws if the mailbox refuses it.
+ */
+export async function sendTemplate(
+  key: TemplateKey,
+  to: string,
+  vars: Record<string, string>,
+  extras: Omit<RenderExtras, "siteUrl"> & { replyTo?: string; subjectPrefix?: string; mailer?: Mailer } = {},
+) {
+  const tpl = await getTemplate(key);
+  // Autoresponders that have been switched off (test sends still go out).
+  if (!tpl.enabled && !extras.subjectPrefix) return false;
+  const mailer = extras.mailer ?? (await getMailer());
+  if (!mailer) return false;
+  const { subject, html, text } = renderEmail(key, tpl, vars, { siteUrl: SITE_URL, ...extras });
+  try {
+    await mailer.send({ to, subject: (extras.subjectPrefix ?? "") + subject, html, text, replyTo: extras.replyTo, kind: key });
+  } finally {
+    if (!extras.mailer) mailer.close();
+  }
+  return true;
+}
+
+/** Notes a send in the email log (Admin → Email → Log). Never fails the send itself. */
+export async function logEmail(entry: { kind: string; to: string; subject: string; error?: string; html?: string; text?: string; replyTo?: string }) {
+  try {
+    await serviceClient()
+      ?.from("email_log")
+      .insert({
+        kind: entry.kind,
+        to_address: entry.to.slice(0, 500),
+        subject: entry.subject.slice(0, 300),
+        status: entry.error ? "failed" : "sent",
+        error: (entry.error ?? "").slice(0, 500),
+        html: entry.html ?? "",
+        text_body: entry.text ?? "",
+        reply_to: entry.replyTo ?? "",
+      });
+  } catch (err) {
+    console.error("[mail] couldn't write the email log", err);
+  }
+}

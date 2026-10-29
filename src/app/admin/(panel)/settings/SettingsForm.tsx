@@ -15,6 +15,8 @@ export type SettingsValues = {
   notify_email: string;
   socials: { label: string; href: string }[];
   bank_accounts: BankAccount[];
+  activity_log_days: number;
+  email_log_days: number;
 };
 
 export function SettingsForm({ values, team }: { values: SettingsValues; team: { name: string; email: string }[] }) {
@@ -87,6 +89,29 @@ export function SettingsForm({ values, team }: { values: SettingsValues; team: {
           currency asks for the details senders in that currency need.
         </p>
         <BankAccountsField value={values.bank_accounts} />
+      </section>
+
+      <section className={styles.card} id="logs">
+        <h2 className={styles.cardTitle}>How long logs are kept</h2>
+        <p className={styles.cardLead}>Older entries are deleted automatically each night.</p>
+        <div className={styles.row2}>
+          <TextInput
+            name="activity_log_days"
+            label="Activity log (days)"
+            type="number"
+            required
+            defaultValue={values.activity_log_days}
+            help="Sign-ins and changes in the admin. 1 to 3650."
+          />
+          <TextInput
+            name="email_log_days"
+            label="Sent emails (days)"
+            type="number"
+            required
+            defaultValue={values.email_log_days}
+            help="Email → Sent emails. 1 to 3650."
+          />
+        </div>
       </section>
 
       <SaveBar pending={pending} state={state} />

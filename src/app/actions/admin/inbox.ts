@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { ActionError, requireAction } from "@/lib/admin/access";
 import { KINDS, type Submission } from "@/lib/admin/inbox";
 import { check, run, type ActionResult } from "@/lib/admin/result";
-import { addressList, detailRows, escapeHtml, getMailer, layout } from "@/lib/mail";
+import { addressList, sendTemplate } from "@/lib/mail";
 
 export async function setStatus(id: string, status: "new" | "read" | "archived") {
   return run(async () => {
@@ -37,41 +37,22 @@ export async function forwardSubmission(id: string, _: unknown, fd: FormData): P
     const { data } = await supabase.from("submissions").select("*").eq("id", id).maybeSingle();
     if (!data) throw new ActionError("That message is no longer in the inbox.");
     const item = data as Submission;
-    const mailer = await getMailer();
-    if (!mailer) throw new ActionError("Email isn't set up yet. Connect a mailbox in Email set-up first.");
     const kind = KINDS[item.kind];
     const from = access.name || access.email;
-    const rows = [
+    const details = [
       { label: "Name", value: item.name },
       { label: "Email", value: item.email },
       ...(item.phone ? [{ label: "Phone", value: item.phone }] : []),
+      { label: "Received", value: new Date(item.created_at).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Africa/Lagos" }) },
       ...item.fields,
     ];
-    try {
-      await mailer.send({
-        to: to.join(", "),
-        replyTo: item.email,
-        subject: `${kind} from ${item.name}`,
-        text:
-          (note ? `${from} wrote: ${note}\n\n` : `${from} shared this with you.\n\n`) +
-          rows.map((r) => `${r.label}: ${r.value}`).join("\n\n") +
-          `\n\nReply to this email to answer ${item.name} directly.`,
-        html: layout({
-          kicker: "Website inbox",
-          preheader: `${kind} from ${item.name}, shared by ${from}`,
-          body:
-            `<h1 style="margin:0 0 8px;font-size:22px;">${escapeHtml(kind)} from ${escapeHtml(item.name)}</h1>` +
-            `<p style="margin:0 0 20px;font-size:14px;color:#5b6b6c;">Shared by ${escapeHtml(from)} · received ${escapeHtml(new Date(item.created_at).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Africa/Lagos" }))}</p>` +
-            (note
-              ? `<div style="margin:0 0 24px;padding:14px 16px;border:1px solid #cfe9d8;background:#eef8f1;border-radius:10px;"><p style="margin:0 0 4px;font-size:13px;color:#2f8a57;font-weight:600;">Note from ${escapeHtml(from)}</p><p style="margin:0;white-space:pre-wrap;">${escapeHtml(note)}</p></div>`
-              : "") +
-            detailRows(rows) +
-            `<p style="margin:12px 0 0;font-size:13px;color:#5b6b6c;">Reply to this email to answer ${escapeHtml(item.name)} directly.</p>`,
-        }),
-      });
-    } finally {
-      mailer.close();
-    }
+    const sent = await sendTemplate("forward", to.join(", "), { form: kind, name: item.name, shared_by: from }, {
+      details,
+      replyTo: item.email,
+      calloutTitle: `Note from ${from}`,
+      calloutText: note || undefined,
+    });
+    if (!sent) throw new ActionError("Email isn't set up yet. Connect a mailbox in Email set-up first.");
     await supabase.from("activity_log").insert({
       actor: (await supabase.auth.getClaims()).data?.claims.sub,
       actor_email: access.email,

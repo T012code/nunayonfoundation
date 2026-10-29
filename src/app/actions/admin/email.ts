@@ -3,7 +3,9 @@
 import { ActionError, requireAction } from "@/lib/admin/access";
 import { str } from "@/lib/admin/form";
 import { check, run, type ActionResult } from "@/lib/admin/result";
-import { getMailer, layout, SMTP_PRESETS } from "@/lib/mail";
+import { EMAILS, isTemplateKey, SAMPLE_DETAILS } from "@/lib/email-templates";
+import { SITE_URL } from "@/lib/env";
+import { sendTemplate, SMTP_PRESETS } from "@/lib/mail";
 import { emailProblem } from "@/lib/validate";
 
 export async function saveMailSettings(_: unknown, fd: FormData): Promise<ActionResult> {
@@ -42,28 +44,35 @@ export async function saveMailSettings(_: unknown, fd: FormData): Promise<Action
   });
 }
 
-export async function sendTestEmail(): Promise<ActionResult> {
+/** Any of the site's emails, with sample details, to any address (blank: your own). */
+export async function sendTestEmail(toAddress?: string, key: string = "test"): Promise<ActionResult> {
   return run(async () => {
     const { access } = await requireAction("manage");
-    const mailer = await getMailer();
-    if (!mailer) throw new ActionError("Email isn't fully set up yet: save the details and password first (and make sure the server key is added in Vercel).");
+    if (!isTemplateKey(key)) throw new ActionError("Unknown email.");
+    const to = (toAddress ?? "").trim().toLowerCase() || access.email;
+    const problem = emailProblem(to);
+    if (problem) throw new ActionError(`Send the test to: ${problem}`);
+    const def = EMAILS[key];
+    const vars: Record<string, string> = { ...def.vars };
+    if (["password_reset", "invite", "password_link"].includes(key)) vars.name = access.name.split(" ")[0] || vars.name;
     try {
-      await mailer.send({
-        to: access.email,
-        subject: "Test email from the Nunayon Foundation website",
-        text: "It works. Form alerts, invitations and newsletters will be sent from this mailbox.",
-        html: layout({ body: `<h1 style="margin:0 0 16px;font-size:22px;">It works</h1><p style="margin:0;">Form alerts, invitations and newsletters will be sent from this mailbox.</p>` }),
+      const sent = await sendTemplate(key, to, vars, {
+        subjectPrefix: key === "test" ? "" : "[Test] ",
+        link: SITE_URL,
+        details: "hasDetails" in def ? SAMPLE_DETAILS : undefined,
+        calloutTitle: key === "forward" ? `Note from ${vars.shared_by}` : undefined,
+        calloutText: key === "forward" ? "Could you reply to this one? Thanks." : undefined,
       });
+      if (!sent) throw new ActionError("Email isn't fully set up yet: save the details and password first (and make sure the server key is added in Vercel).");
     } catch (err) {
+      if (err instanceof ActionError) throw err;
       const msg = err instanceof Error ? err.message : String(err);
       throw new ActionError(
         /auth|535|534|credentials/i.test(msg)
           ? "The mailbox refused the sign-in. Check the email and app password (not your normal password)."
           : `Sending failed: ${msg}`,
       );
-    } finally {
-      mailer.close();
     }
-    return { ok: true, message: `Test email sent to ${access.email}. Check the inbox (and spam folder).` };
+    return { ok: true, message: `Test sent to ${to}. Check the inbox (and spam folder).` };
   });
 }

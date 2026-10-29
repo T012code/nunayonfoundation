@@ -4,7 +4,8 @@ import { redirect } from "next/navigation";
 import { ActionError, requireAction } from "@/lib/admin/access";
 import { required, str } from "@/lib/admin/form";
 import { check, run, type ActionResult } from "@/lib/admin/result";
-import { button, getMailer, layout } from "@/lib/mail";
+import { getMailer, sendTemplate } from "@/lib/mail";
+import { emailProblem } from "@/lib/validate";
 import { SITE_URL } from "@/lib/env";
 import { getLetterhead, renderCampaign, sendBatch, startCampaign } from "@/lib/newsletter";
 import { serviceClient } from "@/lib/supabase/server";
@@ -31,17 +32,23 @@ export async function saveCampaign(id: string | null, _: unknown, fd: FormData):
   return result;
 }
 
-export async function sendTest(id: string): Promise<ActionResult> {
+export async function sendTest(id: string, toAddress?: string): Promise<ActionResult> {
   return run(async () => {
     const { supabase, access } = await requireAction("newsletter");
+    const to = (toAddress ?? "").trim().toLowerCase() || access.email;
+    const problem = emailProblem(to);
+    if (problem) throw new ActionError(`Send the test to: ${problem}`);
     const { data: c } = await supabase.from("campaigns").select("subject, preheader, body").eq("id", id).maybeSingle();
     if (!c) throw new ActionError("Save the newsletter first.");
     const mailer = await getMailer();
     if (!mailer) throw new ActionError("Email isn't set up yet. The super admin can connect a mailbox in Email set-up.");
     const { html, text } = renderCampaign(c, await getLetterhead());
-    await mailer.send({ to: access.email, subject: `[Test] ${c.subject}`, html, text });
-    mailer.close();
-    return { ok: true, message: `Test sent to ${access.email}` };
+    try {
+      await mailer.send({ kind: "newsletter_test", to, subject: `[Test] ${c.subject}`, html, text });
+    } finally {
+      mailer.close();
+    }
+    return { ok: true, message: `Test sent to ${to}` };
   });
 }
 
@@ -112,16 +119,7 @@ export async function resendConfirmations(): Promise<ActionResult> {
     let n = 0;
     try {
       for (const s of data ?? []) {
-        const url = `${SITE_URL}/newsletter/confirm?token=${s.token}`;
-        await mailer.send({
-          to: s.email,
-          subject: "Please confirm your subscription",
-          text: `Confirm your subscription to news from Nunayon Foundation: ${url}`,
-          html: layout({
-            preheader: "One click to confirm.",
-            body: `<h1 style="margin:0 0 16px;font-size:22px;">Confirm your subscription</h1><p style="margin:0 0 16px;">You signed up for news from Nunayon Foundation. Please confirm it's you.</p>${button(url, "Yes, subscribe me")}`,
-          }),
-        });
+        await sendTemplate("newsletter_confirm", s.email, {}, { link: `${SITE_URL}/newsletter/confirm?token=${s.token}`, mailer });
         n++;
       }
     } finally {

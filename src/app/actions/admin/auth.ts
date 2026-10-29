@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { getAccess } from "@/lib/admin/access";
-import { button, getMailer, layout } from "@/lib/mail";
+import { getMailer, logEmail, sendTemplate } from "@/lib/mail";
 import { SITE_URL } from "@/lib/env";
 import { createClient, serviceClient } from "@/lib/supabase/server";
 
@@ -39,30 +39,23 @@ export async function requestReset(_: unknown, fd: FormData): Promise<{ done: bo
   const db = serviceClient();
   try {
     if (db) {
-      const { data: admin } = await db.from("admins").select("id").eq("email", email).eq("active", true).maybeSingle();
+      const { data: admin } = await db.from("admins").select("id, name").eq("email", email).eq("active", true).maybeSingle<{ id: string; name: string }>();
       if (!admin) return { done: true };
       const mailer = await getMailer();
       if (mailer) {
         const { data, error } = await db.auth.admin.generateLink({ type: "recovery", email });
         if (error || !data) return { done: true };
         const url = `${SITE_URL}/admin/auth/confirm?token_hash=${data.properties.hashed_token}&type=recovery&next=/admin/set-password`;
-        await mailer.send({
-          to: email,
-          subject: "Reset your admin password",
-          text: `Someone asked to reset the password for your Nunayon Foundation admin account.\n\nChoose a new password: ${url}\n\nThe link works once and expires in an hour. If this wasn't you, ignore this email.`,
-          html: layout({
-            preheader: "Choose a new password for the admin.",
-            body:
-              `<h1 style="margin:0 0 16px;font-size:22px;">Reset your password</h1>` +
-              `<p style="margin:0 0 16px;">Someone asked to reset the password for your Nunayon Foundation admin account.</p>` +
-              button(url, "Choose a new password") +
-              `<p style="margin:16px 0 0;font-size:13px;color:#5b6b6c;">The link works once and expires in an hour. If this wasn't you, ignore this email.</p>`,
-          }),
-        });
-        mailer.close();
+        try {
+          await sendTemplate("password_reset", email, { name: admin.name.split(" ")[0] || "there" }, { link: url, mailer });
+        } finally {
+          mailer.close();
+        }
         return { done: true };
       }
     }
+    // No mailbox connected yet: Supabase's own (unbranded) email sends the link.
+    await logEmail({ kind: "password_reset", to: email, subject: "Reset password (sent by Supabase)" });
     const supabase = await createClient();
     await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${SITE_URL}/admin/auth/confirm?next=/admin/set-password`,

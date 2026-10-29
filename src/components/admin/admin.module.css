@@ -1889,3 +1889,110 @@
   gap: var(--space-sm);
   margin-top: var(--space-md);
 }
+
+/* ── Email: templates, tests and the sent log ── */
+.editorSplit {
+  display: grid;
+  gap: var(--space-md);
+  align-items: start;
+}
+
+@media (min-width: 80rem) {
+  .editorSplit {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  }
+
+  .editorSplit > :last-child {
+    position: sticky;
+    top: var(--space-md);
+  }
+}
+
+.word {
+  display: inline-block;
+  margin: 0 var(--space-3xs);
+  padding: 0 var(--space-3xs);
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-sm);
+  background: var(--sand);
+  font-size: 0.85em;
+}
+
+.templateList {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.templateList li + li {
+  border-top: 1px solid var(--color-rule);
+}
+
+.templateRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-xs) var(--space-md);
+  padding: var(--space-sm) 0;
+  color: var(--color-ink);
+  text-decoration: none;
+}
+
+.templateRow > span:first-child {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  flex: 1 1 18rem;
+}
+
+@media (hover: hover) {
+  .templateRow:hover strong {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+}
+
+.templateMeta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.testSend {
+  display: grid;
+  gap: var(--space-2xs);
+  margin-top: var(--space-sm);
+}
+
+.testSendRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.testSendRow .input {
+  flex: 1 1 14rem;
+  min-width: 0;
+}
+
+.logError {
+  margin-top: 2px;
+  color: var(--color-error);
+  font-size: var(--text-xs);
+  overflow-wrap: anywhere;
+}
+
+.rowCheck {
+  width: 1.125rem;
+  height: 1.125rem;
+  accent-color: var(--leaf-deep);
+}
+
+.rowActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2xs);
+  white-space: nowrap;
+}
