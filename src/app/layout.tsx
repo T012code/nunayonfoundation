@@ -37,10 +37,17 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     // `js` is added before first paint so scroll animations can start hidden; without
-    // JavaScript the page shows everything.
+    // JavaScript the page shows everything (and, in maintenance mode, the status page).
     <html lang="en-NG" className={montserrat.variable} suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
+        {/* `team-view`: signed in to the admin (its sign-in cookie is present), so the real site
+            shows through maintenance / coming soon mode. Only changes what's displayed. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "var d=document.documentElement;d.classList.add('js');if(/(^|;\\s*)sb-[^=]+-auth-token(\\.0)?=/.test(document.cookie))d.classList.add('team-view')",
+          }}
+        />
       </head>
       <body>
         {children}

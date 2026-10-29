@@ -457,3 +457,17 @@ select {
     scroll-behavior: auto !important;
   }
 }
+
+/* ── Maintenance / coming soon mode ──────────────────────────────────────────
+   Visitors see the status page; signed-in team members (html.team-view) see the site. */
+[data-gated-site] {
+  display: none;
+}
+
+.team-view [data-gated-site] {
+  display: block;
+}
+
+.team-view [data-status-page] {
+  display: none;
+}

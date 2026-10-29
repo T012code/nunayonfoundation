@@ -1,0 +1,43 @@
+.banner {
+  position: relative;
+  z-index: 60;
+  border-bottom: 1px solid oklch(from var(--amber) l c h / 0.6);
+  background: oklch(from var(--amber) 95% 0.05 h);
+  color: var(--teal);
+  font-size: var(--text-sm);
+}
+
+.inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2xs) var(--space-sm);
+  padding-block: var(--space-2xs);
+}
+
+.text svg {
+  display: inline-block;
+  width: 1.125rem;
+  height: 1.125rem;
+  margin-right: var(--space-2xs);
+  vertical-align: -0.2em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+}
+
+.text {
+  flex: 1 1 22rem;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.links a {
+  color: inherit;
+  font-weight: var(--weight-bold);
+  text-underline-offset: 0.2em;
+}

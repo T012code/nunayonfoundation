@@ -2,6 +2,7 @@ import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteGate } from "@/components/site/SiteGate";
 import { SiteShell } from "@/components/site/SiteShell";
 import { StatusPage } from "@/components/site/StatusPage";
+import { TeamBanner } from "@/components/site/TeamBanner";
 import { getSettings } from "@/lib/content";
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
@@ -15,6 +16,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
   if (status.mode === "live") return site;
   return (
     <SiteGate
+      banner={<TeamBanner mode={status.mode} />}
       status={<StatusPage mode={status.mode} title={status.title} message={status.message} until={status.until} contact={{ email, phone, whatsapp }} socials={socials} />}
     >
       {site}
