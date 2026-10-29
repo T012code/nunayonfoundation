@@ -3,7 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
-import { contactTopics } from "@/content/pages";
+import type { Copy } from "@/content/copy";
 import { submitForm } from "@/app/actions/forms";
 import { BotGuard, FormError } from "./BotGuard";
 import { PhoneField } from "./PhoneField";
@@ -14,13 +14,21 @@ import styles from "./forms.module.css";
 const sendContact = submitForm.bind(null, "contact");
 const sendPartner = submitForm.bind(null, "partner");
 
-const FROM_LINK: Record<string, string> = { partnership: "Partnership", volunteering: "Volunteering", donations: "Donations" };
+type FormsCopy = Copy<"forms">;
 
-export function ContactForm() {
+/** A ?topic= link (e.g. from the donate page) picks the topic that starts with that word. */
+function topicFromLink(link: string | null, topics: string[], partner: string) {
+  if (!link) return "";
+  if (link === "partnership") return partner;
+  return topics.find((t) => t.toLowerCase().startsWith(link.slice(0, 5).toLowerCase())) ?? "";
+}
+
+export function ContactForm({ copy }: { copy: FormsCopy }) {
+  const c = copy.contact;
   const params = useSearchParams();
-  const initial = FROM_LINK[params.get("topic") ?? ""] ?? "";
+  const initial = topicFromLink(params.get("topic"), c.topicOptions, c.partnerTopic);
   const [topic, setTopic] = useState(initial);
-  const partnership = topic === "Partnership";
+  const partnership = !!c.partnerTopic && topic === c.partnerTopic;
   const { errors, formError, pending, attempt, onSubmit, clear, report } = useSiteForm(
     partnership ? "partner" : "contact",
     partnership ? sendPartner : sendContact,
@@ -29,15 +37,15 @@ export function ContactForm() {
   return (
     <form className={styles.form} onSubmit={onSubmit} noValidate>
       <div className={styles.row}>
-        <TextField name="name" label="Full name" required autoComplete="name" error={errors.name} onEdit={clear} />
-        <TextField name="email" label="Email" type="email" required autoComplete="email" error={errors.email} onEdit={clear} onReport={report} />
+        <TextField name="name" label={copy.common.name} required autoComplete="name" error={errors.name} onEdit={clear} />
+        <TextField name="email" label={copy.common.email} type="email" required autoComplete="email" error={errors.email} onEdit={clear} onReport={report} />
       </div>
       <div className={styles.row}>
-        <PhoneField name="phone" label="Phone or WhatsApp" required error={errors.phone} onEdit={clear} onReport={report} />
+        <PhoneField name="phone" label={copy.common.phone} required error={errors.phone} onEdit={clear} onReport={report} />
         <SelectField
           name="topic"
-          label="What is it about?"
-          options={contactTopics}
+          label={c.topic}
+          options={c.topicOptions}
           required
           defaultValue={initial}
           error={errors.topic}
@@ -48,27 +56,27 @@ export function ContactForm() {
       {partnership ? (
         <TextField
           name="organisation"
-          label="Organisation"
+          label={c.organisation}
           required
           autoComplete="organization"
-          hint="Church, school, company or group you represent."
+          hint={c.organisationHint}
           error={errors.organisation}
           onEdit={clear}
         />
       ) : null}
       <TextArea
         name="message"
-        label={partnership ? "How would you like to partner with us?" : "Message"}
+        label={partnership ? c.partnerMessage : c.message}
         required
         minLength={10}
         error={errors.message}
         onEdit={clear}
       />
-      <p className={styles.note}>We reply within two working days. We only use your details to answer you.</p>
+      {c.note ? <p className={styles.note}>{c.note}</p> : null}
       <BotGuard resetKey={attempt} />
       <FormError message={formError} />
       <Button type="submit" variant="primary" arrow loading={pending} className={styles.submit}>
-        {pending ? "Sending" : "Send message"}
+        {pending ? copy.common.sending : c.button}
       </Button>
     </form>
   );

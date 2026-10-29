@@ -89,6 +89,32 @@ const LABELS: Record<string, string> = {
   explore: "Explore heading",
   involved: "Get involved heading",
   visit: "Contact heading",
+  forms: "Forms",
+  common: "On every form",
+  sending: "Button text while sending",
+  topic: "Topic question",
+  topicOptions: "Topics to choose from",
+  partnerTopic: "Topic that asks for the organisation (must match one of the topics)",
+  organisation: "Organisation question",
+  organisationHint: "Organisation hint",
+  message: "Message question",
+  partnerMessage: "Message question for partnerships",
+  state: "State question",
+  stateOptions: "States to choose from",
+  interests: "Ways to help: question",
+  interestsOptions: "Ways to help: choices",
+  interestsError: "Ways to help: message if none chosen",
+  availability: "Availability: question",
+  availabilityOptions: "Availability: choices",
+  availabilityError: "Availability: message if none chosen",
+  about: "Last question",
+  aboutHint: "Last question hint",
+  amount: "Amount question",
+  amountPlaceholder: "Amount example",
+  date: "Date question",
+  datePlaceholder: "Date example",
+  programme: "Programme question",
+  anywhere: "First programme choice",
 };
 
 const LONG = new Set(["body", "lead", "intro", "text", "a", "note", "mission", "vision", "partnerText", "description", "officeNote", "hoursText"]);
@@ -212,7 +238,17 @@ function Node({ name, def, value, onChange, top }: { name: string; def: Json; va
   }
 
   if (isImage(name)) {
-    return <ImageField label={labelFor(name)} value={(value as ImageRef | null) ?? (def as ImageRef)} onChange={(v) => onChange((v ?? def) as Json)} />;
+    // An empty default means the photo is optional (a page heading with or without one).
+    const optional = def === "";
+    return (
+      <ImageField
+        label={labelFor(name)}
+        required={!optional}
+        help={optional ? "Shown beside the page heading. Leave empty for a heading without a photo." : undefined}
+        value={((value ?? def) || null) as ImageRef | null}
+        onChange={(v) => onChange((v ?? def) as Json)}
+      />
+    );
   }
 
   if (typeof def === "number") {

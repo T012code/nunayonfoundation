@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 };
 
 export default async function VolunteerPage() {
-  const c = await getCopy("volunteer");
+  const [c, forms] = await Promise.all([getCopy("volunteer"), getCopy("forms")]);
   return (
     <>
       <PageHero {...c.hero}>
@@ -67,7 +67,7 @@ export default async function VolunteerPage() {
             </Reveal>
           </div>
           <Reveal className={b.formCard}>
-            <VolunteerForm />
+            <VolunteerForm copy={forms} />
           </Reveal>
         </div>
       </section>

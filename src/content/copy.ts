@@ -5,7 +5,7 @@
 
 import type { ImageRef } from "./images";
 import { cookies, privacy, terms, type LegalPage } from "./legal";
-import { about, donate, faq, volunteer } from "./pages";
+import { about, contactTopics, donate, faq, NIGERIAN_STATES, volunteer } from "./pages";
 import { impact, story, ways } from "./site";
 
 /** Policy text for editing: paragraphs separated by blank lines, list items starting with "- ". */
@@ -23,6 +23,8 @@ const legalCopy = (page: LegalPage) => ({
 });
 
 const img = (r: ImageRef) => r;
+/** An optional photo beside a page heading: none until someone adds one in the admin. */
+const noPhoto = "" as ImageRef | "";
 
 export const COPY = {
   home: {
@@ -92,6 +94,7 @@ export const COPY = {
       eyebrow: "Programmes",
       title: "Every programme, one aim: families who can stand on their own.",
       lead: "Every outreach is planned with local leaders and followed up after the day. Choose a programme to see what it covers and how it works.",
+      image: noPhoto,
     },
     jumpLabel: "Jump to a programme",
     more: "About this programme",
@@ -112,6 +115,7 @@ export const COPY = {
       eyebrow: "News",
       title: "Stories from the field.",
       lead: "What happened at our outreaches, who we met, and what your support made possible.",
+      image: noPhoto,
     },
     read: "Read the story",
     empty: "New stories are on their way. Check back soon.",
@@ -127,6 +131,7 @@ export const COPY = {
       eyebrow: "Gallery",
       title: "Moments from our outreaches.",
       lead: "Choose an album, or open any photo to see it full size. Use the arrow keys or swipe to move between photos.",
+      image: noPhoto,
     },
     cta: { title: "Be part of the next photo.", body: "Join us at an outreach as a volunteer, or give so the next one can happen." },
   },
@@ -149,7 +154,7 @@ export const COPY = {
   },
 
   donate: {
-    hero: { ...donate.hero },
+    hero: { ...donate.hero, image: noPhoto },
     uses: {
       eyebrow: "What your gift does",
       title: "Every amount does something real",
@@ -169,6 +174,7 @@ export const COPY = {
       eyebrow: "Contact",
       title: "We'd love to hear from you.",
       lead: "Questions, partnerships, volunteering or press: send us a message and someone from the team will reply within two working days.",
+      image: noPhoto,
     },
     tiles: { email: "Email", phone: "Phone", whatsapp: "WhatsApp", whatsappValue: "Chat with us", office: "Office" },
     form: { eyebrow: "Send a message", title: "Tell us how we can help" },
@@ -182,7 +188,7 @@ export const COPY = {
   },
 
   faq: {
-    hero: { ...faq.hero },
+    hero: { ...faq.hero, image: noPhoto },
     topics: "Topics",
     groups: faq.groups.map((g) => ({ id: g.id, title: g.title, items: g.items.map((i) => ({ ...i })) })),
     cta: {
@@ -196,6 +202,48 @@ export const COPY = {
   privacy: legalCopy(privacy),
   terms: legalCopy(terms),
   cookies: legalCopy(cookies),
+
+  // Labels, hints, choices and buttons on the website's forms. Answers keep their field (the
+  // inbox shows them under the same headings), so renaming a choice is safe.
+  forms: {
+    common: { name: "Full name", email: "Email", phone: "Phone or WhatsApp", sending: "Sending" },
+    contact: {
+      topic: "What is it about?",
+      topicOptions: [...contactTopics],
+      partnerTopic: "Partnership",
+      organisation: "Organisation",
+      organisationHint: "Church, school, company or group you represent.",
+      message: "Message",
+      partnerMessage: "How would you like to partner with us?",
+      note: "We reply within two working days. We only use your details to answer you.",
+      button: "Send message",
+    },
+    volunteer: {
+      state: "State you live in",
+      stateOptions: [...NIGERIAN_STATES],
+      interests: "How would you like to help?",
+      interestsOptions: volunteer.interests.map((i) => ({ ...i })),
+      interestsError: "Choose at least one way you'd like to help.",
+      availability: "When are you usually free?",
+      availabilityOptions: volunteer.availability.map((i) => ({ ...i })),
+      availabilityError: "Choose when you're usually free.",
+      about: "Anything else we should know?",
+      aboutHint: "Skills, qualifications, or if you're volunteering as a group.",
+      button: "Sign me up",
+    },
+    donation: {
+      name: "Name on the transfer",
+      email: "Email for your receipt",
+      amount: "Amount (₦)",
+      amountPlaceholder: "e.g. 25,000",
+      date: "Date of transfer",
+      datePlaceholder: "e.g. 3 November",
+      programme: "Where should it go?",
+      anywhere: "Wherever it's needed most",
+      note: "A note to the team",
+      button: "Tell us you've given",
+    },
+  },
 
   site: {
     cta: {
@@ -280,15 +328,16 @@ export const COPY_PAGES: { key: CopyKey; title: string; path: string; about: str
   { key: "about", title: "About us", path: "/about", about: "Mission, vision, values, the people heading and where we work." },
   { key: "programmes", title: "Programmes (list)", path: "/programmes", about: "The heading and closing banner on the programmes page." },
   { key: "programme", title: "Programme pages", path: "/programmes", about: "Section headings shared by every programme page." },
-  { key: "news", title: "News (list)", path: "/news", about: "The heading on the news page." },
+  { key: "news", title: "News (list)", path: "/news", about: "The heading and an optional photo on the news page." },
   { key: "story", title: "News story pages", path: "/news", about: "Headings shared by every news story." },
   { key: "gallery", title: "Gallery", path: "/gallery", about: "The heading and closing banner on the gallery page." },
   { key: "volunteer", title: "Volunteer", path: "/volunteer", about: "Roles, steps, sign-up text and questions." },
-  { key: "donate", title: "Donate", path: "/donate", about: "What gifts do, the tell-us text and questions." },
-  { key: "contact", title: "Contact", path: "/contact", about: "The heading, contact tiles and the side notes by the form." },
+  { key: "donate", title: "Donate", path: "/donate", about: "A photo by the heading, what gifts do, the tell-us text and questions. Bank details are in Site settings; the bank box's words are under Home page › Donation band." },
+  { key: "contact", title: "Contact", path: "/contact", about: "The heading, an optional photo, contact tiles and the side notes by the form. Form questions are under Forms." },
   { key: "faq", title: "FAQ", path: "/faq", about: "Every question and answer, grouped by topic." },
   { key: "privacy", title: "Privacy policy", path: "/privacy", about: "The full policy text." },
   { key: "terms", title: "Terms & conditions", path: "/terms", about: "The full terms text." },
   { key: "cookies", title: "Cookie policy", path: "/cookies", about: "The full cookie policy text." },
+  { key: "forms", title: "Forms", path: "/contact", about: "Labels, hints, choices and buttons on the contact, volunteer and donation forms." },
   { key: "site", title: "Site-wide text", path: "/", about: "Footer, the closing banner, thank-you messages, newsletter pages and the page-not-found message." },
 ];

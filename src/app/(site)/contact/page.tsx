@@ -23,7 +23,7 @@ const ICONS = {
 };
 
 export default async function ContactPage() {
-  const [site, c] = await Promise.all([getSettings(), getCopy("contact")]);
+  const [site, c, forms] = await Promise.all([getSettings(), getCopy("contact"), getCopy("forms")]);
   const tel = site.phone.replace(/\s/g, "");
   const wa = `https://wa.me/${site.whatsapp.replace(/\D/g, "")}`;
   const ways = [
@@ -81,7 +81,7 @@ export default async function ContactPage() {
           </div>
           <Reveal className={b.formCard}>
             <Suspense>
-              <ContactForm />
+              <ContactForm copy={forms} />
             </Suspense>
           </Reveal>
         </div>

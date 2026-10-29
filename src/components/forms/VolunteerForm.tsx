@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/Button";
-import { volunteer } from "@/content/pages";
+import type { Copy } from "@/content/copy";
 import { submitForm } from "@/app/actions/forms";
 import { BotGuard, FormError } from "./BotGuard";
 import { PhoneField } from "./PhoneField";
@@ -9,58 +9,52 @@ import { ChoiceGroup, SelectField, TextArea, TextField } from "./Field";
 import { useSiteForm } from "./useSiteForm";
 import styles from "./forms.module.css";
 
-const STATES = [
-  "Abia", "Adamawa", "Akwa Ibom", "Anambra", "Bauchi", "Bayelsa", "Benue", "Borno", "Cross River", "Delta",
-  "Ebonyi", "Edo", "Ekiti", "Enugu", "FCT Abuja", "Gombe", "Imo", "Jigawa", "Kaduna", "Kano", "Katsina",
-  "Kebbi", "Kogi", "Kwara", "Lagos", "Nasarawa", "Niger", "Ogun", "Ondo", "Osun", "Oyo", "Plateau",
-  "Rivers", "Sokoto", "Taraba", "Yobe", "Zamfara", "Outside Nigeria",
-];
-
 const send = submitForm.bind(null, "volunteer");
 
-export function VolunteerForm() {
+export function VolunteerForm({ copy }: { copy: Copy<"forms"> }) {
+  const c = copy.volunteer;
   const { errors, formError, pending, attempt, onSubmit, clear, report } = useSiteForm("volunteer", send);
   return (
     <form className={styles.form} onSubmit={onSubmit} noValidate>
       <div className={styles.row}>
-        <TextField name="name" label="Full name" required autoComplete="name" error={errors.name} onEdit={clear} />
-        <TextField name="email" label="Email" type="email" required autoComplete="email" error={errors.email} onEdit={clear} onReport={report} />
+        <TextField name="name" label={copy.common.name} required autoComplete="name" error={errors.name} onEdit={clear} />
+        <TextField name="email" label={copy.common.email} type="email" required autoComplete="email" error={errors.email} onEdit={clear} onReport={report} />
       </div>
       <div className={styles.row}>
-        <PhoneField name="phone" label="Phone or WhatsApp" required error={errors.phone} onEdit={clear} onReport={report} />
-        <SelectField name="state" label="State you live in" options={STATES} required error={errors.state} onEdit={clear} />
+        <PhoneField name="phone" label={copy.common.phone} required error={errors.phone} onEdit={clear} onReport={report} />
+        <SelectField name="state" label={c.state} options={c.stateOptions} required error={errors.state} onEdit={clear} />
       </div>
       <ChoiceGroup
         name="interests"
-        legend="How would you like to help?"
-        options={volunteer.interests}
+        legend={c.interests}
+        options={c.interestsOptions}
         required
-        message="Choose at least one way you'd like to help."
+        message={c.interestsError}
         error={errors.interests}
         onEdit={clear}
       />
       <ChoiceGroup
         name="availability"
-        legend="When are you usually free?"
-        options={volunteer.availability}
+        legend={c.availability}
+        options={c.availabilityOptions}
         compact
         required
-        message="Choose when you're usually free."
+        message={c.availabilityError}
         error={errors.availability}
         onEdit={clear}
       />
       <TextArea
         name="about"
-        label="Anything else we should know?"
+        label={c.about}
         rows={4}
-        hint="Skills, qualifications, or if you're volunteering as a group."
+        hint={c.aboutHint}
         error={errors.about}
         onEdit={clear}
       />
       <BotGuard resetKey={attempt} />
       <FormError message={formError} />
       <Button type="submit" variant="primary" arrow loading={pending} className={styles.submit}>
-        {pending ? "Sending" : "Sign me up"}
+        {pending ? copy.common.sending : c.button}
       </Button>
     </form>
   );

@@ -22,7 +22,8 @@ export function PageHero({
   eyebrow: string;
   title: string;
   lead?: string;
-  image?: ImageRef;
+  /** Empty for a heading without a photo. */
+  image?: ImageRef | "";
   crumbs?: Crumb[];
   children?: React.ReactNode;
 }) {

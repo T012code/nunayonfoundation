@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 };
 
 export default async function DonatePage() {
-  const [settings, programmes, c, home] = await Promise.all([getSettings(), getProgrammes(), getCopy("donate"), getCopy("home")]);
+  const [settings, programmes, c, home, forms] = await Promise.all([getSettings(), getProgrammes(), getCopy("donate"), getCopy("home"), getCopy("forms")]);
   return (
     <>
       <PageHero {...c.hero} />
@@ -54,7 +54,7 @@ export default async function DonatePage() {
             </Reveal>
           </div>
           <Reveal className={b.formCard}>
-            <DonationForm programmes={programmes.map((p) => p.title)} />
+            <DonationForm programmes={programmes.map((p) => p.title)} copy={forms} />
           </Reveal>
         </div>
       </section>
