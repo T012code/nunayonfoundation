@@ -20,8 +20,10 @@ New work never touches these: code changes go on other branches (currently
    list and email wording. It doesn't touch the team, subscribers, inbox messages, newsletters
    or logs (so nobody who unsubscribed is added back).
 2. **Code.** On the working branch, undo everything after MDP without rewriting history:
-   `git revert --no-edit 1719618af6c8720a339acaeedc3b563cacbca513..HEAD`, then push. Vercel
-   builds and publishes it, and every page is rebuilt from the restored content.
+   `git revert --no-edit e10b9b9..HEAD`, then push. (`e10b9b9` only added these notes; the
+   site's code there is identical to MDP, and starting after it keeps this file.) Check with
+   `git diff mdp HEAD -- src` (empty means the code matches MDP). Vercel builds and publishes
+   it, and every page is rebuilt from the restored content.
    In a hurry, Vercel → Deployments → the MDP deployment above → Promote puts the old build
    back in a minute; do step 2 afterwards so the next push doesn't undo it.
 3. **Database structure.** If later work added tables or columns, they stay (unused by the MDP
