@@ -26,10 +26,20 @@ const securityHeaders = [
   { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
 ];
 
+// The site's own address. Visitors who reach it through Vercel's addresses
+// (nunayonfoundation.vercel.app and the like) are sent here, so links, the logo and sign-ins
+// all stay on one domain. Preview builds (random *.vercel.app addresses) are left alone.
+const SITE = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "");
+const VERCEL_ALIASES = "nunayonfoundation(-layo5|-git-claude-trusting-lovelace-xzsdbd-layo5)?\\.vercel\\.app";
+
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   async redirects() {
     return [
+      // Scheduled jobs (/api/…) keep working on any address; everything else moves over.
+      ...(SITE
+        ? [{ source: "/:path((?!api/).*)", has: [{ type: "host" as const, value: VERCEL_ALIASES }], destination: `${SITE}/:path`, permanent: false }]
+        : []),
       { source: "/get-involved", destination: "/volunteer", permanent: true },
       { source: "/security.txt", destination: "/.well-known/security.txt", permanent: true },
     ];
