@@ -1,7 +1,7 @@
 # MDP: major deployment point
 
 "Take it back to MDP" means: put the website back exactly as it was on 29 October 2026, after
-the maintenance page was simplified and the donation form got its currency picker. Everything
+the maintenance page was simplified, the donation form got its currency picker and Vercel addresses started redirecting to nunayonfoundation.org. Everything
 below is frozen and must not be changed.
 
 | Part | Where it's kept |
