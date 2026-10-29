@@ -12,7 +12,7 @@ export default async function SiteStatus() {
     <div className={s.page}>
       <PageHead
         title="Site status"
-        lead="Take the public site offline for maintenance, or show a coming soon page before launch. The admin, and newsletter confirm and unsubscribe links, keep working."
+        lead="Take the public site offline for maintenance, or show a coming soon page before launch. Anyone signed in to the admin still sees the real site, with a banner on top. Newsletter confirm and unsubscribe links keep working."
       />
       <SiteStatusForm values={data ?? { site_mode: "live", mode_title: "", mode_message: "", mode_until: "" }} />
     </div>
