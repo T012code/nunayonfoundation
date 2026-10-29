@@ -26,3 +26,9 @@ npm run dev
 
 Photos are never resized on request. Each image is saved once in four widths (480, 960, 1600, 2400 px,
 WebP) and served with `srcset`, which keeps Supabase storage and Vercel image costs at zero.
+
+## MDP (major deployment point)
+
+A frozen copy of the site as of 29 October 2026. When asked to "take it back to MDP", follow
+[docs/MDP.md](docs/MDP.md). Never change, delete or move the `mdp` git branch, the `mdp`
+schema in Supabase, or the MDP Vercel deployment.
