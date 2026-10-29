@@ -22,6 +22,7 @@ export function AccountForms({
   const router = useRouter();
   const [state, action, pending] = useActionState(changePassword, null);
   const [settingUp, setSettingUp] = useState(false);
+  const [replacing, setReplacing] = useState(false);
   const [busy, start] = useTransition();
   const [error, setError] = useState<string>();
 
@@ -29,7 +30,26 @@ export function AccountForms({
     <>
       <section className={styles.card}>
         <h2 className={styles.cardTitle}>Authenticator app</h2>
-        {factors.length ? (
+        {replacing ? (
+          <div className={styles.single}>
+            <p className={styles.muted}>
+              Scan this with the app on your new phone and enter its code. Your old app keeps working until you do.
+            </p>
+            <MfaSetup
+              enrolled={false}
+              replace
+              onDone={() => {
+                setReplacing(false);
+                router.refresh();
+              }}
+            />
+            <div>
+              <button type="button" className={styles.ghostButton} onClick={() => setReplacing(false)}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        ) : factors.length ? (
           <div className={styles.fields}>
             {factors.map((f) => (
               <div key={f.id} className={styles.factor}>
@@ -63,6 +83,11 @@ export function AccountForms({
                 ) : null}
               </div>
             ))}
+            <div>
+              <button type="button" className={styles.secondaryButton} onClick={() => setReplacing(true)}>
+                Move to a new phone or app
+              </button>
+            </div>
           </div>
         ) : settingUp ? (
           <div className={styles.single}>

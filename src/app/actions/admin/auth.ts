@@ -14,7 +14,7 @@ export async function signOut() {
 }
 
 /** Records a sign-in (or MFA) event in the activity log, in the team member's own name. */
-export async function logSignIn(action: "signed in" | "verified MFA" | "set up MFA") {
+export async function logSignIn(action: "signed in" | "verified MFA" | "set up MFA" | "replaced MFA") {
   const s = await getAccess();
   if (s.state === "signed-out" || s.state === "no-access") return;
   const supabase = await createClient();

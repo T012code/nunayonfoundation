@@ -11,8 +11,9 @@ type Enrolment = { factorId: string; qr: string; secret: string };
 /**
  * Authenticator app sign-in step. With an app already linked it asks for the 6-digit code;
  * otherwise it shows a QR code to link one first. `onDone` runs once the session is verified.
+ * With `replace`, it links a new app even though one is linked, then removes the old one.
  */
-export function MfaSetup({ enrolled, onDone }: { enrolled: boolean; onDone: () => void }) {
+export function MfaSetup({ enrolled, onDone, replace }: { enrolled: boolean; onDone: () => void; replace?: boolean }) {
   const [enrolment, setEnrolment] = useState<Enrolment | null>(null);
   const [factorId, setFactorId] = useState<string | null>(null);
   const [error, setError] = useState<string>();
@@ -27,17 +28,17 @@ export function MfaSetup({ enrolled, onDone }: { enrolled: boolean; onDone: () =
       const { data, error } = await supabase.auth.mfa.listFactors();
       if (error) return setError(error.message);
       const verified = data.totp.find((f) => f.status === "verified");
-      if (verified) return setFactorId(verified.id);
+      if (verified && !replace) return setFactorId(verified.id);
       // Clear any half-finished set-up before starting a fresh one.
       for (const f of data.all.filter((f) => f.factor_type === "totp" && f.status !== "verified")) {
         await supabase.auth.mfa.unenroll({ factorId: f.id });
       }
-      const res = await supabase.auth.mfa.enroll({ factorType: "totp", friendlyName: `Authenticator ${new Date().toISOString().slice(0, 10)}` });
+      const res = await supabase.auth.mfa.enroll({ factorType: "totp", friendlyName: `Authenticator ${new Date().toISOString().slice(0, 16).replace("T", " ")}` });
       if (res.error) return setError(res.error.message);
       setEnrolment({ factorId: res.data.id, qr: res.data.totp.qr_code, secret: res.data.totp.secret });
       setFactorId(res.data.id);
     })();
-  }, []);
+  }, [replace]);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -55,7 +56,14 @@ export function MfaSetup({ enrolled, onDone }: { enrolled: boolean; onDone: () =
       setError(error.message.includes("Invalid") ? "That code didn't work. Check the time on your phone and try the newest code." : error.message);
       return;
     }
-    await logSignIn(enrolment ? "set up MFA" : "verified MFA");
+    if (replace) {
+      // The new app is verified, so the old one can go.
+      const { data } = await supabase.auth.mfa.listFactors();
+      for (const f of data?.totp ?? []) if (f.id !== factorId) await supabase.auth.mfa.unenroll({ factorId: f.id });
+      await logSignIn("replaced MFA");
+    } else {
+      await logSignIn(enrolment ? "set up MFA" : "verified MFA");
+    }
     onDone();
   }
 
@@ -98,7 +106,7 @@ export function MfaSetup({ enrolled, onDone }: { enrolled: boolean; onDone: () =
         />
       </label>
       <Button type="submit" variant="primary" loading={pending} disabled={!factorId}>
-        {settingUp ? "Link app and continue" : "Verify"}
+        {replace ? "Switch to this app" : settingUp ? "Link app and continue" : "Verify"}
       </Button>
     </form>
   );
