@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/Button";
 import { submitForm } from "@/app/actions/forms";
+import { AmountField } from "./AmountField";
 import { BotGuard, FormError } from "./BotGuard";
 import { SelectField, TextArea, TextField } from "./Field";
 import type { Copy } from "@/content/copy";
@@ -21,15 +22,7 @@ export function DonationForm({ programmes, copy }: { programmes: string[]; copy:
         <TextField name="email" label={c.email} type="email" required autoComplete="email" error={errors.email} onEdit={clear} onReport={report} />
       </div>
       <div className={styles.row}>
-        <TextField
-          name="amount"
-          label={c.amount}
-          required
-          pattern="[0-9,. ]{2,15}"
-          placeholder={c.amountPlaceholder}
-          error={errors.amount}
-          onEdit={clear}
-        />
+        <AmountField name="amount" label={c.amount} required placeholder={c.amountPlaceholder} error={errors.amount} onEdit={clear} />
         <TextField name="date" label={c.date} required placeholder={c.datePlaceholder} error={errors.date} onEdit={clear} />
       </div>
       <SelectField

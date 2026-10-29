@@ -402,6 +402,51 @@
   box-shadow: 0 0 0 1px var(--color-rule);
 }
 
+/* Amount: the currency picker looks like the phone field's country button; the native
+   select sits invisibly on top, so the device's own picker opens. */
+.amountCurrency {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: var(--space-2xs);
+  padding: 0 var(--space-sm);
+  border-right: 1px solid var(--color-rule);
+  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+  color: var(--color-ink);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+}
+
+.amountCurrency::after {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  opacity: 0.55;
+  transform: translateY(-2px) rotate(45deg);
+}
+
+.amountCurrency select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .amountCurrency:hover {
+    background: var(--color-paper);
+  }
+}
+
+.amountCurrency:has(select:focus-visible) {
+  outline: 2px solid var(--color-focus);
+  outline-offset: -2px;
+}
+
 /* width: 0 so the input's built-in size never sets a minimum width for the row. */
 .phoneInput {
   flex: 1;

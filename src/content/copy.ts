@@ -234,8 +234,8 @@ export const COPY = {
     donation: {
       name: "Name on the transfer",
       email: "Email for your receipt",
-      amount: "Amount (₦)",
-      amountPlaceholder: "e.g. 25,000",
+      amount: "Amount",
+      amountPlaceholder: "25,000",
       date: "Date of transfer",
       datePlaceholder: "e.g. 3 November",
       programme: "Where should it go?",

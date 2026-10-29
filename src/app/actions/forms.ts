@@ -46,7 +46,7 @@ const FORMS: Record<Kind, { subject: string; fields: FieldSpec[] }> = {
   donation: {
     subject: "Donation notice",
     fields: [
-      { name: "amount", label: "Amount (₦)", required: true, max: 20 },
+      { name: "amount", label: "Amount", required: true, max: 30 },
       { name: "date", label: "Date of transfer", required: true, max: 60 },
       { name: "programme", label: "For", required: true, max: 200 },
       { name: "note", label: "Note", max: 2000 },
