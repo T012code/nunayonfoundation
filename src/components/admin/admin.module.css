@@ -1996,3 +1996,55 @@
   gap: var(--space-2xs);
   white-space: nowrap;
 }
+
+/* Across the top of every admin page while the public site isn't live. */
+.siteBanner {
+  margin: 0 0 var(--space-md);
+  padding: var(--space-xs) var(--space-sm);
+  border: 1px solid oklch(from var(--amber) l c h / 0.55);
+  border-radius: var(--radius-sm);
+  background: oklch(from var(--amber) l c h / 0.14);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+}
+
+.siteBanner a {
+  color: inherit;
+}
+
+.modeGrid {
+  display: grid;
+  gap: var(--space-xs);
+}
+
+@media (min-width: 48rem) {
+  .modeGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.modeTile {
+  display: grid;
+  gap: var(--space-3xs);
+  padding: var(--space-sm);
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.modeTile input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.modeTile:has(input:checked) {
+  border-color: var(--leaf-deep);
+  background: var(--mint-wash);
+  box-shadow: inset 0 0 0 1px var(--leaf-deep);
+}
+
+.modeTile:has(input:focus-visible) {
+  outline: 2px solid var(--leaf-deep);
+  outline-offset: 2px;
+}

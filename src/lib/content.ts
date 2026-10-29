@@ -2,6 +2,7 @@ import "server-only";
 import { cache } from "react";
 import { about, albums as albumsSeed, type Album, type Person } from "@/content/pages";
 import type { ImageRef } from "@/content/images";
+import type { SiteMode } from "@/content/site-mode";
 import { HOME_STORIES } from "@/lib/home";
 import {
   articles as articlesSeed,
@@ -32,6 +33,7 @@ export type Settings = {
   bankAccounts: BankAccount[];
   impact: Stat[];
   hero: { title: string; lead: string; slides: ImageRef[] };
+  status: { mode: SiteMode; title: string; message: string; until: string };
 };
 
 const fallbackSettings: Settings = {
@@ -44,6 +46,7 @@ const fallbackSettings: Settings = {
   bankAccounts: bank.accounts,
   impact: impactSeed.stats,
   hero: heroSeed,
+  status: { mode: "live", title: "", message: "", until: "" },
 };
 
 async function attempt<T>(what: string, run: () => PromiseLike<{ data: unknown; error: unknown }>, fallback: T): Promise<T> {
@@ -58,6 +61,10 @@ async function attempt<T>(what: string, run: () => PromiseLike<{ data: unknown; 
 }
 
 type SettingsRow = {
+  site_mode: SiteMode;
+  mode_title: string;
+  mode_message: string;
+  mode_until: string;
   email: string;
   phone: string;
   whatsapp: string;
@@ -74,7 +81,7 @@ export const getSettings = cache(async (): Promise<Settings> => {
     () =>
       publicClient()
         .from("site_settings")
-        .select("email, phone, whatsapp, address, socials, bank_accounts, impact, hero")
+        .select("email, phone, whatsapp, address, socials, bank_accounts, impact, hero, site_mode, mode_title, mode_message, mode_until")
         .maybeSingle(),
     null,
   );
@@ -88,6 +95,7 @@ export const getSettings = cache(async (): Promise<Settings> => {
     socials: row.socials,
     bankAccounts: row.bank_accounts,
     impact: row.impact,
+    status: { mode: row.site_mode ?? "live", title: row.mode_title ?? "", message: row.mode_message ?? "", until: row.mode_until ?? "" },
     hero: {
       title: row.hero.title || heroSeed.title,
       lead: row.hero.lead || heroSeed.lead,

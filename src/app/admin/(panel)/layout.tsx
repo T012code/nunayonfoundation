@@ -1,5 +1,7 @@
 import { signOut } from "@/app/actions/admin/auth";
 import { AdminShell, type NavGroup, type NavItem } from "@/components/admin/AdminShell";
+import Link from "next/link";
+import styles from "@/components/admin/admin.module.css";
 import { can, isManager, requirePage, ROLE_LABELS } from "@/lib/admin/access";
 
 // Every page in the panel is personal and always fresh.
@@ -9,6 +11,9 @@ export default async function PanelLayout({ children }: { children: React.ReactN
   const { access, supabase } = await requirePage();
   const has = (p: Parameters<typeof can>[1]) => can(access, p);
   const manager = isManager(access);
+
+  const { data: site } = await supabase.from("site_settings").select("site_mode").maybeSingle<{ site_mode: string }>();
+  const mode = site?.site_mode ?? "live";
 
   let unread = 0;
   if (has("inbox")) {
@@ -46,6 +51,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
       label: "Site",
       items: [
         ...show(has("settings"), { href: "/admin/settings", label: "Site settings", icon: "settings" }),
+        ...show(manager, { href: "/admin/site-status", label: "Site status", icon: "eye" }),
         ...show(manager, { href: "/admin/email", label: "Email", icon: "mail" }),
         ...show(manager, { href: "/admin/team", label: "Team & permissions", icon: "team" }),
         ...show(has("activity"), { href: "/admin/activity", label: "Activity log", icon: "activity" }),
@@ -55,7 +61,16 @@ export default async function PanelLayout({ children }: { children: React.ReactN
   const groups = all.filter((g) => g.items.length > 0);
 
   return (
-    <AdminShell groups={groups} me={{ name: access.name, email: access.email, role: ROLE_LABELS[access.role] }} signOut={signOut}>
+    <AdminShell groups={groups} me={{ name: access.name, email: access.email, role: ROLE_LABELS[access.role] }} signOut={signOut}
+      banner={
+        mode !== "live" ? (
+          <p className={styles.siteBanner} role="status">
+            The public site is showing the {mode === "maintenance" ? "maintenance" : "coming soon"} page.{" "}
+            {manager ? <Link href="/admin/site-status">Change site status</Link> : null}
+          </p>
+        ) : null
+      }
+    >
       {children}
     </AdminShell>
   );

@@ -16,11 +16,14 @@ export function AdminShell({
   groups,
   me,
   signOut,
+  banner,
   children,
 }: {
   groups: NavGroup[];
   me: { name: string; email: string; role: string };
   signOut: () => Promise<void>;
+  /** Shown above every page, e.g. while the public site is in maintenance mode. */
+  banner?: ReactNode;
   children: ReactNode;
 }) {
   usePressStates();
@@ -108,6 +111,7 @@ export function AdminShell({
         </div>
       </header>
       <main className={styles.main} id="main">
+        {banner}
         {children}
       </main>
     </div>
