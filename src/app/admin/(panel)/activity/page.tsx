@@ -86,7 +86,7 @@ export default async function ActivityAdmin({ searchParams }: { searchParams: Pr
 
   return (
     <div className={s.page}>
-      <PageHead title="Activity log" lead="Every sign-in and change made in the admin, newest first." />
+      <PageHead title="Activity log" lead="Every sign-in and change made in the admin, newest first. Entries older than 14 days are cleared automatically." />
 
       <form className={s.toolbar} action="/admin/activity" role="search" aria-label="Filter the activity log">
         <label className={s.field}>
