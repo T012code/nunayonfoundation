@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     siteName: site.name,
     title: `${site.name} · ${site.tagline}`,
     description: site.description,
-    images: [{ url: "/placeholder/children-waving-1600.webp", width: 1600, height: 1067, alt: "Children smiling and waving" }],
+    // The picture itself is app/opengraph-image.tsx.
   },
   twitter: { card: "summary_large_image" },
 };

@@ -29,7 +29,10 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   async redirects() {
-    return [{ source: "/get-involved", destination: "/volunteer", permanent: true }];
+    return [
+      { source: "/get-involved", destination: "/volunteer", permanent: true },
+      { source: "/security.txt", destination: "/.well-known/security.txt", permanent: true },
+    ];
   },
   async headers() {
     return [

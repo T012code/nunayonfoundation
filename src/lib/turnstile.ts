@@ -19,3 +19,23 @@ export async function verifyTurnstile(token: string | null, ip: string | null) {
     return false;
   }
 }
+
+/**
+ * Asks Cloudflare whether the secret key is real, using a dummy token: a real secret is told
+ * the token is wrong; a wrong secret is told the secret is wrong. Null when not set or unreachable.
+ */
+export async function turnstileSecretWorks(): Promise<boolean | null> {
+  const secret = process.env.TURNSTILE_SECRET_KEY;
+  if (!secret || !process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY) return false;
+  try {
+    const res = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+      method: "POST",
+      body: new URLSearchParams({ secret, response: "check" }),
+      next: { revalidate: 3600 },
+    });
+    const data = (await res.json()) as { "error-codes"?: string[] };
+    return !(data["error-codes"] ?? []).some((c) => c.includes("secret"));
+  } catch {
+    return null;
+  }
+}

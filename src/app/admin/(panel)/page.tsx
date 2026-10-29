@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { adminStyles as s, Badge, Card, Empty, formatTime, Notice, PageHead } from "@/components/admin/ui";
 import { can, requirePage } from "@/lib/admin/access";
+import { turnstileSecretWorks } from "@/lib/turnstile";
 import { serviceClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = { title: "Dashboard" };
@@ -35,14 +36,20 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   let checklist: { label: string; done: boolean; help: string }[] = [];
   if (access.role === "super_admin") {
     const db = serviceClient();
-    const mail = db ? (await db.from("mail_settings").select("host, has_password").maybeSingle()).data : null;
+    const [mail, turnstile] = await Promise.all([
+      db ? db.from("mail_settings").select("host, has_password").maybeSingle().then((r) => r.data) : null,
+      turnstileSecretWorks(),
+    ]);
     checklist = [
       { label: "Server key", done: !!db, help: "Add SUPABASE_SECRET_KEY in Vercel so forms, invitations and email work." },
       { label: "Outgoing email", done: !!(mail?.host && mail.has_password), help: "Connect the foundation's mailbox in Email set-up." },
       {
         label: "Spam protection",
-        done: !!(process.env.TURNSTILE_SECRET_KEY && process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY),
-        help: "Add the Cloudflare Turnstile keys in Vercel.",
+        done: turnstile !== false,
+        help:
+          process.env.TURNSTILE_SECRET_KEY && process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
+            ? "Cloudflare rejected TURNSTILE_SECRET_KEY. Copy the secret key again from Cloudflare → Turnstile into Vercel, then redeploy."
+            : "Add the Cloudflare Turnstile keys in Vercel.",
       },
     ];
   }
