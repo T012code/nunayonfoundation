@@ -19,7 +19,16 @@ export type SettingsValues = {
   email_log_days: number;
 };
 
-export function SettingsForm({ values, team }: { values: SettingsValues; team: { name: string; email: string }[] }) {
+export function SettingsForm({
+  values,
+  team,
+  hidden = [],
+}: {
+  values: SettingsValues;
+  team: { name: string; email: string }[];
+  /** Addresses not shown in the list (the super admin); if they get alerts, they keep getting them. */
+  hidden?: string[];
+}) {
   const alerts = values.notify_email
     .split(/[\s,;]+/)
     .map((a) => a.trim().toLowerCase())
@@ -56,6 +65,11 @@ export function SettingsForm({ values, team }: { values: SettingsValues; team: {
           the person who wrote in.
         </p>
         <div className={styles.fields}>
+          {alerts
+            .filter((a) => hidden.includes(a))
+            .map((a) => (
+              <input key={a} type="hidden" name="notify_members" value={a} />
+            ))}
           {team.length ? (
             <fieldset className={styles.copyGroup}>
               <legend>Team members</legend>
@@ -76,7 +90,7 @@ export function SettingsForm({ values, team }: { values: SettingsValues; team: {
             name="notify_other"
             label={team.length ? "Other email addresses" : "Email addresses"}
             rows={2}
-            defaultValue={alerts.filter((a) => !team.some((m) => m.email === a)).join(", ")}
+            defaultValue={alerts.filter((a) => !hidden.includes(a) && !team.some((m) => m.email === a)).join(", ")}
             help="Separate addresses with commas. They aren't shown on the site."
           />
         </div>

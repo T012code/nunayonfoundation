@@ -21,7 +21,7 @@ export default async function InboxItem({ params }: { params: Promise<{ id: stri
   }
   const wa = item.phone.replace(/\D/g, "");
   // Team members to forward to (only visible to the super admin and admins; others type an address).
-  const { data: team } = await supabase.from("admins").select("name, email").eq("active", true).order("name");
+  const { data: team } = await supabase.from("admins").select("name, email").eq("active", true).neq("role", "super_admin").order("name");
   const subject = `Re: your ${KINDS[item.kind].toLowerCase()} to Nunayon Foundation`;
 
   return (
