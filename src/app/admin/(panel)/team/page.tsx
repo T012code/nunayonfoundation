@@ -23,6 +23,8 @@ export default async function TeamAdmin() {
   const { data } = await supabase
     .from("admins")
     .select("id, user_id, name, email, role, permissions, mfa_required, active")
+    // The super admin isn't listed: their account works as usual but stays out of the team list.
+    .neq("role", "super_admin")
     .order("created_at");
   const members = (data ?? []) as Member[];
 
@@ -41,7 +43,7 @@ export default async function TeamAdmin() {
     <div className={s.page}>
       <PageHead
         title="Team & permissions"
-        lead="Who can sign in to the admin and what each person can do. Admins can do everything; for editors and communications, the role ticks the usual permissions and you can adjust them per person. Nobody can change or remove the super admin."
+        lead="Who can sign in to the admin and what each person can do. Admins can do everything; for editors and communications, the role ticks the usual permissions and you can adjust them per person."
         actions={
           <Link href="/admin/team/new" className={s.primaryButton}>
             <Icon name="plus" /> Invite someone
@@ -72,7 +74,7 @@ export default async function TeamAdmin() {
             {members.map((m) => {
               const a = m.user_id ? auth.get(m.user_id) : undefined;
               const perms =
-                m.role === "super_admin" || m.role === "admin"
+                m.role === "admin"
                   ? "Everything"
                   : m.permissions.map((p) => PERMISSION_LABELS[p].label).join(", ") || "Nothing yet";
               return (
@@ -84,7 +86,7 @@ export default async function TeamAdmin() {
                     <div className={`${s.small} ${s.muted}`}>{m.email}</div>
                   </td>
                   <td>
-                    <Badge tone={m.role === "super_admin" ? "teal" : undefined}>{ROLE_LABELS[m.role]}</Badge>{" "}
+                    <Badge>{ROLE_LABELS[m.role]}</Badge>{" "}
                     {!m.active ? <Badge tone="red">Off</Badge> : null}
                   </td>
                   <td className={`${s.small} ${s.muted}`}>{perms}</td>

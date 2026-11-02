@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 import { PageHead, adminStyles as s } from "@/components/admin/ui";
 import { requirePage, ROLE_PRESETS } from "@/lib/admin/access";
 import { MemberForm, type MemberValues } from "../MemberForm";
@@ -12,7 +12,8 @@ export default async function MemberAdmin({ params, searchParams }: { params: Pr
   let values: MemberValues = { name: "", email: "", role: "editor", permissions: ROLE_PRESETS.editor, mfa_required: false, active: true };
   if (id !== "new") {
     const { data } = await supabase.from("admins").select("id, name, email, role, permissions, mfa_required, active").eq("id", id).maybeSingle();
-    if (!data) notFound();
+    // The super admin's record isn't shown in the team (their own details are under Your account).
+    if (!data || data.role === "super_admin") redirect("/admin/team");
     values = data as MemberValues;
   }
   // Roles that already have 3 active people (not counting this person).
