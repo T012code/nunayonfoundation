@@ -62,7 +62,7 @@ export function SettingsForm({
         <h2 className={styles.cardTitle}>Form alerts</h2>
         <p className={styles.cardLead}>
           Who gets an email for every new message, volunteer sign-up and donation notice. Replying to an alert answers
-          the person who wrote in.
+          the person who wrote in. If nobody is chosen, alerts go to the public email above ({values.email}).
         </p>
         <div className={styles.fields}>
           {alerts

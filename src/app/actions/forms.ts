@@ -127,8 +127,10 @@ export async function submitForm(kind: Kind, fd: FormData): Promise<FormResult> 
   after(async () => {
     const details = [{ label: "Name", value: name }, { label: "Email", value: email }, ...(phone ? [{ label: "Phone", value: phone }] : []), ...fields];
     try {
-      const { data: settings } = await db.from("site_settings").select("notify_email").maybeSingle<{ notify_email: string }>();
-      const to = addressList(settings?.notify_email ?? "");
+      // Whoever is chosen in Site settings → Form alerts; nobody chosen means the site's own email.
+      const { data: settings } = await db.from("site_settings").select("notify_email, email").maybeSingle<{ notify_email: string; email: string }>();
+      const chosen = addressList(settings?.notify_email ?? "");
+      const to = chosen.length ? chosen : addressList(settings?.email ?? "");
       if (to.length) {
         await sendTemplate("form_alert", to.join(", "), { form: spec.subject, name }, { link: `${SITE_URL}/admin/inbox`, details, replyTo: email });
       }
