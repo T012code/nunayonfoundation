@@ -32,7 +32,7 @@ export type MemberValues = {
 };
 
 const ROLE_HELP: Record<Exclude<Role, "super_admin">, string> = {
-  admin: "Everything, including the team and email set-up. Always signs in with an authenticator app.",
+  admin: "Everything, including the team and email set-up.",
   editor: "Content: news, programmes, gallery and board members.",
   communications: "Inbox, newsletter and news.",
 };
@@ -182,20 +182,12 @@ export function MemberForm({
             <h2 className={styles.cardTitle}>Security</h2>
             <div className={styles.checks}>
               <label className={styles.check}>
-                <input
-                  key={role === "admin" ? "admin" : "other"}
-                  type="checkbox"
-                  name="mfa_required"
-                  {...(role === "admin"
-                    ? { checked: true, disabled: true, readOnly: true }
-                    : { defaultChecked: values.mfa_required })}
-                />
+                <input type="checkbox" name="mfa_required" defaultChecked={values.mfa_required} />
                 <span className={styles.checkText}>
                   <strong>Require an authenticator app</strong>
                   <span className={styles.help}>
-                    {role === "admin"
-                      ? "Always on for admins, since they can manage other people."
-                      : "They'll set one up at their next sign-in and need a code every time."}
+                    They&apos;ll set one up at their next sign-in and need a code every time. Recommended for admins, since they can
+                    manage other people.
                   </span>
                 </span>
               </label>

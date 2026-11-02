@@ -15,11 +15,10 @@ function readPermissions(fd: FormData) {
   return fd.getAll("permissions").map(String).filter((p): p is Permission => (PERMISSIONS as readonly string[]).includes(p));
 }
 
-/** Admins hold everything and always use an authenticator app; other roles take what's ticked. */
+/** Admins hold everything; other roles take what's ticked. An authenticator app is optional for both. */
 function accessFor(role: Role, fd: FormData) {
-  return role === "admin"
-    ? { permissions: [...PERMISSIONS], mfa_required: true }
-    : { permissions: readPermissions(fd), mfa_required: fd.get("mfa_required") === "on" };
+  const mfa_required = fd.get("mfa_required") === "on";
+  return role === "admin" ? { permissions: [...PERMISSIONS], mfa_required } : { permissions: readPermissions(fd), mfa_required };
 }
 
 /** The database's own messages for the limits, in the form's words. */
